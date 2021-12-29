@@ -3,6 +3,10 @@
 venv/
 .vscode/
 
+# Python
+__pycache__/
+.mypy_cache/
+
 # other credentials
 client_secret.json
 token.pkl

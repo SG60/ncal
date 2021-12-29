@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "notion-and-google-calendar-2-way-sync"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+license = "GNU GPL"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+notion-client = "^0.4.0"
+google-api-python-client = "^2.33.0"
+google-auth-oauthlib = "^0.4.6"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
