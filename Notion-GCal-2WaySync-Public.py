@@ -10,12 +10,13 @@ import pickle
 ##### The Set-Up Section. Please follow the comments to understand the code. 
 ###########################################################################
 
+import secret_tokens # private file containing tokens (don't commit to git!)
 
-NOTION_TOKEN = "" #the secret_something from Notion Integration
+NOTION_TOKEN = secret_tokens.NOTION_TOKEN #the secret_something from Notion Integration
 
-database_id = "" #get the mess of numbers before the "?" on your dashboard URL (no need to split into dashes)
+database_id = secret_tokens.database_id #get the mess of numbers before the "?" on your dashboard URL (no need to split into dashes)
 
-urlRoot = 'https://www.notion.so/akarri/2583098dfd32472ab6ca1ff2a8b2866d?v=3a1adf60f15748f08ed925a2eca88421&p=' #open up a task and then copy the URL root up to the "p="
+urlRoot = secret_tokens.urlRoot #open up a task and then copy the URL root up to the "p="
 
 runScript = "python3 GCalToken.py" #This is the command you will be feeding into the command prompt to run the GCalToken program
 
@@ -25,19 +26,19 @@ credentialsLocation = "token.pkl" #This is where you keep the pickle file that h
 
 
 DEFAULT_EVENT_LENGTH = 60 #This is how many minutes the default event length is. Feel free to change it as you please
-timezone = 'America/New_York' #Choose your respective time zone: http://www.timezoneconverter.com/cgi-bin/zonehelp.tzc
+timezone = 'Europe/London' #Choose your respective time zone: http://www.timezoneconverter.com/cgi-bin/zonehelp.tzc
 
 def notion_time():
-    return datetime.now().strftime("%Y-%m-%dT%H:%M:%S-04:00") #Change the last 5 characters to be representative of your timezone
+    return datetime.now().strftime("%Y-%m-%dT%H:%M:%S") #Change the last 5 characters to be representative of your timezone
      #^^ has to be adjusted for when daylight savings is different if your area observes it
     
 def DateTimeIntoNotionFormat(dateTimeValue):
-    return dateTimeValue.strftime("%Y-%m-%dT%H:%M:%S-04:00")  #Change the last 5 characters to be representative of your timezone
+    return dateTimeValue.strftime("%Y-%m-%dT%H:%M:%S")  #Change the last 5 characters to be representative of your timezone
      #^^ has to be adjusted for when daylight savings is different if your area observes it
 
 
 def googleQuery():
-    return datetime.now().strftime("%Y-%m-%dT%H:%M:%S")+"-04:00" #Change the last 5 characters to be representative of your timezone
+    return datetime.now().strftime("%Y-%m-%dT%H:%M:%S") #Change the last 5 characters to be representative of your timezone
      #^^ has to be adjusted for when daylight savings is different if your area observes it
 
 
@@ -52,22 +53,21 @@ AllDayEventOption = 0 #0 if you want dates on your Notion dashboard to be treate
 #  - VERY IMPORTANT: For each 'key' of the dictionary, make sure that you make that EXACT thing in the Notion database first before running the code. You WILL have an error and your dashboard/calendar will be messed up
 
 
-DEFAULT_CALENDAR_ID = '565bdjsqmautc214vcimtn5kso@group.calendar.google.com' #The GCal calendar id. The format is something like "sldkjfliksedjgodsfhgshglsj@group.calendar.google.com"
+DEFAULT_CALENDAR_ID = 'cv9aoe96819t4bt5f5jars9b10@group.calendar.google.com' #The GCal calendar id. The format is something like "sldkjfliksedjgodsfhgshglsj@group.calendar.google.com"
 
-DEFAULT_CALENDAR_NAME = 'Test'
+DEFAULT_CALENDAR_NAME = 'Notion Events'
 
 
 #leave the first entry as is
 #the structure should be as follows:              WHAT_THE_OPTION_IN_NOTION_IS_CALLED : GCAL_CALENDAR_ID 
 calendarDictionary = {
     DEFAULT_CALENDAR_NAME : DEFAULT_CALENDAR_ID, 
-    'Test' : 'fd34893uklhjdflgkjsdafdfjklsd@group.calendar.google.com', #just typed some random ids but put the one for your calendars here
-    'New Test' : 'skdhvjhefoierjkh345378khkh@group.calendar.google.com'
+    'Notion Events' : 'cv9aoe96819t4bt5f5jars9b10@group.calendar.google.com', #just typed some random ids but put the one for your calendars here
 }
 
 
 ## doesn't delete the Notion task (yet), I'm waiting for the Python API to be updated to allow deleting tasks
-DELETE_OPTION = 0 
+DELETE_OPTION = 1 
 #set at 0 if you want the delete column being checked off to mean that the gCal event and the Notion Event will be checked off. 
 #set at 1 if you want nothing deleted
 

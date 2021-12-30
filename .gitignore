@@ -10,3 +10,4 @@ __pycache__/
 # other credentials
 client_secret.json
 token.pkl
+secret_tokens.py
