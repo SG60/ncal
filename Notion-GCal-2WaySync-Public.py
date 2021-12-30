@@ -922,7 +922,7 @@ for gCalId in notion_gCal_IDs:
     print(value)
     print('\n') 
     try:
-        gCal_start_datetimes.append(datetime.strptime(value['start']['dateTime'][:-6], "%Y-%m-%dT%H:%M:%S"))
+        gCal_start_datetimes.append(datetime.strptime(value['start']['dateTime'], "%Y-%m-%dT%H:%M:%S"))
     except:
         date = datetime.strptime(value['start']['date'], "%Y-%m-%d")
         x = datetime(date.year, date.month, date.day, 0, 0, 0)
