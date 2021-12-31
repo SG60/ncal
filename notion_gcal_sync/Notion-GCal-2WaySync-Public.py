@@ -100,17 +100,17 @@ DELETE_OPTION = 1
 # Please refer to the Template if you are confused: https://www.notion.so/akarri/2583098dfd32472ab6ca1ff2a8b2866d?v=3a1adf60f15748f08ed925a2eca88421
 
 
-Task_Notion_Name = "Task Name"
-Date_Notion_Name = "Date"
-Initiative_Notion_Name = "Initiative"
-ExtraInfo_Notion_Name = "Extra Info"
+Task_Notion_Name = "Name"
+Date_Notion_Name = "Start Date"
+Initiative_Notion_Name = "Type"
+ExtraInfo_Notion_Name = "Description"
 On_GCal_Notion_Name = "On GCal?"
 NeedGCalUpdate_Notion_Name = "NeedGCalUpdate"
 GCalEventId_Notion_Name = "GCal Event Id"
 LastUpdatedTime_Notion_Name = "Last Updated Time"
 Calendar_Notion_Name = "Calendar"
 Current_Calendar_Id_Notion_Name = "Current Calendar Id"
-Delete_Notion_Name = "Done?"
+Delete_Notion_Name = "Done"
 
 #######################################################################################
 ###               No additional user editing beyond this point is needed            ###
