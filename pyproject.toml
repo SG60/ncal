@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "notion-and-google-calendar-2-way-sync"
+name = "notion-gcal-sync"
 version = "0.1.0"
 description = ""
-authors = ["Your Name <you@example.com>"]
+authors = ["Sam Greening <samjg60@gmail.com>"]
 license = "GNU GPL"
 
 [tool.poetry.dependencies]
