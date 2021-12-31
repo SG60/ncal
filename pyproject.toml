@@ -5,6 +5,9 @@ description = ""
 authors = ["Sam Greening <samjg60@gmail.com>"]
 license = "GNU GPL"
 
+[tool.poetry.scripts]
+notion-gcal-sync = "notion_gcal_sync.cli:main"
+
 [tool.poetry.dependencies]
 python = "^3.8"
 notion-client = "^0.4.0"
