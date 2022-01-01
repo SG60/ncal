@@ -101,7 +101,7 @@ DELETE_OPTION = 1
 
 
 Task_Notion_Name = "Name"
-Date_Notion_Name = "Start Date"
+Date_Notion_Name = "Do Date"
 Initiative_Notion_Name = "Type"
 ExtraInfo_Notion_Name = "Description"
 On_GCal_Notion_Name = "On GCal?"
@@ -544,7 +544,7 @@ if len(resultList) > 0:
 
         try:
             Initiatives.append(
-                el["properties"][Initiative_Notion_Name]["select"]["name"]
+                el["properties"][Initiative_Notion_Name]["select"]["name"] # TODO: Make this work with Project relation
             )
         except:
             Initiatives.append("")
@@ -778,7 +778,7 @@ if len(resultList) > 0:
 
         try:
             Initiatives.append(
-                el["properties"][Initiative_Notion_Name]["select"]["name"]
+                el["properties"][Initiative_Notion_Name]["select"]["name"] # TODO: Make this work with Project relation
             )
         except:
             Initiatives.append("")
