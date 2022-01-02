@@ -23,6 +23,7 @@ typer = "^0.4.0"
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
 pytest-cov = "^3.0.0"
+mypy = "^0.930"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
