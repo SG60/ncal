@@ -543,8 +543,9 @@ if len(resultList) > 0:
             end_Times.append(el["properties"][Date_Notion_Name]["date"]["start"])
 
         try:
+            # TODO: Make this work with Project relation
             Initiatives.append(
-                el["properties"][Initiative_Notion_Name]["select"]["name"] # TODO: Make this work with Project relation
+                el["properties"][Initiative_Notion_Name]["select"]["name"]
             )
         except:
             Initiatives.append("")
@@ -777,8 +778,9 @@ if len(resultList) > 0:
             end_Times.append(el["properties"][Date_Notion_Name]["date"]["start"])
 
         try:
+            # TODO: Make this work with Project relation
             Initiatives.append(
-                el["properties"][Initiative_Notion_Name]["select"]["name"] # TODO: Make this work with Project relation
+                el["properties"][Initiative_Notion_Name]["select"]["name"]
             )
         except:
             Initiatives.append("")
