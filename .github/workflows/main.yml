@@ -76,6 +76,9 @@ jobs:
         run: |
           # check with black
           poetry run python -m black . --check
+          
+      - name: Run mypy
+        run: poetry run mypy .
 
       - name: Test with pytest
         run: |
