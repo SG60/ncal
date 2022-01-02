@@ -4,6 +4,9 @@ version = "0.1.0"
 description = ""
 authors = ["Your Name <you@example.com>"]
 license = "GNU GPL"
+homepage = "https://github.com/SG60/Notion-and-Google-Calendar-2-Way-Sync"
+repository = "https://github.com/SG60/Notion-and-Google-Calendar-2-Way-Sync"
+readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.8"
@@ -13,6 +16,8 @@ google-auth-oauthlib = "^0.4.6"
 python-dateutil = "^2.8.2"
 
 [tool.poetry.dev-dependencies]
+pytest = "^6.2.5"
+pytest-cov = "^3.0.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
