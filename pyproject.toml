@@ -4,6 +4,9 @@ version = "0.1.0"
 description = ""
 authors = ["Sam Greening <samjg60@gmail.com>"]
 license = "GNU GPL"
+homepage = "https://github.com/SG60/Notion-and-Google-Calendar-2-Way-Sync"
+repository = "https://github.com/SG60/Notion-and-Google-Calendar-2-Way-Sync"
+readme = "README.md"
 
 [tool.poetry.scripts]
 notion-gcal-sync = "notion_gcal_sync.cli:main"
@@ -17,6 +20,7 @@ python-dateutil = "^2.8.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
+pytest-cov = "^3.0.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

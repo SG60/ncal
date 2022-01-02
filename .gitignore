@@ -6,6 +6,7 @@ venv/
 # Python
 __pycache__/
 .mypy_cache/
+.coverage
 
 # other credentials
 client_secret.json
