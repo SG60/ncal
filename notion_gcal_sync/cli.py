@@ -3,14 +3,15 @@ import os
 import pickle
 from datetime import datetime
 
-# from dateutil.parser import isoparse
+import dateutil.parser
+import secret_tokens  # private file containing tokens (don't commit to git!) # TODO: remove this
+import typer
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from notion_client import Client
-import dateutil.parser
 
-
-import secret_tokens  # private file containing tokens (don't commit to git!)
+from notion_gcal_sync import core
+from notion_gcal_sync.core import DateTimeIntoNotionFormat, googleQuery, notion_time
 
 ###########################################################################
 ##### The Set-Up Section. Please follow the comments to understand the code.
@@ -35,30 +36,6 @@ credentialsLocation = "token.pkl"  # This is where you keep the pickle file that
 
 DEFAULT_EVENT_LENGTH = 60  # This is how many minutes the default event length is. Feel free to change it as you please
 timezone = "Europe/London"  # Choose your respective time zone: http://www.timezoneconverter.com/cgi-bin/zonehelp.tzc
-
-
-def notion_time():
-    return datetime.now(dt.timezone.utc).isoformat()
-    # return datetime.now().strftime(
-    #     "%Y-%m-%dT%H:%M:%S"
-    # )  # Change the last 5 characters to be representative of your timezone
-    # # ^^ has to be adjusted for when daylight savings is different if your area observes it
-
-
-def DateTimeIntoNotionFormat(dateTimeValue: datetime):
-    return dateTimeValue.isoformat()
-    # return dateTimeValue.strftime(
-    #     "%Y-%m-%dT%H:%M:%S"
-    # )  # Change the last 5 characters to be representative of your timezone
-    # # ^^ has to be adjusted for when daylight savings is different if your area observes it
-
-
-def googleQuery():
-    return datetime.now(dt.timezone.utc).isoformat()
-    # return datetime.now().strftime(
-    #     "%Y-%m-%dT%H:%M:%S"
-    # )  # Change the last 5 characters to be representative of your timezone
-    # # ^^ has to be adjusted for when daylight savings is different if your area observes it
 
 
 DEFAULT_EVENT_START = 8  # 8 would be 8 am. 16 would be 4 pm. Only whole numbers
@@ -117,33 +94,9 @@ Delete_Notion_Name = "Done"
 #######################################################################################
 
 
-# SET UP THE GOOGLE CALENDAR API INTERFACE
-
-credentials = pickle.load(open(credentialsLocation, "rb"))
-service = build("calendar", "v3", credentials=credentials)
-
-
-# There could be a hiccup if the Google Calendar API token expires.
-# If the token expires, the other python script GCalToken.py creates a new token for the program to use
-# This is placed here because it can take a few seconds to start working and I want the most heavy tasks to occur first
-try:
-    calendar = service.calendars().get(calendarId=DEFAULT_CALENDAR_ID).execute()
-except:
-    # refresh the token
-    import os
-
-    os.system(runScript)
-
-    # SET UP THE GOOGLE CALENDAR API INTERFACE
-
-    credentials = pickle.load(open(credentialsLocation, "rb"))
-    service = build("calendar", "v3", credentials=credentials)
-
-    # result = service.calendarList().list().execute()
-    # print(result['items'][:])
-
-    calendar = service.calendars().get(calendarId=DEFAULT_CALENDAR_ID).execute()
-
+service, calendar = core.setup_google_api(
+    runScript, DEFAULT_CALENDAR_ID, credentialsLocation
+)
 
 ##This is where we set up the connection with the Notion API
 os.environ["NOTION_TOKEN"] = NOTION_TOKEN
@@ -1051,8 +1004,8 @@ for i in range(len(new_notion_start_datetimes)):
     if (
         new_notion_start_datetimes[i] != "" and new_notion_end_datetimes[i] != ""
     ):  # both start and end time need to be updated
-        start = new_notion_start_datetimes[i]
-        end = new_notion_end_datetimes[i]
+        start: datetime = new_notion_start_datetimes[i]
+        end: datetime = new_notion_end_datetimes[i]
 
         if (
             start.hour == 0 and start.minute == 0 and start == end
@@ -1554,63 +1507,11 @@ for i in range(len(calIds)):
         print(f"Added this event to Notion: {calName[i]}")
 
 
-###########################################################################
-##### Part 5: Deletion Sync -- If marked Done in Notion, then it will delete the GCal event (and the Notion event once Python API updates)
-###########################################################################
-
-
-def delete_page():
-    my_page = notion.databases.query(
-        **{
-            "database_id": database_id,
-            "filter": {
-                "and": [
-                    {
-                        "property": GCalEventId_Notion_Name,
-                        "text": {"is_not_empty": True},
-                    },
-                    {"property": On_GCal_Notion_Name, "checkbox": {"equals": True}},
-                    {"property": Delete_Notion_Name, "checkbox": {"equals": True}},
-                ]
-            },
-        }
-    )
-
-    resultList = my_page["results"]
-
-    if (
-        DELETE_OPTION == 0 and len(resultList) > 0
-    ):  # delete gCal event (and Notion task once the Python API is updated)
-        CalendarList = []
-        CurrentCalList = []
-
-        for i, el in enumerate(resultList):
-            calendarID = calendarDictionary[
-                el["properties"][Calendar_Notion_Name]["select"]["name"]
-            ]
-            eventId = el["properties"][GCalEventId_Notion_Name]["rich_text"][0]["text"][
-                "content"
-            ]
-
-            pageId = el["id"]
-
-            print(calendarID, eventId)
-
-            try:
-                service.events().delete(
-                    calendarId=calendarID, eventId=eventId
-                ).execute()
-            except:
-                continue
-
-            my_page = notion.pages.update(  ##### Delete Notion task (diesn't work yet)
-                **{"page_id": pageId, "archived": True, "properties": {}},
-            )
-
-            print(my_page)
-
-
-def main() -> int:
-    print(
+def typer_test():
+    typer.echo(
         f"\nhello world, this is the cli main() function :)\ncalendar = {DEFAULT_CALENDAR_NAME}"
     )
+
+
+def main():
+    typer.run(typer_test)
