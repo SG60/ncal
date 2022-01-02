@@ -458,7 +458,7 @@ python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 name = "tomli"
 version = "2.0.0"
 description = "A lil' TOML parser"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
@@ -486,7 +486,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "4cb6ddb0df54fcca4521506e7be515aa1f4898b0353312ed883febdc6e56f632"
+content-hash = "8314e8d43d53b00ec044ca90741ab13ded5cd5a274e3ac299e826fe533d10383"
 
 [metadata.files]
 atomicwrites = [
