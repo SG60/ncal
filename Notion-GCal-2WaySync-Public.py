@@ -82,7 +82,7 @@ DEFAULT_CALENDAR_NAME = "Notion Events"
 # the structure should be as follows:              WHAT_THE_OPTION_IN_NOTION_IS_CALLED : GCAL_CALENDAR_ID
 calendarDictionary = {
     DEFAULT_CALENDAR_NAME: DEFAULT_CALENDAR_ID,
-    #"Cal Name": "asdfadsf234asef21134@group.calendar.google.com",  # just typed some random ids but put the one for your calendars here
+    # "Cal Name": "asdfadsf234asef21134@group.calendar.google.com",  # just typed some random ids but put the one for your calendars here
 }
 
 
