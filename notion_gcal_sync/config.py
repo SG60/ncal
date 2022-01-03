@@ -65,7 +65,7 @@ DELETE_OPTION = 1
 
 Task_Notion_Name = "Name"
 Date_Notion_Name = "Do Date"
-Initiative_Notion_Name = "Type"
+Initiative_Notion_Name = "Priority"
 ExtraInfo_Notion_Name = "Description"
 On_GCal_Notion_Name = "On GCal?"
 NeedGCalUpdate_Notion_Name = "NeedGCalUpdate"
@@ -74,7 +74,3 @@ LastUpdatedTime_Notion_Name = "Last Updated Time"
 Calendar_Notion_Name = "Calendar"
 Current_Calendar_Id_Notion_Name = "Current Calendar Id"
 Delete_Notion_Name = "Done"
-
-#######################################################################################
-###               No additional user editing beyond this point is needed            ###
-#######################################################################################
