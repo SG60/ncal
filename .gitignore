@@ -12,3 +12,6 @@ __pycache__/
 client_secret.json
 token.pkl
 secret_tokens.py
+
+# vim
+Session.vim
