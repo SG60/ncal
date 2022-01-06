@@ -4,27 +4,31 @@ import os
 # from notion_client import Client
 import notion_client as nc
 import typer
+from notion_gcal_sync import core
 
-from notion_gcal_sync import config, core
+
+from notion_gcal_sync.config import config
 
 
 def typer_test():
+
     typer.echo(
         f"\nhello world, this is the cli main() function :)\ncalendar = {config.DEFAULT_CALENDAR_NAME}"
     )
 
 
-def main():
+def sync():
 
     service, calendar = core.setup_google_api(
         config.runScript, config.DEFAULT_CALENDAR_ID, config.credentialsLocation
     )
 
     ##This is where we set up the connection with the Notion API
-    os.environ["NOTION_TOKEN"] = config.NOTION_TOKEN
-    notion = nc.Client(auth=os.environ["NOTION_TOKEN"])
+
+    notion = nc.Client(auth=config.NOTION_API_TOKEN)
 
     todayDate = dt.datetime.today().strftime("%Y-%m-%d")
+
     core.new_events_notion_to_gcal(
         config.database_id,
         config.urlRoot,
@@ -98,4 +102,7 @@ def main():
         service,
         notion,
     )
+
+
+def main():
     typer.run(typer_test)

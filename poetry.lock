@@ -125,7 +125,7 @@ grpcio-gcp = ["grpcio-gcp (>=0.2.2)"]
 
 [[package]]
 name = "google-api-python-client"
-version = "2.33.0"
+version = "2.34.0"
 description = "Google API Client Library for Python"
 category = "main"
 optional = false
@@ -136,7 +136,7 @@ google-api-core = ">=1.21.0,<3.0.0dev"
 google-auth = ">=1.16.0,<3.0.0dev"
 google-auth-httplib2 = ">=0.1.0"
 httplib2 = ">=0.15.0,<1dev"
-uritemplate = ">=3.0.0,<5"
+uritemplate = ">=3.0.1,<5"
 
 [[package]]
 name = "google-auth"
@@ -282,7 +282,7 @@ toml = {version = ">=0.10.2", markers = "python_version > \"3.6\""}
 
 [[package]]
 name = "ipython"
-version = "7.30.1"
+version = "7.31.0"
 description = "IPython: Productive Interactive Computing"
 category = "dev"
 optional = false
@@ -496,8 +496,24 @@ python-versions = "*"
 pyasn1 = ">=0.4.6,<0.5.0"
 
 [[package]]
+name = "pydantic"
+version = "1.9.0"
+description = "Data validation and settings management using python 3.6 type hinting"
+category = "main"
+optional = false
+python-versions = ">=3.6.1"
+
+[package.dependencies]
+python-dotenv = {version = ">=0.10.4", optional = true, markers = "extra == \"dotenv\""}
+typing-extensions = ">=3.7.4.3"
+
+[package.extras]
+dotenv = ["python-dotenv (>=0.10.4)"]
+email = ["email-validator (>=1.0.3)"]
+
+[[package]]
 name = "pygments"
-version = "2.11.1"
+version = "2.11.2"
 description = "Pygments is a syntax highlighting package written in Python."
 category = "dev"
 optional = false
@@ -562,8 +578,19 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
 six = ">=1.5"
 
 [[package]]
+name = "python-dotenv"
+version = "0.19.2"
+description = "Read key-value pairs from a .env file and set them as environment variables"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[package.extras]
+cli = ["click (>=5.0)"]
+
+[[package]]
 name = "requests"
-version = "2.27.0"
+version = "2.27.1"
 description = "Python HTTP for Humans."
 category = "main"
 optional = false
@@ -691,7 +718,7 @@ python-versions = "*"
 name = "typing-extensions"
 version = "4.0.1"
 description = "Backported and Experimental Type Hints for Python 3.6+"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -727,7 +754,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "9241b6194075a0ab4c28faf06fdf0ef109bf901450052275f961695b07ec0c99"
+content-hash = "d91f54ac195ddddde193d545ce17b64bafba7c38fcedfb44571c899a0bdf1501"
 
 [metadata.files]
 appnope = [
@@ -824,8 +851,8 @@ google-api-core = [
     {file = "google_api_core-2.3.2-py2.py3-none-any.whl", hash = "sha256:3c562d393aed7e3d2011fcd1f103b490c411dcf5644b6312ca11a166a6ea8faf"},
 ]
 google-api-python-client = [
-    {file = "google-api-python-client-2.33.0.tar.gz", hash = "sha256:38e98611794632a12479fafbabe0b5027e8fcfc412e8375f1b23db0bc0209181"},
-    {file = "google_api_python_client-2.33.0-py2.py3-none-any.whl", hash = "sha256:1322d026110bc62eb29a4a25a15895dac51486b30a29b5943bc456318677280b"},
+    {file = "google-api-python-client-2.34.0.tar.gz", hash = "sha256:f4c602d1b49f7de53dca105fa1e021718f73ab8a40957e66226f7b0504e65e7c"},
+    {file = "google_api_python_client-2.34.0-py2.py3-none-any.whl", hash = "sha256:31eab065a8d01409af13632006a0bac4eae2ef02f0539092a4dd9575cdd724f0"},
 ]
 google-auth = [
     {file = "google-auth-2.3.3.tar.gz", hash = "sha256:d83570a664c10b97a1dc6f8df87e5fdfff012f48f62be131e449c20dfc32630e"},
@@ -871,8 +898,8 @@ ipdb = [
     {file = "ipdb-0.13.9.tar.gz", hash = "sha256:951bd9a64731c444fd907a5ce268543020086a697f6be08f7cc2c9a752a278c5"},
 ]
 ipython = [
-    {file = "ipython-7.30.1-py3-none-any.whl", hash = "sha256:fc60ef843e0863dd4e24ab2bb5698f071031332801ecf8d1aeb4fb622056545c"},
-    {file = "ipython-7.30.1.tar.gz", hash = "sha256:cb6aef731bf708a7727ab6cde8df87f0281b1427d41e65d62d4b68934fa54e97"},
+    {file = "ipython-7.31.0-py3-none-any.whl", hash = "sha256:4c4234cdcc6b8f87c5b5c7af9899aa696ac5cfcf0e9f6d0688018bbee5c73bce"},
+    {file = "ipython-7.31.0.tar.gz", hash = "sha256:346c74db7312c41fa566d3be45d2e759a528dcc2994fe48aac1a03a70cd668a3"},
 ]
 jedi = [
     {file = "jedi-0.18.1-py2.py3-none-any.whl", hash = "sha256:637c9635fcf47945ceb91cd7f320234a7be540ded6f3e99a50cb6febdfd1ba8d"},
@@ -1004,9 +1031,46 @@ pyasn1-modules = [
     {file = "pyasn1_modules-0.2.8-py3.6.egg", hash = "sha256:cbac4bc38d117f2a49aeedec4407d23e8866ea4ac27ff2cf7fb3e5b570df19e0"},
     {file = "pyasn1_modules-0.2.8-py3.7.egg", hash = "sha256:c29a5e5cc7a3f05926aff34e097e84f8589cd790ce0ed41b67aed6857b26aafd"},
 ]
+pydantic = [
+    {file = "pydantic-1.9.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:cb23bcc093697cdea2708baae4f9ba0e972960a835af22560f6ae4e7e47d33f5"},
+    {file = "pydantic-1.9.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:1d5278bd9f0eee04a44c712982343103bba63507480bfd2fc2790fa70cd64cf4"},
+    {file = "pydantic-1.9.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ab624700dc145aa809e6f3ec93fb8e7d0f99d9023b713f6a953637429b437d37"},
+    {file = "pydantic-1.9.0-cp310-cp310-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:c8d7da6f1c1049eefb718d43d99ad73100c958a5367d30b9321b092771e96c25"},
+    {file = "pydantic-1.9.0-cp310-cp310-musllinux_1_1_i686.whl", hash = "sha256:3c3b035103bd4e2e4a28da9da7ef2fa47b00ee4a9cf4f1a735214c1bcd05e0f6"},
+    {file = "pydantic-1.9.0-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:3011b975c973819883842c5ab925a4e4298dffccf7782c55ec3580ed17dc464c"},
+    {file = "pydantic-1.9.0-cp310-cp310-win_amd64.whl", hash = "sha256:086254884d10d3ba16da0588604ffdc5aab3f7f09557b998373e885c690dd398"},
+    {file = "pydantic-1.9.0-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:0fe476769acaa7fcddd17cadd172b156b53546ec3614a4d880e5d29ea5fbce65"},
+    {file = "pydantic-1.9.0-cp36-cp36m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c8e9dcf1ac499679aceedac7e7ca6d8641f0193c591a2d090282aaf8e9445a46"},
+    {file = "pydantic-1.9.0-cp36-cp36m-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:d1e4c28f30e767fd07f2ddc6f74f41f034d1dd6bc526cd59e63a82fe8bb9ef4c"},
+    {file = "pydantic-1.9.0-cp36-cp36m-musllinux_1_1_i686.whl", hash = "sha256:c86229333cabaaa8c51cf971496f10318c4734cf7b641f08af0a6fbf17ca3054"},
+    {file = "pydantic-1.9.0-cp36-cp36m-musllinux_1_1_x86_64.whl", hash = "sha256:c0727bda6e38144d464daec31dff936a82917f431d9c39c39c60a26567eae3ed"},
+    {file = "pydantic-1.9.0-cp36-cp36m-win_amd64.whl", hash = "sha256:dee5ef83a76ac31ab0c78c10bd7d5437bfdb6358c95b91f1ba7ff7b76f9996a1"},
+    {file = "pydantic-1.9.0-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:d9c9bdb3af48e242838f9f6e6127de9be7063aad17b32215ccc36a09c5cf1070"},
+    {file = "pydantic-1.9.0-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:2ee7e3209db1e468341ef41fe263eb655f67f5c5a76c924044314e139a1103a2"},
+    {file = "pydantic-1.9.0-cp37-cp37m-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:0b6037175234850ffd094ca77bf60fb54b08b5b22bc85865331dd3bda7a02fa1"},
+    {file = "pydantic-1.9.0-cp37-cp37m-musllinux_1_1_i686.whl", hash = "sha256:b2571db88c636d862b35090ccf92bf24004393f85c8870a37f42d9f23d13e032"},
+    {file = "pydantic-1.9.0-cp37-cp37m-musllinux_1_1_x86_64.whl", hash = "sha256:8b5ac0f1c83d31b324e57a273da59197c83d1bb18171e512908fe5dc7278a1d6"},
+    {file = "pydantic-1.9.0-cp37-cp37m-win_amd64.whl", hash = "sha256:bbbc94d0c94dd80b3340fc4f04fd4d701f4b038ebad72c39693c794fd3bc2d9d"},
+    {file = "pydantic-1.9.0-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:e0896200b6a40197405af18828da49f067c2fa1f821491bc8f5bde241ef3f7d7"},
+    {file = "pydantic-1.9.0-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:7bdfdadb5994b44bd5579cfa7c9b0e1b0e540c952d56f627eb227851cda9db77"},
+    {file = "pydantic-1.9.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:574936363cd4b9eed8acdd6b80d0143162f2eb654d96cb3a8ee91d3e64bf4cf9"},
+    {file = "pydantic-1.9.0-cp38-cp38-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:c556695b699f648c58373b542534308922c46a1cda06ea47bc9ca45ef5b39ae6"},
+    {file = "pydantic-1.9.0-cp38-cp38-musllinux_1_1_i686.whl", hash = "sha256:f947352c3434e8b937e3aa8f96f47bdfe6d92779e44bb3f41e4c213ba6a32145"},
+    {file = "pydantic-1.9.0-cp38-cp38-musllinux_1_1_x86_64.whl", hash = "sha256:5e48ef4a8b8c066c4a31409d91d7ca372a774d0212da2787c0d32f8045b1e034"},
+    {file = "pydantic-1.9.0-cp38-cp38-win_amd64.whl", hash = "sha256:96f240bce182ca7fe045c76bcebfa0b0534a1bf402ed05914a6f1dadff91877f"},
+    {file = "pydantic-1.9.0-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:815ddebb2792efd4bba5488bc8fde09c29e8ca3227d27cf1c6990fc830fd292b"},
+    {file = "pydantic-1.9.0-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:6c5b77947b9e85a54848343928b597b4f74fc364b70926b3c4441ff52620640c"},
+    {file = "pydantic-1.9.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:4c68c3bc88dbda2a6805e9a142ce84782d3930f8fdd9655430d8576315ad97ce"},
+    {file = "pydantic-1.9.0-cp39-cp39-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:5a79330f8571faf71bf93667d3ee054609816f10a259a109a0738dac983b23c3"},
+    {file = "pydantic-1.9.0-cp39-cp39-musllinux_1_1_i686.whl", hash = "sha256:f5a64b64ddf4c99fe201ac2724daada8595ada0d102ab96d019c1555c2d6441d"},
+    {file = "pydantic-1.9.0-cp39-cp39-musllinux_1_1_x86_64.whl", hash = "sha256:a733965f1a2b4090a5238d40d983dcd78f3ecea221c7af1497b845a9709c1721"},
+    {file = "pydantic-1.9.0-cp39-cp39-win_amd64.whl", hash = "sha256:2cc6a4cb8a118ffec2ca5fcb47afbacb4f16d0ab8b7350ddea5e8ef7bcc53a16"},
+    {file = "pydantic-1.9.0-py3-none-any.whl", hash = "sha256:085ca1de245782e9b46cefcf99deecc67d418737a1fd3f6a4f511344b613a5b3"},
+    {file = "pydantic-1.9.0.tar.gz", hash = "sha256:742645059757a56ecd886faf4ed2441b9c0cd406079c2b4bee51bcc3fbcd510a"},
+]
 pygments = [
-    {file = "Pygments-2.11.1-py3-none-any.whl", hash = "sha256:9135c1af61eec0f650cd1ea1ed8ce298e54d56bcd8cc2ef46edd7702c171337c"},
-    {file = "Pygments-2.11.1.tar.gz", hash = "sha256:59b895e326f0fb0d733fd28c6839bd18ad0687ba20efc26d4277fd1d30b971f4"},
+    {file = "Pygments-2.11.2-py3-none-any.whl", hash = "sha256:44238f1b60a76d78fc8ca0528ee429702aae011c265fe6a8dd8b63049ae41c65"},
+    {file = "Pygments-2.11.2.tar.gz", hash = "sha256:4e426f72023d88d03b2fa258de560726ce890ff3b630f88c21cbb8b2503b8c6a"},
 ]
 pyparsing = [
     {file = "pyparsing-3.0.6-py3-none-any.whl", hash = "sha256:04ff808a5b90911829c55c4e26f75fa5ca8a2f5f36aa3a51f68e27033341d3e4"},
@@ -1024,9 +1088,13 @@ python-dateutil = [
     {file = "python-dateutil-2.8.2.tar.gz", hash = "sha256:0123cacc1627ae19ddf3c27a5de5bd67ee4586fbdd6440d9748f8abb483d3e86"},
     {file = "python_dateutil-2.8.2-py2.py3-none-any.whl", hash = "sha256:961d03dc3453ebbc59dbdea9e4e11c5651520a876d0f4db161e8674aae935da9"},
 ]
+python-dotenv = [
+    {file = "python-dotenv-0.19.2.tar.gz", hash = "sha256:a5de49a31e953b45ff2d2fd434bbc2670e8db5273606c1e737cc6b93eff3655f"},
+    {file = "python_dotenv-0.19.2-py2.py3-none-any.whl", hash = "sha256:32b2bdc1873fd3a3c346da1c6db83d0053c3c62f28f1f38516070c4c8971b1d3"},
+]
 requests = [
-    {file = "requests-2.27.0-py2.py3-none-any.whl", hash = "sha256:f71a09d7feba4a6b64ffd8e9d9bc60f9bf7d7e19fd0e04362acb1cfc2e3d98df"},
-    {file = "requests-2.27.0.tar.gz", hash = "sha256:8e5643905bf20a308e25e4c1dd379117c09000bf8a82ebccc462cfb1b34a16b5"},
+    {file = "requests-2.27.1-py2.py3-none-any.whl", hash = "sha256:f22fa1e554c9ddfd16e6e41ac79759e17be9e492b3587efa038054674760e72d"},
+    {file = "requests-2.27.1.tar.gz", hash = "sha256:68d7c56fd5a8999887728ef304a6d12edc7be74f1cfa47714fc8b414525c9a61"},
 ]
 requests-oauthlib = [
     {file = "requests-oauthlib-1.3.0.tar.gz", hash = "sha256:b4261601a71fd721a8bd6d7aa1cc1d6a8a93b4a9f5e96626f8e4d91e8beeaa6a"},
