@@ -1,23 +1,14 @@
 import datetime as dt
-import os
 
 # from notion_client import Client
 import notion_client as nc
 import typer
+
 from notion_gcal_sync import core
+from notion_gcal_sync.config import Settings
 
 
-from notion_gcal_sync.config import config
-
-
-def typer_test():
-
-    typer.echo(
-        f"\nhello world, this is the cli main() function :)\ncalendar = {config.DEFAULT_CALENDAR_NAME}"
-    )
-
-
-def sync():
+def sync(config: Settings):
 
     service, calendar = core.setup_google_api(
         config.runScript, config.DEFAULT_CALENDAR_ID, config.credentialsLocation
@@ -102,6 +93,10 @@ def sync():
         service,
         notion,
     )
+
+
+def typer_test(name: str):
+    typer.echo(f"Hello {name}")
 
 
 def main():

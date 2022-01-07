@@ -1,5 +1,6 @@
-from notion_gcal_sync import __version__, config
 from os import environ
+
+from notion_gcal_sync import __version__, config
 
 
 def test_version():

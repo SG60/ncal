@@ -1,8 +1,8 @@
+import pathlib
 from os import environ
 
 import pydantic
 import tomli
-import pathlib
 
 # from dotenv import load_dotenv, dotenv_values
 
