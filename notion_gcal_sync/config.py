@@ -1,48 +1,38 @@
 from os import environ
+from pathlib import Path
+from typing import Any, Dict
 
 import pydantic
 import tomli
-import pathlib
+from dotenv import dotenv_values, load_dotenv
 
-# from dotenv import load_dotenv, dotenv_values
-
-
-###########################################################################
-##### The Set-Up Section. Please follow the comments to understand the code.
-###########################################################################
-
-#
-# CONFIG order of priorities (high to low):
-# cli config options
-# environment variables
-# .env
-# toml config file in current directory
-#
+# Pydantic default priority order (high to low):
+#     Arguments passed to the Settings class initialiser.
+#     Environment variables, e.g. my_prefix_special_function as described above.
+#     Variables loaded from a dotenv (.env) file.
+#     Variables loaded from the secrets directory.
+#     The default field values for the Settings model.
 
 
-class Settings(pydantic.BaseSettings):
+class Settings(pydantic.BaseModel):
     """Class for storing settings"""
 
-    NOTION_API_TOKEN: str
-
+    # secret api token
+    notion_api_token: str
     # get the mess of numbers before the "?" on your dashboard URL (no need to split into dashes)
     database_id: str
-
     # open up a task and then copy the URL root up to the "p="
     urlRoot: str
-
-    runScript: str = "python3 GCalToken.py"  # GCalToken creating program
-
-    credentialsLocation: pydantic.FilePath = (
-        "token.pkl"  # Pickle file containing GCal Credentials
-    )
+    # GCalToken creating program
+    runScript: str = "python3 GCalToken.py"
+    # Pickle file containing GCal Credentials
+    credentialsLocation: pydantic.FilePath = Path("token.pkl")
 
     DEFAULT_EVENT_LENGTH: int = 60  # Default event length in minutes
     timezone: str = "Europe/London"  # http://www.timezoneconverter.com/cgi-bin/zonehelp.tzc  TODO: make this unnecessary
 
-    DEFAULT_EVENT_START: int = (
-        8  # 8 would be 8 am. 16 would be 4 pm. Only whole numbers
-    )
+    # 8 would be 8 am. 16 would be 4 pm. Only whole numbers
+    DEFAULT_EVENT_START: int = 8
 
     AllDayEventOption: int = 0  # 0 if you want dates on your Notion dashboard to be treated as an all-day event
     # ^^ 1 if you want dates on your Notion dashboard to be created at whatever hour you defined in the DEFAULT_EVENT_START variable
@@ -68,7 +58,6 @@ class Settings(pydantic.BaseSettings):
     # set at 1 if you want nothing deleted
 
     ##### DATABASE SPECIFIC EDITS
-
     # There needs to be a few properties on the Notion Database for this to work. Replace the values of each variable with the string of what the variable is called on your Notion dashboard
     # The Last Edited Time column is a property of the notion pages themselves, you just have to make it a column
     # The NeedGCalUpdate column is a formula column that works as such "if(prop("Last Edited Time") > prop("Last Updated Time"), true, false)"
@@ -86,12 +75,49 @@ class Settings(pydantic.BaseSettings):
     Current_Calendar_Id_Notion_Name: str = "Current Calendar Id"
     Delete_Notion_Name: str = "Done"
 
-    class Config:
-        env_prefix = "NCAL_"
 
-
-def load_config_file(path_to_file: pathlib.Path) -> Settings:
+def load_config_file(path_to_file: Path) -> Dict:
     with open(path_to_file, "rb") as f:
         tomli_dictionary = tomli.load(f)
-        settings = Settings(**tomli_dictionary)
-        return settings
+        # settings = Settings(**tomli_dictionary)
+        return tomli_dictionary
+
+
+def env_var_names_dict(prefix: str) -> Dict[str, str]:
+    """
+    produces a dictionary: {setting_str: prefixed_str}
+    """
+    return {i: prefix.lower() + i.lower() for i in Settings.__fields__.keys()}
+
+
+def get_env_vars_case_insensitive(env_var_names: Dict[str, str]) -> Dict[str, str]:
+    load_dotenv()  # uses .env file if available
+    ncal_env_vars: dict[str, str] = {}
+    # populate env_vars with values which match the dictionary
+    for key, value in env_var_names.items():
+        if (x := value.upper()) in environ:
+            ncal_env_vars[key] = environ[x]
+        if (x := value.lower()) in environ:
+            ncal_env_vars[key] = environ[x]
+    return ncal_env_vars
+
+
+# priority (high-low): cli, env, config_file
+def load_settings(
+    config_file_path: Path = Path("config.toml"),
+    **kwargs,
+):
+    default_settings = Settings.construct().dict()
+
+    prefix = "NCAL_"
+    env_var_names = {i: prefix + i for i in Settings.__fields__.keys()}
+    env_settings = get_env_vars_case_insensitive(env_var_names)
+
+    try:
+        toml_settings = load_config_file(config_file_path)
+    except FileNotFoundError:
+        print(f"no config file found at {config_file_path}")
+        toml_settings = {}
+
+    settings = {**default_settings, **toml_settings, **env_settings, **kwargs}
+    return Settings(**settings)
