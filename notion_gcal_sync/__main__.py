@@ -1,3 +1,3 @@
-from notion_gcal_sync.cli import main
+from notion_gcal_sync.cli import app
 
-main()
+app()

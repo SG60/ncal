@@ -1,25 +1,29 @@
+import asyncio
 import datetime as dt
-from typing import Optional
-from pydantic import ValidationError
+import time
+from pathlib import Path
+from typing import Callable, Coroutine, Literal, Optional
 
 # from notion_client import Client
 import notion_client as nc
 import typer
+from pydantic import ValidationError
 
 from notion_gcal_sync import core
-from notion_gcal_sync.config import Settings, load_config_file
-from pathlib import Path
+from notion_gcal_sync.config import Settings, load_config_file, load_settings
 
 
-def sync(settings: Settings):
+def sync_actual(settings: Settings):
 
     service, calendar = core.setup_google_api(
-        settings.runScript, settings.DEFAULT_CALENDAR_ID, settings.credentialsLocation
+        settings.runScript,
+        settings.DEFAULT_CALENDAR_ID,
+        str(settings.credentialsLocation),
     )
 
     ##This is where we set up the connection with the Notion API
 
-    notion = nc.Client(auth=settings.NOTION_API_TOKEN)
+    notion = nc.Client(auth=settings.notion_api_token)
 
     todayDate = dt.datetime.today().strftime("%Y-%m-%d")
 
@@ -98,10 +102,60 @@ def sync(settings: Settings):
     )
 
 
-def typer_test(
+app = typer.Typer(help="CLI to sync a Notion database with Google Calendar.")
+state = {"verbose": False}
+
+
+async def scheduler(
+    timedelta: dt.timedelta, function: Callable[..., Coroutine], f_args: dict
+) -> None:
+    next_run = dt.datetime.now() + timedelta
+    print(f"next run: {next_run}")
+    while True:
+        now = dt.datetime.now()
+        if now >= next_run:
+            await function(**f_args)
+            next_run = timedelta + next_run
+            print(f"next run: {next_run}")
+        await asyncio.sleep(1)
+
+
+async def sync(settings: Settings) -> None:
+    with typer.progressbar(
+        range(4), label="Sychronising", show_eta=False, show_pos=True
+    ) as progress:
+        # for _ in progress:
+        #     await asyncio.sleep(1)
+        progress.label = "modified N->G"
+        time.sleep(0.3)  # sync something
+        progress.update(1)
+        progress.label = "modified G->N"
+        time.sleep(0.3)  # etc.
+        progress.update(1, "modified G->N")
+        progress.label = "new N->G"
+        time.sleep(0.3)
+        progress.update(1)
+        progress.label = "new G->G"
+        time.sleep(0.3)
+        progress.label = "Sychronized"
+        progress.update(1)
+
+
+async def continuous_sync(interval: dt.timedelta, settings: Settings):
+    await sync(settings)
+    await scheduler(interval, sync, {"settings": settings})
+
+
+@app.command("sync")
+def cli_sync(
+    repeat: bool = typer.Option(False, "--repeat/--no-repeat", "-r"),
+    seconds: int = 5,
     config_file: Optional[Path] = typer.Option(
-        None,'--config-file', '-c' , help="toml configuration file location"
-    )
+        None, "--config-file", "-c", help="toml configuration file location"
+    ),
+    notion_api_token: Optional[str] = None,
+    database_id: Optional[str] = None,
+    urlRoot: Optional[str] = None,
 ):
     """
     CLI to sync a Notion database with Google Calendar.
@@ -112,21 +166,44 @@ def typer_test(
         f"Sychronize Notion <-> GCal", bg=typer.colors.GREEN, fg="white", bold=True
     )
     typer.echo()
+
+    cli_settings = {}
+    if notion_api_token:
+        cli_settings["notion_api_token"] = notion_api_token
+    if database_id:
+        cli_settings["database_id"] = database_id
+    if urlRoot:
+        cli_settings["urlRoot"] = urlRoot
+
     try:
         if config_file:
-            file_str = typer.style(config_file, fg=typer.colors.BRIGHT_BLUE)
-            typer.echo(f"Using {file_str} for configuration.")
-            settings = load_config_file(config_file)
+            settings = load_settings(**cli_settings, config_file_path=config_file)
         else:
-            settings = Settings()
+            settings = load_settings(**cli_settings)
     except ValidationError:
-        typer.secho("no config provided, use --help for more information", bg="white", fg="red")
+        typer.secho(
+            "no valid config provided, use --help for more information",
+            bg="white",
+            fg="red",
+        )
+        typer.echo("Required options: notion_api_token, database_id, urlRoot")
         raise typer.Exit(1)
     except FileNotFoundError:
-        typer.secho("invalid config-file provided, use --help for more information", bg="white", fg="red")
+        typer.secho(
+            "invalid config-file provided, use --help for more information",
+            bg="white",
+            fg="red",
+        )
         raise typer.Exit(1)
-    sync(settings)
+    typer.echo(settings)
+    if repeat:
+        interval = dt.timedelta(seconds=seconds)
+        asyncio.run(continuous_sync(interval, settings))
+    else:
+        asyncio.run(sync(settings))
 
 
-def main():
-    typer.run(typer_test)
+@app.callback()
+def main(verbose: bool = False):
+    if verbose:
+        state["verbose"] = True
