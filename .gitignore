@@ -7,8 +7,12 @@ venv/
 __pycache__/
 .mypy_cache/
 .coverage
+dist/
 
 # other credentials
 client_secret.json
 token.pkl
 secret_tokens.py
+
+# vim
+Session.vim

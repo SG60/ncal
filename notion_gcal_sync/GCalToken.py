@@ -1,7 +1,8 @@
-from googleapiclient.discovery import build
-from google_auth_oauthlib.flow import InstalledAppFlow
 import pickle
-from datetime import datetime, timedelta, date
+from datetime import date, datetime, timedelta
+
+from google_auth_oauthlib.flow import InstalledAppFlow # type: ignore
+from googleapiclient.discovery import build # type: ignore
 
 # SET UP THE GOOGLE CALENDAR API INTERFACE
 
