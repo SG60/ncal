@@ -4,8 +4,8 @@ import pickle
 
 import dateutil.parser
 import notion_client as nc
-from google_auth_oauthlib.flow import InstalledAppFlow # type: ignore
-from googleapiclient.discovery import build # type: ignore
+from google_auth_oauthlib.flow import InstalledAppFlow  # type: ignore
+from googleapiclient.discovery import build  # type: ignore
 
 from notion_gcal_sync import config
 
