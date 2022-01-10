@@ -4,4 +4,4 @@ Currently reworking this fork. It will eventually be a simple command that can b
 
 Configuration will be via toml, command line flags, or environment variables.
 
-See [[oldREADME.md]] for more info.
+See [old README.md](./oldREADME.md) for more info.
