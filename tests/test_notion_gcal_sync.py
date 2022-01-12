@@ -29,7 +29,9 @@ def test_toml_import(tmp_path, settings_dict):
     (tmp_path / "sub").mkdir()
     (tmp_path / "sub" / "picklefile").touch()
     # test that toml import produces the correct settings
-    assert config.load_settings(tmpfile, use_env_vars=False) == config.Settings(**settings_dict)
+    assert config.load_settings(tmpfile, use_env_vars=False) == config.Settings(
+        **settings_dict
+    )
 
 
 def test_envvar_import(tmp_path, settings_dict):
