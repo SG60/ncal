@@ -110,7 +110,7 @@ def load_settings(
     use_toml_file=True,
     **kwargs,
 ):
-    default_settings = Settings.construct().dict()
+    default_settings = Settings.construct().dict()  # type: ignore
 
     if use_env_vars:
         prefix = "NCAL_"
@@ -128,5 +128,7 @@ def load_settings(
     else:
         toml_settings = {}
 
-    settings = {**default_settings, **toml_settings, **env_settings, **kwargs}
+    passed_settings = {key: value for key, value in kwargs.items() if value}
+
+    settings = {**default_settings, **toml_settings, **env_settings, **passed_settings}
     return Settings(**settings)

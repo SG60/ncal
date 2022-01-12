@@ -96,9 +96,9 @@ def paginated_database_query(
     while True:
         # this query will return a dictionary that we will parse for information that we want
         response = notion_client.databases.query(database_id, **query)
-        matching_pages.extend(response["results"])
-        if response["next_cursor"]:
-            query["start_cursor"] = response["next_cursor"]
+        matching_pages.extend(response["results"])  # type: ignore
+        if response["next_cursor"]:  # type: ignore
+            query["start_cursor"] = response["next_cursor"]  # type: ignore
         else:
             break
     return matching_pages
@@ -1363,8 +1363,8 @@ def delete_page(
     if (
         DELETE_OPTION == 0 and len(resultList) > 0
     ):  # delete gCal event (and Notion task once the Python API is updated)
-        CalendarList = []
-        CurrentCalList = []
+        # CalendarList = []
+        # CurrentCalList = []
 
         for i, el in enumerate(resultList):
             calendarID = calendarDictionary[

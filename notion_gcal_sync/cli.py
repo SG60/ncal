@@ -157,7 +157,7 @@ def cli_sync(
     ),
     notion_api_token: Optional[str] = None,
     database_id: Optional[str] = None,
-    urlRoot: Optional[str] = None,
+    url_root: Optional[str] = None,
 ):
     """
     CLI to sync a Notion database with Google Calendar.
@@ -169,19 +169,20 @@ def cli_sync(
     )
     typer.echo()
 
-    cli_settings = {}
-    if notion_api_token:
-        cli_settings["notion_api_token"] = notion_api_token
-    if database_id:
-        cli_settings["database_id"] = database_id
-    if urlRoot:
-        cli_settings["urlRoot"] = urlRoot
-
     try:
         if config_file:
-            settings = load_settings(**cli_settings, config_file_path=config_file)
+            settings = load_settings(
+                config_file_path=config_file,
+                notion_api_token=notion_api_token,
+                database_id=database_id,
+                url_root=url_root,
+            )
         else:
-            settings = load_settings(**cli_settings)
+            settings = load_settings(
+                notion_api_token=notion_api_token,
+                database_id=database_id,
+                url_root=url_root,
+            )
     except ValidationError:
         typer.secho(
             "no valid config provided, use --help for more information",
