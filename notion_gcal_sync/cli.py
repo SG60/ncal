@@ -1,8 +1,11 @@
 import asyncio
 import datetime as dt
+import logging
 import time
 from pathlib import Path
 from typing import Callable, Coroutine, Optional
+
+import arrow
 
 # from notion_client import Client
 import notion_client as nc
@@ -14,95 +17,6 @@ from notion_gcal_sync.config import Settings, load_settings
 from notion_gcal_sync.gcal_token import gcal_token
 
 from . import __version__
-
-
-def sync_actual(settings: Settings):
-
-    service, calendar = core.setup_google_api(
-        settings.default_calendar_id,
-        str(settings.credentials_location),
-    )
-
-    ##This is where we set up the connection with the Notion API
-
-    notion = nc.Client(auth=settings.notion_api_token)
-
-    todayDate = dt.datetime.today().strftime("%Y-%m-%d")
-
-    core.new_events_notion_to_gcal(
-        settings.database_id,
-        settings.url_root,
-        settings.default_calendar_name,
-        settings.calendar_dictionary,
-        settings.task_notion_name,
-        settings.date_notion_name,
-        settings.initiative_notion_name,
-        settings.extrainfo_notion_name,
-        settings.on_gcal_notion_name,
-        settings.gcaleventid_notion_name,
-        settings.lastupdatedtime_notion_name,
-        settings.calendar_notion_name,
-        settings.current_calendar_id_notion_name,
-        settings.delete_notion_name,
-        notion,
-        service,
-    )
-
-    core.existing_events_notion_to_gcal(
-        settings.database_id,
-        settings.url_root,
-        settings.default_calendar_id,
-        settings.default_calendar_name,
-        settings.calendar_dictionary,
-        settings.task_notion_name,
-        settings.date_notion_name,
-        settings.initiative_notion_name,
-        settings.extrainfo_notion_name,
-        settings.on_gcal_notion_name,
-        settings.needgcalupdate_notion_name,
-        settings.gcaleventid_notion_name,
-        settings.lastupdatedtime_notion_name,
-        settings.calendar_notion_name,
-        settings.current_calendar_id_notion_name,
-        settings.delete_notion_name,
-        notion,
-        todayDate,
-        service,
-    )
-
-    core.existing_events_gcal_to_notion(
-        settings.database_id,
-        settings.default_calendar_name,
-        settings.calendar_dictionary,
-        settings.date_notion_name,
-        settings.on_gcal_notion_name,
-        settings.needgcalupdate_notion_name,
-        settings.gcaleventid_notion_name,
-        settings.lastupdatedtime_notion_name,
-        settings.calendar_notion_name,
-        settings.current_calendar_id_notion_name,
-        settings.delete_notion_name,
-        service,
-        notion,
-        todayDate,
-    )
-
-    core.new_events_gcal_to_notion(
-        settings.database_id,
-        settings.calendar_dictionary,
-        settings.task_notion_name,
-        settings.date_notion_name,
-        settings.extrainfo_notion_name,
-        settings.on_gcal_notion_name,
-        settings.gcaleventid_notion_name,
-        settings.lastupdatedtime_notion_name,
-        settings.calendar_notion_name,
-        settings.current_calendar_id_notion_name,
-        settings.delete_notion_name,
-        service,
-        notion,
-    )
-
 
 app = typer.Typer(help="CLI to sync a Notion database with Google Calendar.")
 state = {"verbose": False}
@@ -124,21 +38,102 @@ async def scheduler(
 
 async def sync(settings: Settings) -> None:
     with typer.progressbar(
-        range(4), label="Sychronising", show_eta=False, show_pos=True
+        range(5), label="Sychronising", show_eta=False, show_pos=True
     ) as progress:
-        # for _ in progress:
-        #     await asyncio.sleep(1)
-        progress.label = "modified N->G"
-        time.sleep(0.3)  # sync something
+        progress.label = "API connections"
+        # Set up API connections
+        service, calendar = core.setup_google_api(
+            settings.default_calendar_id,
+            str(settings.credentials_location),
+        )
+        notion = nc.Client(auth=settings.notion_api_token)
+        todayDate = arrow.utcnow().isoformat()
         progress.update(1)
-        progress.label = "modified G->N"
-        time.sleep(0.3)  # etc.
-        progress.update(1, "modified G->N")
+
         progress.label = "new N->G"
-        time.sleep(0.3)
+        core.new_events_notion_to_gcal(
+            settings.database_id,
+            settings.url_root,
+            settings.default_calendar_name,
+            settings.calendar_dictionary,
+            settings.task_notion_name,
+            settings.date_notion_name,
+            settings.initiative_notion_name,
+            settings.extrainfo_notion_name,
+            settings.on_gcal_notion_name,
+            settings.gcaleventid_notion_name,
+            settings.lastupdatedtime_notion_name,
+            settings.calendar_notion_name,
+            settings.current_calendar_id_notion_name,
+            settings.delete_notion_name,
+            notion,
+            service,
+            settings=settings
+        )
         progress.update(1)
+
+        progress.label = "modified N->G"
+        core.existing_events_notion_to_gcal(
+            settings.database_id,
+            settings.url_root,
+            settings.default_calendar_id,
+            settings.default_calendar_name,
+            settings.calendar_dictionary,
+            settings.task_notion_name,
+            settings.date_notion_name,
+            settings.initiative_notion_name,
+            settings.extrainfo_notion_name,
+            settings.on_gcal_notion_name,
+            settings.needgcalupdate_notion_name,
+            settings.gcaleventid_notion_name,
+            settings.lastupdatedtime_notion_name,
+            settings.calendar_notion_name,
+            settings.current_calendar_id_notion_name,
+            settings.delete_notion_name,
+            notion,
+            todayDate,
+            service,
+            settings=settings
+        )
+        progress.update(1)
+
+        progress.label = "modified G->N"
+        core.existing_events_gcal_to_notion(
+            settings.database_id,
+            settings.default_calendar_name,
+            settings.calendar_dictionary,
+            settings.date_notion_name,
+            settings.on_gcal_notion_name,
+            settings.needgcalupdate_notion_name,
+            settings.gcaleventid_notion_name,
+            settings.lastupdatedtime_notion_name,
+            settings.calendar_notion_name,
+            settings.current_calendar_id_notion_name,
+            settings.delete_notion_name,
+            service,
+            notion,
+            todayDate,
+            settings=settings
+        )
+        progress.update(1)
+
         progress.label = "new G->G"
-        time.sleep(0.3)
+        core.new_events_gcal_to_notion(
+            settings.database_id,
+            settings.calendar_dictionary,
+            settings.task_notion_name,
+            settings.date_notion_name,
+            settings.extrainfo_notion_name,
+            settings.on_gcal_notion_name,
+            settings.gcaleventid_notion_name,
+            settings.lastupdatedtime_notion_name,
+            settings.calendar_notion_name,
+            settings.current_calendar_id_notion_name,
+            settings.delete_notion_name,
+            service,
+            notion,
+            settings=settings
+        )
         progress.label = "Sychronized"
         progress.update(1)
 
@@ -219,6 +214,7 @@ def main(
 ):
     if verbose:
         state["verbose"] = True
+        logging.basicConfig(level=20)
     if version:
         typer.echo(f"Notion GCal Sync version: {__version__}")
         raise typer.Exit()

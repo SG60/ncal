@@ -1,5 +1,5 @@
 import datetime as dt
-import os
+import logging
 import pickle
 from typing import Any
 
@@ -7,7 +7,6 @@ import arrow
 import dateutil.parser
 import googleapiclient.discovery  # type: ignore
 import notion_client as nc
-from google_auth_oauthlib.flow import InstalledAppFlow  # type: ignore
 
 from notion_gcal_sync import config
 from notion_gcal_sync.gcal_token import gcal_token
@@ -40,7 +39,7 @@ def setup_google_api(
         )
 
         # result = service.calendarList().list().execute()
-        # print(result['items'][:])
+        # logging.info(result['items'][:])
 
         calendar = service.calendars().get(calendarId=calendar_id).execute()
 
@@ -104,40 +103,6 @@ def paginated_database_query(
     return matching_pages
 
 
-def get_new_notion_pages(
-    database_id: str,
-    on_gcal_notion_name: str,
-    date_notion_name: str,
-    delete_notion_name: str,
-    notion: nc.Client,
-) -> list:
-    """Get new pages from notion (with pagination!)."""
-    # todayDate = dt.datetime.today().strftime("%Y-%m-%d")
-    todayDate = arrow.utcnow().isoformat()
-
-    matching_pages = []
-
-    query = {
-        # "database_id": database_id,
-        "filter": {
-            "and": [
-                {
-                    "property": on_gcal_notion_name,
-                    "checkbox": {"equals": False},
-                },
-                {
-                    "property": date_notion_name,
-                    "date": {"on_or_after": todayDate},
-                },
-                {"property": delete_notion_name, "checkbox": {"equals": False}},
-            ]
-        },
-    }
-
-    matching_pages = paginated_database_query(notion, database_id, **query)
-    return matching_pages
-
-
 def new_events_notion_to_gcal(
     database_id,
     urlRoot,
@@ -155,6 +120,7 @@ def new_events_notion_to_gcal(
     Delete_Notion_Name,
     notion,
     service,
+    settings: config.Settings,
 ):
     """
     Part 1: Take Notion Events not on GCal and move them over to GCal
@@ -164,16 +130,49 @@ def new_events_notion_to_gcal(
     If you just want all Notion events to be on GCal, then you'll have to edit the query so it is only checking the 'On GCal?' property
     """
 
+    def get_new_notion_pages(
+        database_id: str,
+        on_gcal_notion_name: str,
+        date_notion_name: str,
+        delete_notion_name: str,
+        notion: nc.Client,
+    ) -> list:
+        """Get new pages from notion (with pagination!)."""
+        # todayDate = dt.datetime.today().strftime("%Y-%m-%d")
+        todayDate = arrow.utcnow().isoformat()
+
+        matching_pages = []
+
+        query = {
+            # "database_id": database_id,
+            "filter": {
+                "and": [
+                    {
+                        "property": on_gcal_notion_name,
+                        "checkbox": {"equals": False},
+                    },
+                    {
+                        "property": date_notion_name,
+                        "date": {"on_or_after": todayDate},
+                    },
+                    {"property": delete_notion_name, "checkbox": {"equals": False}},
+                ]
+            },
+        }
+
+        matching_pages = paginated_database_query(notion, database_id, **query)
+        return matching_pages
+
     resultList = get_new_notion_pages(
         database_id, On_GCal_Notion_Name, Date_Notion_Name, Delete_Notion_Name, notion
     )
 
-    # print(len(resultList))
+    # logging.info(len(resultList))
 
     try:
-        print(resultList[0])
+        logging.info(resultList[0])
     except:
-        print("")
+        logging.info("")
 
     TaskNames = []
     start_Dates = []
@@ -186,9 +185,9 @@ def new_events_notion_to_gcal(
 
     if len(resultList) > 0:
         for i, el in enumerate(resultList):
-            print("\n")
-            print(el)
-            print("\n")
+            logging.info("\n")
+            logging.info(el)
+            logging.info("\n")
 
             TaskNames.append(
                 el["properties"][Task_Notion_Name]["title"][0]["text"]["content"]
@@ -242,10 +241,18 @@ def new_events_notion_to_gcal(
                     },
                 },
             )
-            print(CalendarList)
+            logging.info(CalendarList)
 
             def create_gcal_event(
-                task_name, initiative, extra_info, start, end, url, calendar, service
+                task_name,
+                initiative,
+                extra_info,
+                start,
+                end,
+                url,
+                calendar,
+                service,
+                config: config.Settings,
             ):
                 # 2 Cases: Start and End are  both either date or date+time #Have restriction that the calendar events don't cross days
                 try:
@@ -258,6 +265,7 @@ def new_events_notion_to_gcal(
                         dt.datetime.strptime(end, "%Y-%m-%d"),
                         calendar,
                         service,
+                        config,
                     )
                 except:
                     try:
@@ -270,6 +278,7 @@ def new_events_notion_to_gcal(
                             dateutil.parser.isoparse(end),
                             calendar,
                             service,
+                            config,
                         )
                     except:
                         calEventId = makeCalEvent(
@@ -280,6 +289,7 @@ def new_events_notion_to_gcal(
                             dateutil.parser.isoparse(end),
                             calendar,
                             service,
+                            config,
                         )
                 return calEventId
 
@@ -292,6 +302,7 @@ def new_events_notion_to_gcal(
                 URL_list[i],
                 CalendarList[i],
                 service,
+                settings,
             )
             calEventIdList.append(calEventId)
 
@@ -330,7 +341,7 @@ def new_events_notion_to_gcal(
                 )
 
     else:
-        print("Nothing new added to GCal")
+        logging.info("Nothing new added to GCal")
     return
 
 
@@ -354,6 +365,7 @@ def existing_events_notion_to_gcal(
     notion,
     todayDate,
     service,
+    settings: config.Settings,
 ):
     ###########################################################################
     ##### Part 2: Updating GCal Events that Need To Be Updated (Changed on Notion but need to be changed on GCal)
@@ -362,7 +374,6 @@ def existing_events_notion_to_gcal(
     # Just gotta put a fail-safe in here in case people deleted the Calendar Variable
     # this queries items in the next week where the Calendar select thing is empty
     query = {
-        "database_id": database_id,
         "filter": {
             "and": [
                 {"property": Calendar_Notion_Name, "select": {"is_empty": True}},
@@ -435,20 +446,20 @@ def existing_events_notion_to_gcal(
     updatingCalEventIds = []
 
     for result in resultList:
-        print(result)
-        print("\n")
+        logging.info(result)
+        logging.info("\n")
         pageId = result["id"]
         updatingNotionPageIds.append(pageId)
-        print("\n")
-        print(result)
-        print("\n")
+        logging.info("\n")
+        logging.info(result)
+        logging.info("\n")
         try:
             calId = result["properties"][GCalEventId_Notion_Name]["rich_text"][0][
                 "text"
             ]["content"]
         except:
             calId = DEFAULT_CALENDAR_ID
-        print(calId)
+        logging.info(calId)
         updatingCalEventIds.append(calId)
 
     TaskNames = []
@@ -462,9 +473,9 @@ def existing_events_notion_to_gcal(
 
     if len(resultList) > 0:
         for i, el in enumerate(resultList):
-            print("\n")
-            print(el)
-            print("\n")
+            logging.info("\n")
+            logging.info(el)
+            logging.info("\n")
 
             TaskNames.append(
                 el["properties"][Task_Notion_Name]["title"][0]["text"]["content"]
@@ -494,7 +505,7 @@ def existing_events_notion_to_gcal(
                 ExtraInfo.append("")
             URL_list.append(makeTaskURL(el["id"], urlRoot))
 
-            print(el)
+            logging.info(el)
             # CalendarList.append(calendarDictionary[el['properties'][Calendar_Notion_Name]['select']['name']])
             try:
                 CalendarList.append(
@@ -525,6 +536,7 @@ def existing_events_notion_to_gcal(
                     CurrentCalList[i],
                     CalendarList[i],
                     service,
+                    settings,
                 )
             except:
                 try:
@@ -538,6 +550,7 @@ def existing_events_notion_to_gcal(
                         CurrentCalList[i],
                         CalendarList[i],
                         service,
+                        settings,
                     )
                 except:
                     calEventId = upDateCalEvent(
@@ -550,6 +563,7 @@ def existing_events_notion_to_gcal(
                         CurrentCalList[i],
                         CalendarList[i],
                         service,
+                        settings,
                     )
 
             my_page = notion.pages.update(  ##### This updates the last time that the page in Notion was updated by the code
@@ -570,7 +584,7 @@ def existing_events_notion_to_gcal(
             )
 
     else:
-        print("Nothing new updated to GCal")
+        logging.info("Nothing new updated to GCal")
 
 
 def existing_events_gcal_to_notion(
@@ -588,6 +602,7 @@ def existing_events_gcal_to_notion(
     service,
     notion,
     todayDate,
+    settings: config.Settings,
 ):
     ###########################################################################
     ##### Part 3: Sync GCal event updates for events already in Notion back to Notion!
@@ -705,7 +720,7 @@ def existing_events_gcal_to_notion(
     for gCalId in notion_gCal_IDs:
         # just check all of the calendars of interest for info about the event
         for calendarID in calendarDictionary.keys():
-            print("Trying " + calendarID + " for " + gCalId)
+            logging.info("Trying " + calendarID + " for " + gCalId)
             try:
                 x = (
                     service.events()
@@ -713,7 +728,7 @@ def existing_events_gcal_to_notion(
                     .execute()
                 )
             except:
-                print("Event not found")
+                logging.info("Event not found")
                 x = {"status": "unconfirmed"}
             if x["status"] == "confirmed":
                 gCal_CalIds.append(calendarID)
@@ -721,8 +736,8 @@ def existing_events_gcal_to_notion(
             else:
                 continue
 
-        print(value)
-        print("\n")
+        logging.info(value)
+        logging.info("\n")
         try:
             gCal_start_datetimes.append(
                 dateutil.parser.isoparse(value["start"]["dateTime"])
@@ -774,12 +789,14 @@ def existing_events_gcal_to_notion(
     #         # this means that there is no end time in notion
     #         new_notion_end_datetimes[i] = gCal_end_datetimes[i]
 
-    print("test")
-    print(new_notion_start_datetimes)
-    print(new_notion_end_datetimes)
-    print("\n")
+    logging.info("test")
+    logging.info(new_notion_start_datetimes)
+    logging.info(new_notion_end_datetimes)
+    logging.info("\n")
     for i in range(len(notion_gCal_IDs)):
-        print(notion_start_datetimes[i], gCal_start_datetimes[i], notion_gCal_IDs[i])
+        logging.info(
+            notion_start_datetimes[i], gCal_start_datetimes[i], notion_gCal_IDs[i]
+        )
 
     # for i, new_start, new_end in range(len(new_notion_start_datetimes)):
     for i, (new_start, new_end) in enumerate(
@@ -1003,9 +1020,9 @@ def existing_events_gcal_to_notion(
         else:  # nothing needs to be updated here
             continue
 
-    print(notion_IDs_List)
-    print("\n")
-    print(gCal_CalIds)
+    logging.info(notion_IDs_List)
+    logging.info("\n")
+    logging.info(gCal_CalIds)
 
     CalNames = list(calendarDictionary.keys())
     CalIds = list(calendarDictionary.values())
@@ -1013,7 +1030,7 @@ def existing_events_gcal_to_notion(
     for i, gCalId in enumerate(
         gCal_CalIds
     ):  # instead of checking, just update the notion datebase with whatever calendar the event is on
-        print("GcalId: " + gCalId)
+        logging.info("GcalId: " + gCalId)
         my_page = notion.pages.update(  ##### This puts the the GCal Id into the Notion Dashboard
             **{
                 "page_id": notion_IDs_List[i],
@@ -1051,6 +1068,7 @@ def new_events_gcal_to_notion(
     Delete_Notion_Name,
     service,
     notion,
+    settings: config.Settings,
 ):
     ###########################################################################
     ##### Part 4: Bring events (not in Notion already) from GCal to Notion
@@ -1108,7 +1126,7 @@ def new_events_gcal_to_notion(
         )
         events.extend(x["items"])
 
-    print(events)
+    logging.info(events)
 
     # calItems = events['items']
     calItems = events
@@ -1326,7 +1344,7 @@ def new_events_gcal_to_notion(
                     },
                 )
 
-            print(f"Added this event to Notion: {calName[i]}")
+            logging.info(f"Added this event to Notion: {calName[i]}")
 
 
 def delete_page(
@@ -1376,7 +1394,7 @@ def delete_page(
 
             pageId = el["id"]
 
-            print(calendarID, eventId)
+            logging.info(calendarID, eventId)
 
             try:
                 service.events().delete(
@@ -1389,7 +1407,7 @@ def delete_page(
                 **{"page_id": pageId, "archived": True, "properties": {}},
             )
 
-            print(my_page)
+            logging.info(my_page)
 
 
 ######################################################################
@@ -1426,7 +1444,14 @@ def makeTaskURL(ending, urlRoot):
 
 
 def makeCalEvent(
-    eventName, eventDescription, eventStartTime, sourceURL, eventEndTime, calId, service
+    eventName,
+    eventDescription,
+    eventStartTime,
+    sourceURL,
+    eventEndTime,
+    calId,
+    service,
+    config: config.Settings,
 ):
 
     if (
@@ -1434,14 +1459,14 @@ def makeCalEvent(
         and eventStartTime.minute == 0
         and eventEndTime == eventStartTime
     ):  # only startTime is given from the Notion Dashboard
-        if config.AllDayEventOption == 1:
+        if config.all_day_event_option == 1:
             eventStartTime = dt.datetime.combine(
                 eventStartTime, dt.datetime.min.time()
             ) + dt.timedelta(
-                hours=config.DEFAULT_EVENT_START
+                hours=config.default_event_start
             )  ##make the events pop up at 8 am instead of 12 am
             eventEndTime = eventStartTime + dt.timedelta(
-                minutes=config.DEFAULT_EVENT_LENGTH
+                minutes=config.default_event_length
             )
             event = {
                 "summary": eventName,
@@ -1522,17 +1547,17 @@ def makeCalEvent(
             eventStartTime = dt.datetime.combine(
                 eventStartTime, dt.datetime.min.time()
             ) + dt.timedelta(
-                hours=config.DEFAULT_EVENT_START
+                hours=config.default_event_start
             )  ##make the events pop up at 8 am instead of 12 am
             eventEndTime = eventStartTime + dt.timedelta(
-                minutes=config.DEFAULT_EVENT_LENGTH
+                minutes=config.default_event_length
             )
         elif (
             eventEndTime == eventStartTime
         ):  # this would meant that only 1 datetime was actually on the notion dashboard
             eventStartTime = eventStartTime
             eventEndTime = eventStartTime + dt.timedelta(
-                minutes=config.DEFAULT_EVENT_LENGTH
+                minutes=config.default_event_length
             )
         else:  # if you give a specific start time to the event
             eventStartTime = eventStartTime
@@ -1554,9 +1579,9 @@ def makeCalEvent(
                 "url": sourceURL,
             },
         }
-    print("Adding this event to calendar: ", eventName)
+    logging.info("Adding this event to calendar: ", eventName)
 
-    print(event)
+    logging.info(event)
     x = service.events().insert(calendarId=calId, body=event).execute()
     return x["id"]
 
@@ -1575,6 +1600,7 @@ def upDateCalEvent(
     currentCalId,
     CalId,
     service,
+    config: config.Settings,
 ):
 
     if (
@@ -1582,14 +1608,14 @@ def upDateCalEvent(
         and eventStartTime.minute == 0
         and eventEndTime == eventStartTime
     ):  # you're given a single date
-        if config.AllDayEventOption == 1:
+        if config.all_day_event_option == 1:
             eventStartTime = dt.datetime.combine(
                 eventStartTime, dt.datetime.min.time()
             ) + dt.timedelta(
-                hours=config.DEFAULT_EVENT_START
+                hours=config.default_event_start
             )  ##make the events pop up at 8 am instead of 12 am
             eventEndTime = eventStartTime + dt.timedelta(
-                minutes=config.DEFAULT_EVENT_LENGTH
+                minutes=config.default_event_length
             )
             event = {
                 "summary": eventName,
@@ -1670,17 +1696,17 @@ def upDateCalEvent(
             eventStartTime = dt.datetime.combine(
                 eventStartTime, dt.datetime.min.time()
             ) + dt.timedelta(
-                hours=config.DEFAULT_EVENT_START
+                hours=config.default_event_start
             )  ##make the events pop up at 8 am instead of 12 am
             eventEndTime = eventStartTime + dt.timedelta(
-                minutes=config.DEFAULT_EVENT_LENGTH
+                minutes=config.default_event_length
             )
         elif (
             eventEndTime == eventStartTime
         ):  # this would meant that only 1 datetime was actually on the notion dashboard
             eventStartTime = eventStartTime
             eventEndTime = eventStartTime + dt.timedelta(
-                minutes=config.DEFAULT_EVENT_LENGTH
+                minutes=config.default_event_length
             )
         else:  # if you give a specific start time to the event
             eventStartTime = eventStartTime
@@ -1701,7 +1727,7 @@ def upDateCalEvent(
                 "url": sourceURL,
             },
         }
-    print("Updating this event to calendar: ", eventName)
+    logging.info("Updating this event to calendar: ", eventName)
 
     if currentCalId == CalId:
         x = (
@@ -1711,15 +1737,15 @@ def upDateCalEvent(
         )
 
     else:  # When we have to move the event to a new calendar. We must move the event over to the new calendar and then update the information on the event
-        print("Event " + eventId)
-        print("CurrentCal " + currentCalId)
-        print("NewCal " + CalId)
+        logging.info("Event " + eventId)
+        logging.info("CurrentCal " + currentCalId)
+        logging.info("NewCal " + CalId)
         x = (
             service.events()
             .move(calendarId=currentCalId, eventId=eventId, destination=CalId)
             .execute()
         )
-        print("New event id: " + x["id"])
+        logging.info("New event id: " + x["id"])
         x = (
             service.events()
             .update(calendarId=CalId, eventId=eventId, body=event)
