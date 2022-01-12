@@ -68,7 +68,7 @@ async def sync(settings: Settings) -> None:
             settings.delete_notion_name,
             notion,
             service,
-            settings=settings
+            settings=settings,
         )
         progress.update(1)
 
@@ -93,7 +93,7 @@ async def sync(settings: Settings) -> None:
             notion,
             todayDate,
             service,
-            settings=settings
+            settings=settings,
         )
         progress.update(1)
 
@@ -113,7 +113,7 @@ async def sync(settings: Settings) -> None:
             service,
             notion,
             todayDate,
-            settings=settings
+            settings=settings,
         )
         progress.update(1)
 
@@ -132,7 +132,7 @@ async def sync(settings: Settings) -> None:
             settings.delete_notion_name,
             service,
             notion,
-            settings=settings
+            settings=settings,
         )
         progress.label = "Sychronized"
         progress.update(1)

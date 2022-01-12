@@ -740,19 +740,19 @@ def existing_events_gcal_to_notion(
         logging.info("\n")
         try:
             gCal_start_datetimes.append(
-                dateutil.parser.isoparse(value["start"]["dateTime"])
+                dateutil.parser.isoparse(value["start"]["dateTime"])  # type: ignore
             )
         except:
-            date = dt.datetime.strptime(value["start"]["date"], "%Y-%m-%d")
+            date = dt.datetime.strptime(value["start"]["date"], "%Y-%m-%d")  # type: ignore
             # x = datetime(date.year, date.month, date.day, 0, 0, 0) redundant I think
             # gCal_start_datetimes.append(datetime.strptime(x, "%Y-%m-%dT%H:%M:%S"))
             gCal_start_datetimes.append(date)
         try:
             gCal_end_datetimes.append(
-                dateutil.parser.isoparse(value["end"]["dateTime"])
+                dateutil.parser.isoparse(value["end"]["dateTime"])  # type: ignore
             )
         except:
-            date = dt.datetime.strptime(value["end"]["date"], "%Y-%m-%d")
+            date = dt.datetime.strptime(value["end"]["date"], "%Y-%m-%d")  # type: ignore
             x = dt.datetime(date.year, date.month, date.day, 0, 0, 0) - dt.timedelta(
                 days=1
             )
