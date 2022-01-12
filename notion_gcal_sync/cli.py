@@ -17,7 +17,6 @@ from notion_gcal_sync.gcal_token import gcal_token
 def sync_actual(settings: Settings):
 
     service, calendar = core.setup_google_api(
-        settings.run_script,
         settings.default_calendar_id,
         str(settings.credentials_location),
     )

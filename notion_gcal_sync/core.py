@@ -7,17 +7,19 @@ import arrow
 import dateutil.parser
 import notion_client as nc
 from google_auth_oauthlib.flow import InstalledAppFlow  # type: ignore
-from googleapiclient.discovery import build  # type: ignore
+import googleapiclient.discovery  # type: ignore
 
 from notion_gcal_sync import config
 from notion_gcal_sync.gcal_token import gcal_token
 
 
 # SET UP THE GOOGLE CALENDAR API INTERFACE
-def setup_google_api(calendar_id: str, credentials_location: str):
+def setup_google_api(
+    calendar_id: str, credentials_location: str
+) -> tuple[googleapiclient.discovery.Resource, Any]:
 
     credentials = pickle.load(open(credentials_location, "rb"))
-    service = build("calendar", "v3", credentials=credentials)
+    service = googleapiclient.discovery.build("calendar", "v3", credentials=credentials)
 
     # There could be a hiccup if the Google Calendar API token expires.
     # If the token expires, the other python script GCalToken.py creates a new token for the program to use
@@ -33,7 +35,9 @@ def setup_google_api(calendar_id: str, credentials_location: str):
         # SET UP THE GOOGLE CALENDAR API INTERFACE
 
         credentials = pickle.load(open(credentials_location, "rb"))
-        service = build("calendar", "v3", credentials=credentials)
+        service = googleapiclient.discovery.build(
+            "calendar", "v3", credentials=credentials
+        )
 
         # result = service.calendarList().list().execute()
         # print(result['items'][:])
@@ -69,7 +73,10 @@ def googleQuery():
 
 def setup_api_connections(
     runscript_location, default_calendar_id, credentials_location, notion_api_token
-) -> tuple[Any, Any, nc.Client]:
+) -> tuple[googleapiclient.discovery.Resource, Any, nc.Client]:
+    """Setup the API connections to Google Calendar and notion
+    Returns (g_api_service, calendar, notion_client)
+    """
     # setup google api
     service, calendar = setup_google_api(
         default_calendar_id,
@@ -78,6 +85,23 @@ def setup_api_connections(
     # This is where we set up the connection with the Notion API
     notion = nc.Client(auth=notion_api_token)
     return service, calendar, notion
+
+
+def paginated_database_query(
+    notion_client: nc.Client, database_id: str, **query: Any
+) -> list:
+    """notion_client.database.query(**query) becomes paginated_database_query(**query)"""
+    matching_pages = []
+
+    while True:
+        # this query will return a dictionary that we will parse for information that we want
+        response = notion_client.databases.query(database_id, **query)
+        matching_pages.extend(response["results"])
+        if response["next_cursor"]:
+            query["start_cursor"] = response["next_cursor"]
+        else:
+            break
+    return matching_pages
 
 
 def get_new_notion_pages(
@@ -94,7 +118,7 @@ def get_new_notion_pages(
     matching_pages = []
 
     query = {
-        "database_id": database_id,
+        # "database_id": database_id,
         "filter": {
             "and": [
                 {
@@ -110,14 +134,15 @@ def get_new_notion_pages(
         },
     }
 
-    while True:
-        # this query will return a dictionary that we will parse for information that we want
-        response = notion.databases.query(**query)
-        matching_pages.extend(response["results"])
-        if response["next_cursor"]:
-            query["start_cursor"] = response["next_cursor"]
-        else:
-            break
+    matching_pages = paginated_database_query(notion, database_id, **query)
+    # while True:
+    #     # this query will return a dictionary that we will parse for information that we want
+    #     response = notion.databases.query(**query)
+    #     matching_pages.extend(response["results"])
+    #     if response["next_cursor"]:
+    #         query["start_cursor"] = response["next_cursor"]
+    #     else:
+    #         break
     return matching_pages
 
 
@@ -734,18 +759,33 @@ def existing_events_gcal_to_notion(
     # Now we iterate and compare the time on the Notion Dashboard and the start time of the GCal event
     # If the datetimes don't match up,  then the Notion  Dashboard must be updated
 
-    new_notion_start_datetimes: list[str | dt.datetime] = [""] * len(
-        notion_start_datetimes
-    )
-    new_notion_end_datetimes: list[str | dt.datetime] = [""] * len(notion_end_datetimes)
+    # new_notion_start_datetimes: list[str | dt.datetime] = [""] * len(
+    #     notion_start_datetimes
+    # )
+    # new_notion_end_datetimes: list[str | dt.datetime] = [""] * len(notion_end_datetimes)
 
-    for i in range(len(new_notion_start_datetimes)):
+    new_notion_start_datetimes: list[None | dt.datetime] = []
+    new_notion_end_datetimes: list[None | dt.datetime] = []
+
+    for i in range(len(notion_start_datetimes)):
         if notion_start_datetimes[i] != gCal_start_datetimes[i]:
-            new_notion_start_datetimes[i] = gCal_start_datetimes[i]
+            new_notion_start_datetimes.append(gCal_start_datetimes[i])
+        else:
+            new_notion_start_datetimes.append(None)
 
         if notion_end_datetimes[i] != gCal_end_datetimes[i]:
             # this means that there is no end time in notion
-            new_notion_end_datetimes[i] = gCal_end_datetimes[i]
+            new_notion_end_datetimes.append(gCal_end_datetimes[i])
+        else:
+            new_notion_end_datetimes.append(None)
+
+    # for i in range(len(notion_start_datetimes)):
+    #     if notion_start_datetimes[i] != gCal_start_datetimes[i]:
+    #         new_notion_start_datetimes[i] = gCal_start_datetimes[i]
+
+    #     if notion_end_datetimes[i] != gCal_end_datetimes[i]:
+    #         # this means that there is no end time in notion
+    #         new_notion_end_datetimes[i] = gCal_end_datetimes[i]
 
     print("test")
     print(new_notion_start_datetimes)
@@ -754,12 +794,13 @@ def existing_events_gcal_to_notion(
     for i in range(len(notion_gCal_IDs)):
         print(notion_start_datetimes[i], gCal_start_datetimes[i], notion_gCal_IDs[i])
 
-    for i in range(len(new_notion_start_datetimes)):
+    # for i, new_start, new_end in range(len(new_notion_start_datetimes)):
+    for i, (new_start, new_end) in enumerate(zip(new_notion_start_datetimes,new_notion_end_datetimes)):
         if (
-            new_notion_start_datetimes[i] != "" and new_notion_end_datetimes[i] != ""
+            new_start is not None and new_end is not None
         ):  # both start and end time need to be updated
-            start: dt.datetime = new_notion_start_datetimes[i]
-            end: dt.datetime = new_notion_end_datetimes[i]
+            start: dt.datetime = new_start
+            end: dt.datetime = new_end
 
             if (
                 start.hour == 0 and start.minute == 0 and start == end
@@ -828,8 +869,8 @@ def existing_events_gcal_to_notion(
                         },
                     },
                 )
-        elif new_notion_start_datetimes[i] != "":  # only start time need to be updated
-            start = new_notion_start_datetimes[i]
+        elif new_start is not None:  # only start time need to be updated
+            start = new_start
             end = notion_end_datetimes[i]
 
             if (
@@ -899,9 +940,9 @@ def existing_events_gcal_to_notion(
                         },
                     },
                 )
-        elif new_notion_end_datetimes[i] != "":  # only end time needs to be updated
+        elif new_end is not None:  # only end time needs to be updated
             start = notion_start_datetimes[i]
-            end = new_notion_end_datetimes[i]
+            end = new_end
 
             if (
                 start.hour == 0 and start.minute == 0 and start == end
@@ -950,7 +991,7 @@ def existing_events_gcal_to_notion(
                         },
                     },
                 )
-            else:  # update Notin using datetime format
+            else:  # update Notion using datetime format
                 my_page = notion.pages.update(  # update the notion dashboard with the new datetime and update the last updated time
                     **{
                         "page_id": notion_IDs_List[i],
