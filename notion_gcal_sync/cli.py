@@ -11,6 +11,7 @@ from pydantic import ValidationError
 
 from notion_gcal_sync import core
 from notion_gcal_sync.config import Settings, load_config_file, load_settings
+from notion_gcal_sync.gcal_token import gcal_token
 
 
 def sync_actual(settings: Settings):
@@ -201,6 +202,12 @@ def cli_sync(
         asyncio.run(continuous_sync(interval, settings))
     else:
         asyncio.run(sync(settings))
+
+
+@app.command("gcal-token")
+def cli_gcal_token(client_secret_json: Path, out_file: Path = Path("token.pkl")):
+    """Generate a token, which will be stored in a .pkl file"""
+    gcal_token(out_file, client_secret_json)
 
 
 @app.callback()
