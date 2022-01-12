@@ -1,11 +1,13 @@
 import datetime as dt
 import os
 import pickle
+from typing import Any
 
+import arrow
 import dateutil.parser
+import googleapiclient.discovery  # type: ignore
 import notion_client as nc
 from google_auth_oauthlib.flow import InstalledAppFlow  # type: ignore
-from googleapiclient.discovery import build  # type: ignore
 
 from notion_gcal_sync import config
 from notion_gcal_sync.gcal_token import gcal_token
@@ -13,11 +15,11 @@ from notion_gcal_sync.gcal_token import gcal_token
 
 # SET UP THE GOOGLE CALENDAR API INTERFACE
 def setup_google_api(
-    runscriptlocation: str, calendar_id: str, credentials_location: str
-):
+    calendar_id: str, credentials_location: str
+) -> tuple[googleapiclient.discovery.Resource, Any]:
 
     credentials = pickle.load(open(credentials_location, "rb"))
-    service = build("calendar", "v3", credentials=credentials)
+    service = googleapiclient.discovery.build("calendar", "v3", credentials=credentials)
 
     # There could be a hiccup if the Google Calendar API token expires.
     # If the token expires, the other python script GCalToken.py creates a new token for the program to use
@@ -33,7 +35,9 @@ def setup_google_api(
         # SET UP THE GOOGLE CALENDAR API INTERFACE
 
         credentials = pickle.load(open(credentials_location, "rb"))
-        service = build("calendar", "v3", credentials=credentials)
+        service = googleapiclient.discovery.build(
+            "calendar", "v3", credentials=credentials
+        )
 
         # result = service.calendarList().list().execute()
         # print(result['items'][:])
@@ -67,6 +71,73 @@ def googleQuery():
     # # ^^ has to be adjusted for when daylight savings is different if your area observes it
 
 
+def setup_api_connections(
+    runscript_location, default_calendar_id, credentials_location, notion_api_token
+) -> tuple[googleapiclient.discovery.Resource, Any, nc.Client]:
+    """Setup the API connections to Google Calendar and notion
+    Returns (g_api_service, calendar, notion_client)
+    """
+    # setup google api
+    service, calendar = setup_google_api(
+        default_calendar_id,
+        str(credentials_location),
+    )
+    # This is where we set up the connection with the Notion API
+    notion = nc.Client(auth=notion_api_token)
+    return service, calendar, notion
+
+
+def paginated_database_query(
+    notion_client: nc.Client, database_id: str, **query: Any
+) -> list:
+    """notion_client.database.query(**query) becomes paginated_database_query(**query)"""
+    matching_pages = []
+
+    while True:
+        # this query will return a dictionary that we will parse for information that we want
+        response = notion_client.databases.query(database_id, **query)
+        matching_pages.extend(response["results"])  # type: ignore
+        if response["next_cursor"]:  # type: ignore
+            query["start_cursor"] = response["next_cursor"]  # type: ignore
+        else:
+            break
+    return matching_pages
+
+
+def get_new_notion_pages(
+    database_id: str,
+    on_gcal_notion_name: str,
+    date_notion_name: str,
+    delete_notion_name: str,
+    notion: nc.Client,
+) -> list:
+    """Get new pages from notion (with pagination!)."""
+    # todayDate = dt.datetime.today().strftime("%Y-%m-%d")
+    todayDate = arrow.utcnow().isoformat()
+
+    matching_pages = []
+
+    query = {
+        # "database_id": database_id,
+        "filter": {
+            "and": [
+                {
+                    "property": on_gcal_notion_name,
+                    "checkbox": {"equals": False},
+                },
+                {
+                    "property": date_notion_name,
+                    "date": {"on_or_after": todayDate},
+                },
+                {"property": delete_notion_name, "checkbox": {"equals": False}},
+            ]
+        },
+    }
+
+    matching_pages = paginated_database_query(notion, database_id, **query)
+    return matching_pages
+
+
 def new_events_notion_to_gcal(
     database_id,
     urlRoot,
@@ -85,36 +156,17 @@ def new_events_notion_to_gcal(
     notion,
     service,
 ):
-    ###########################################################################
-    ##### Part 1: Take Notion Events not on GCal and move them over to GCal
-    ###########################################################################
+    """
+    Part 1: Take Notion Events not on GCal and move them over to GCal
 
-    ## Note that we are only querying for events that are today or in the next week so the code can be efficient.
-    ## If you just want all Notion events to be on GCal, then you'll have to edit the query so it is only checking the 'On GCal?' property
 
-    todayDate = dt.datetime.today().strftime("%Y-%m-%d")
+    Note that we are only querying for events that are today or in the next week so the code can be efficient.
+    If you just want all Notion events to be on GCal, then you'll have to edit the query so it is only checking the 'On GCal?' property
+    """
 
-    my_page = notion.databases.query(  # this query will return a dictionary that we will parse for information that we want
-        **{
-            "database_id": database_id,
-            "filter": {
-                "and": [
-                    {"property": On_GCal_Notion_Name, "checkbox": {"equals": False}},
-                    {
-                        "or": [
-                            {
-                                "property": Date_Notion_Name,
-                                "date": {"equals": todayDate},
-                            },
-                            {"property": Date_Notion_Name, "date": {"next_week": {}}},
-                        ]
-                    },
-                    {"property": Delete_Notion_Name, "checkbox": {"equals": False}},
-                ]
-            },
-        }
+    resultList = get_new_notion_pages(
+        database_id, On_GCal_Notion_Name, Date_Notion_Name, Delete_Notion_Name, notion
     )
-    resultList = my_page["results"]
 
     # print(len(resultList))
 
@@ -192,41 +244,55 @@ def new_events_notion_to_gcal(
             )
             print(CalendarList)
 
-            # 2 Cases: Start and End are  both either date or date+time #Have restriction that the calendar events don't cross days
-            try:
-                # start and end are both dates
-                calEventId = makeCalEvent(
-                    TaskNames[i],
-                    makeEventDescription(Initiatives[i], ExtraInfo[i]),
-                    dt.datetime.strptime(start_Dates[i], "%Y-%m-%d"),
-                    URL_list[i],
-                    dt.datetime.strptime(end_Times[i], "%Y-%m-%d"),
-                    CalendarList[i],
-                    service,
-                )
-            except:
+            def create_gcal_event(
+                task_name, initiative, extra_info, start, end, url, calendar, service
+            ):
+                # 2 Cases: Start and End are  both either date or date+time #Have restriction that the calendar events don't cross days
                 try:
-                    # start and end are both date+time
+                    # start and end are both dates
                     calEventId = makeCalEvent(
-                        TaskNames[i],
-                        makeEventDescription(Initiatives[i], ExtraInfo[i]),
-                        dateutil.parser.isoparse(start_Dates[i]),
-                        URL_list[i],
-                        dateutil.parser.isoparse(end_Times[i]),
-                        CalendarList[i],
+                        task_name,
+                        makeEventDescription(initiative, extra_info),
+                        dt.datetime.strptime(start, "%Y-%m-%d"),
+                        url,
+                        dt.datetime.strptime(end, "%Y-%m-%d"),
+                        calendar,
                         service,
                     )
                 except:
-                    calEventId = makeCalEvent(
-                        TaskNames[i],
-                        makeEventDescription(Initiatives[i], ExtraInfo[i]),
-                        dateutil.parser.isoparse(start_Dates[i]),
-                        URL_list[i],
-                        dateutil.parser.isoparse(end_Times[i]),
-                        CalendarList[i],
-                        service,
-                    )
+                    try:
+                        # start and end are both date+time
+                        calEventId = makeCalEvent(
+                            task_name,
+                            makeEventDescription(initiative, extra_info),
+                            dateutil.parser.isoparse(start),
+                            url,
+                            dateutil.parser.isoparse(end),
+                            calendar,
+                            service,
+                        )
+                    except:
+                        calEventId = makeCalEvent(
+                            task_name,
+                            makeEventDescription(initiative, extra_info),
+                            dateutil.parser.isoparse(start),
+                            url,
+                            dateutil.parser.isoparse(end),
+                            calendar,
+                            service,
+                        )
+                return calEventId
 
+            calEventId = create_gcal_event(
+                TaskNames[i],
+                Initiatives[i],
+                ExtraInfo[i],
+                start_Dates[i],
+                end_Times[i],
+                URL_list[i],
+                CalendarList[i],
+                service,
+            )
             calEventIdList.append(calEventId)
 
             if (
@@ -265,7 +331,7 @@ def new_events_notion_to_gcal(
 
     else:
         print("Nothing new added to GCal")
-    return todayDate
+    return
 
 
 def existing_events_notion_to_gcal(
@@ -295,27 +361,28 @@ def existing_events_notion_to_gcal(
 
     # Just gotta put a fail-safe in here in case people deleted the Calendar Variable
     # this queries items in the next week where the Calendar select thing is empty
-    my_page = notion.databases.query(
-        **{
-            "database_id": database_id,
-            "filter": {
-                "and": [
-                    {"property": Calendar_Notion_Name, "select": {"is_empty": True}},
-                    {
-                        "or": [
-                            {
-                                "property": Date_Notion_Name,
-                                "date": {"equals": todayDate},
-                            },
-                            {"property": Date_Notion_Name, "date": {"next_week": {}}},
-                        ]
-                    },
-                    {"property": Delete_Notion_Name, "checkbox": {"equals": False}},
-                ]
-            },
-        }
+    query = {
+        "database_id": database_id,
+        "filter": {
+            "and": [
+                {"property": Calendar_Notion_Name, "select": {"is_empty": True}},
+                {
+                    "or": [
+                        {
+                            "property": Date_Notion_Name,
+                            "date": {"equals": todayDate},
+                        },
+                        {"property": Date_Notion_Name, "date": {"next_week": {}}},
+                    ]
+                },
+                {"property": Delete_Notion_Name, "checkbox": {"equals": False}},
+            ]
+        },
+    }
+    resultList = paginated_database_query(
+        notion_client=notion, database_id=database_id, **query
     )
-    resultList = my_page["results"]
+    # resultList = my_page["results"]
 
     if len(resultList) > 0:
         for i, el in enumerate(resultList):
@@ -341,31 +408,28 @@ def existing_events_notion_to_gcal(
 
     # this query will return a dictionary that we will parse for information that we want
     # look for events that are today or in the next week
-    my_page = notion.databases.query(
-        **{
-            "database_id": database_id,
-            "filter": {
-                "and": [
-                    {
-                        "property": NeedGCalUpdate_Notion_Name,
-                        "checkbox": {"equals": True},
-                    },
-                    {"property": On_GCal_Notion_Name, "checkbox": {"equals": True}},
-                    {
-                        "or": [
-                            {
-                                "property": Date_Notion_Name,
-                                "date": {"equals": todayDate},
-                            },
-                            {"property": Date_Notion_Name, "date": {"next_week": {}}},
-                        ]
-                    },
-                    {"property": Delete_Notion_Name, "checkbox": {"equals": False}},
-                ]
-            },
-        }
-    )
-    resultList = my_page["results"]
+    query = {
+        "filter": {
+            "and": [
+                {
+                    "property": NeedGCalUpdate_Notion_Name,
+                    "checkbox": {"equals": True},
+                },
+                {"property": On_GCal_Notion_Name, "checkbox": {"equals": True}},
+                {
+                    "or": [
+                        {
+                            "property": Date_Notion_Name,
+                            "date": {"equals": todayDate},
+                        },
+                        {"property": Date_Notion_Name, "date": {"next_week": {}}},
+                    ]
+                },
+                {"property": Delete_Notion_Name, "checkbox": {"equals": False}},
+            ]
+        },
+    }
+    resultList = paginated_database_query(notion, database_id, **query)
 
     updatingNotionPageIds = []
     updatingCalEventIds = []
@@ -530,32 +594,29 @@ def existing_events_gcal_to_notion(
     ###########################################################################
 
     ##Query notion tasks already in Gcal, don't have to be updated, and are today or in the next week
-    my_page = notion.databases.query(
-        **{
-            "database_id": database_id,
-            "filter": {
-                "and": [
-                    {
-                        "property": NeedGCalUpdate_Notion_Name,
-                        "formula": {"checkbox": {"equals": False}},
-                    },
-                    {"property": On_GCal_Notion_Name, "checkbox": {"equals": True}},
-                    {
-                        "or": [
-                            {
-                                "property": Date_Notion_Name,
-                                "date": {"equals": todayDate},
-                            },
-                            {"property": Date_Notion_Name, "date": {"next_week": {}}},
-                        ]
-                    },
-                    {"property": Delete_Notion_Name, "checkbox": {"equals": False}},
-                ]
-            },
-        }
-    )
+    query = {
+        "filter": {
+            "and": [
+                {
+                    "property": NeedGCalUpdate_Notion_Name,
+                    "formula": {"checkbox": {"equals": False}},
+                },
+                {"property": On_GCal_Notion_Name, "checkbox": {"equals": True}},
+                {
+                    "or": [
+                        {
+                            "property": Date_Notion_Name,
+                            "date": {"equals": todayDate},
+                        },
+                        {"property": Date_Notion_Name, "date": {"next_week": {}}},
+                    ]
+                },
+                {"property": Delete_Notion_Name, "checkbox": {"equals": False}},
+            ]
+        },
+    }
 
-    resultList = my_page["results"]
+    resultList = paginated_database_query(notion, database_id, **query)
 
     # Comparison section:
     # We need to see what times between GCal and Notion are not the same, so we are going to convert all of the notion date/times into
@@ -685,18 +746,33 @@ def existing_events_gcal_to_notion(
     # Now we iterate and compare the time on the Notion Dashboard and the start time of the GCal event
     # If the datetimes don't match up,  then the Notion  Dashboard must be updated
 
-    new_notion_start_datetimes: list[str | dt.datetime] = [""] * len(
-        notion_start_datetimes
-    )
-    new_notion_end_datetimes: list[str | dt.datetime] = [""] * len(notion_end_datetimes)
+    # new_notion_start_datetimes: list[str | dt.datetime] = [""] * len(
+    #     notion_start_datetimes
+    # )
+    # new_notion_end_datetimes: list[str | dt.datetime] = [""] * len(notion_end_datetimes)
 
-    for i in range(len(new_notion_start_datetimes)):
+    new_notion_start_datetimes: list[None | dt.datetime] = []
+    new_notion_end_datetimes: list[None | dt.datetime] = []
+
+    for i in range(len(notion_start_datetimes)):
         if notion_start_datetimes[i] != gCal_start_datetimes[i]:
-            new_notion_start_datetimes[i] = gCal_start_datetimes[i]
+            new_notion_start_datetimes.append(gCal_start_datetimes[i])
+        else:
+            new_notion_start_datetimes.append(None)
 
         if notion_end_datetimes[i] != gCal_end_datetimes[i]:
             # this means that there is no end time in notion
-            new_notion_end_datetimes[i] = gCal_end_datetimes[i]
+            new_notion_end_datetimes.append(gCal_end_datetimes[i])
+        else:
+            new_notion_end_datetimes.append(None)
+
+    # for i in range(len(notion_start_datetimes)):
+    #     if notion_start_datetimes[i] != gCal_start_datetimes[i]:
+    #         new_notion_start_datetimes[i] = gCal_start_datetimes[i]
+
+    #     if notion_end_datetimes[i] != gCal_end_datetimes[i]:
+    #         # this means that there is no end time in notion
+    #         new_notion_end_datetimes[i] = gCal_end_datetimes[i]
 
     print("test")
     print(new_notion_start_datetimes)
@@ -705,12 +781,15 @@ def existing_events_gcal_to_notion(
     for i in range(len(notion_gCal_IDs)):
         print(notion_start_datetimes[i], gCal_start_datetimes[i], notion_gCal_IDs[i])
 
-    for i in range(len(new_notion_start_datetimes)):
+    # for i, new_start, new_end in range(len(new_notion_start_datetimes)):
+    for i, (new_start, new_end) in enumerate(
+        zip(new_notion_start_datetimes, new_notion_end_datetimes)
+    ):
         if (
-            new_notion_start_datetimes[i] != "" and new_notion_end_datetimes[i] != ""
+            new_start is not None and new_end is not None
         ):  # both start and end time need to be updated
-            start: dt.datetime = new_notion_start_datetimes[i]
-            end: dt.datetime = new_notion_end_datetimes[i]
+            start: dt.datetime = new_start
+            end: dt.datetime = new_end
 
             if (
                 start.hour == 0 and start.minute == 0 and start == end
@@ -779,8 +858,8 @@ def existing_events_gcal_to_notion(
                         },
                     },
                 )
-        elif new_notion_start_datetimes[i] != "":  # only start time need to be updated
-            start = new_notion_start_datetimes[i]
+        elif new_start is not None:  # only start time need to be updated
+            start = new_start
             end = notion_end_datetimes[i]
 
             if (
@@ -850,9 +929,9 @@ def existing_events_gcal_to_notion(
                         },
                     },
                 )
-        elif new_notion_end_datetimes[i] != "":  # only end time needs to be updated
+        elif new_end is not None:  # only end time needs to be updated
             start = notion_start_datetimes[i]
-            end = new_notion_end_datetimes[i]
+            end = new_end
 
             if (
                 start.hour == 0 and start.minute == 0 and start == end
@@ -901,7 +980,7 @@ def existing_events_gcal_to_notion(
                         },
                     },
                 )
-            else:  # update Notin using datetime format
+            else:  # update Notion using datetime format
                 my_page = notion.pages.update(  # update the notion dashboard with the new datetime and update the last updated time
                     **{
                         "page_id": notion_IDs_List[i],
@@ -979,9 +1058,10 @@ def new_events_gcal_to_notion(
 
     ##First, we get a list of all of the GCal Event Ids from the Notion Dashboard.
 
-    my_page = notion.databases.query(
+    my_page = paginated_database_query(
+        notion,
+        database_id,
         **{
-            "database_id": database_id,
             "filter": {
                 "and": [
                     {
@@ -991,20 +1071,21 @@ def new_events_gcal_to_notion(
                     {"property": Delete_Notion_Name, "checkbox": {"equals": False}},
                 ]
             },
-        }
+        },
     )
 
-    my_page = notion.databases.query(
+    my_page = paginated_database_query(
+        notion,
+        database_id,
         **{
-            "database_id": database_id,
             "filter": {
                 "property": GCalEventId_Notion_Name,
                 "text": {"is_not_empty": True},
             },
-        }
+        },
     )
 
-    resultList = my_page["results"]
+    resultList = my_page
 
     ALL_notion_gCal_Ids = []
 
@@ -1262,9 +1343,10 @@ def delete_page(
     ###########################################################################
     ##### Part 5: Deletion Sync -- If marked Done in Notion, then it will delete the GCal event (and the Notion event once Python API updates)
     ###########################################################################
-    my_page = notion.databases.query(
+    resultList = paginated_database_query(
+        notion,
+        database_id,
         **{
-            "database_id": database_id,
             "filter": {
                 "and": [
                     {
@@ -1275,16 +1357,14 @@ def delete_page(
                     {"property": Delete_Notion_Name, "checkbox": {"equals": True}},
                 ]
             },
-        }
+        },
     )
-
-    resultList = my_page["results"]
 
     if (
         DELETE_OPTION == 0 and len(resultList) > 0
     ):  # delete gCal event (and Notion task once the Python API is updated)
-        CalendarList = []
-        CurrentCalList = []
+        # CalendarList = []
+        # CurrentCalList = []
 
         for i, el in enumerate(resultList):
             calendarID = calendarDictionary[

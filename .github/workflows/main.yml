@@ -69,6 +69,18 @@ jobs:
       - name: Install pytest github plugin
         run: poetry run pip install pytest-github-actions-annotate-failures
 
+      - name: Test with pytest
+        run: |
+          poetry run python -m pytest --cov=notion_gcal_sync --cov-report=xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          fail_ci_if_error: true
+          
+      - name: Run mypy
+        run: poetry run mypy .
+
       - name: Install black
         run: poetry run pip install black
 
@@ -76,10 +88,3 @@ jobs:
         run: |
           # check with black
           poetry run python -m black . --check
-          
-      - name: Run mypy
-        run: poetry run mypy .
-
-      - name: Test with pytest
-        run: |
-          poetry run python -m pytest --cov
