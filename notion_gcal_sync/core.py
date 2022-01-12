@@ -5,9 +5,9 @@ from typing import Any
 
 import arrow
 import dateutil.parser
+import googleapiclient.discovery  # type: ignore
 import notion_client as nc
 from google_auth_oauthlib.flow import InstalledAppFlow  # type: ignore
-import googleapiclient.discovery  # type: ignore
 
 from notion_gcal_sync import config
 from notion_gcal_sync.gcal_token import gcal_token
@@ -795,7 +795,9 @@ def existing_events_gcal_to_notion(
         print(notion_start_datetimes[i], gCal_start_datetimes[i], notion_gCal_IDs[i])
 
     # for i, new_start, new_end in range(len(new_notion_start_datetimes)):
-    for i, (new_start, new_end) in enumerate(zip(new_notion_start_datetimes,new_notion_end_datetimes)):
+    for i, (new_start, new_end) in enumerate(
+        zip(new_notion_start_datetimes, new_notion_end_datetimes)
+    ):
         if (
             new_start is not None and new_end is not None
         ):  # both start and end time need to be updated
