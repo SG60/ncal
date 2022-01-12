@@ -135,14 +135,6 @@ def get_new_notion_pages(
     }
 
     matching_pages = paginated_database_query(notion, database_id, **query)
-    # while True:
-    #     # this query will return a dictionary that we will parse for information that we want
-    #     response = notion.databases.query(**query)
-    #     matching_pages.extend(response["results"])
-    #     if response["next_cursor"]:
-    #         query["start_cursor"] = response["next_cursor"]
-    #     else:
-    #         break
     return matching_pages
 
 
@@ -369,27 +361,28 @@ def existing_events_notion_to_gcal(
 
     # Just gotta put a fail-safe in here in case people deleted the Calendar Variable
     # this queries items in the next week where the Calendar select thing is empty
-    my_page = notion.databases.query(
-        **{
-            "database_id": database_id,
-            "filter": {
-                "and": [
-                    {"property": Calendar_Notion_Name, "select": {"is_empty": True}},
-                    {
-                        "or": [
-                            {
-                                "property": Date_Notion_Name,
-                                "date": {"equals": todayDate},
-                            },
-                            {"property": Date_Notion_Name, "date": {"next_week": {}}},
-                        ]
-                    },
-                    {"property": Delete_Notion_Name, "checkbox": {"equals": False}},
-                ]
-            },
-        }
+    query = {
+        "database_id": database_id,
+        "filter": {
+            "and": [
+                {"property": Calendar_Notion_Name, "select": {"is_empty": True}},
+                {
+                    "or": [
+                        {
+                            "property": Date_Notion_Name,
+                            "date": {"equals": todayDate},
+                        },
+                        {"property": Date_Notion_Name, "date": {"next_week": {}}},
+                    ]
+                },
+                {"property": Delete_Notion_Name, "checkbox": {"equals": False}},
+            ]
+        },
+    }
+    resultList = paginated_database_query(
+        notion_client=notion, database_id=database_id, **query
     )
-    resultList = my_page["results"]
+    # resultList = my_page["results"]
 
     if len(resultList) > 0:
         for i, el in enumerate(resultList):
@@ -415,31 +408,28 @@ def existing_events_notion_to_gcal(
 
     # this query will return a dictionary that we will parse for information that we want
     # look for events that are today or in the next week
-    my_page = notion.databases.query(
-        **{
-            "database_id": database_id,
-            "filter": {
-                "and": [
-                    {
-                        "property": NeedGCalUpdate_Notion_Name,
-                        "checkbox": {"equals": True},
-                    },
-                    {"property": On_GCal_Notion_Name, "checkbox": {"equals": True}},
-                    {
-                        "or": [
-                            {
-                                "property": Date_Notion_Name,
-                                "date": {"equals": todayDate},
-                            },
-                            {"property": Date_Notion_Name, "date": {"next_week": {}}},
-                        ]
-                    },
-                    {"property": Delete_Notion_Name, "checkbox": {"equals": False}},
-                ]
-            },
-        }
-    )
-    resultList = my_page["results"]
+    query = {
+        "filter": {
+            "and": [
+                {
+                    "property": NeedGCalUpdate_Notion_Name,
+                    "checkbox": {"equals": True},
+                },
+                {"property": On_GCal_Notion_Name, "checkbox": {"equals": True}},
+                {
+                    "or": [
+                        {
+                            "property": Date_Notion_Name,
+                            "date": {"equals": todayDate},
+                        },
+                        {"property": Date_Notion_Name, "date": {"next_week": {}}},
+                    ]
+                },
+                {"property": Delete_Notion_Name, "checkbox": {"equals": False}},
+            ]
+        },
+    }
+    resultList = paginated_database_query(notion, database_id, **query)
 
     updatingNotionPageIds = []
     updatingCalEventIds = []
@@ -604,32 +594,29 @@ def existing_events_gcal_to_notion(
     ###########################################################################
 
     ##Query notion tasks already in Gcal, don't have to be updated, and are today or in the next week
-    my_page = notion.databases.query(
-        **{
-            "database_id": database_id,
-            "filter": {
-                "and": [
-                    {
-                        "property": NeedGCalUpdate_Notion_Name,
-                        "formula": {"checkbox": {"equals": False}},
-                    },
-                    {"property": On_GCal_Notion_Name, "checkbox": {"equals": True}},
-                    {
-                        "or": [
-                            {
-                                "property": Date_Notion_Name,
-                                "date": {"equals": todayDate},
-                            },
-                            {"property": Date_Notion_Name, "date": {"next_week": {}}},
-                        ]
-                    },
-                    {"property": Delete_Notion_Name, "checkbox": {"equals": False}},
-                ]
-            },
-        }
-    )
+    query = {
+        "filter": {
+            "and": [
+                {
+                    "property": NeedGCalUpdate_Notion_Name,
+                    "formula": {"checkbox": {"equals": False}},
+                },
+                {"property": On_GCal_Notion_Name, "checkbox": {"equals": True}},
+                {
+                    "or": [
+                        {
+                            "property": Date_Notion_Name,
+                            "date": {"equals": todayDate},
+                        },
+                        {"property": Date_Notion_Name, "date": {"next_week": {}}},
+                    ]
+                },
+                {"property": Delete_Notion_Name, "checkbox": {"equals": False}},
+            ]
+        },
+    }
 
-    resultList = my_page["results"]
+    resultList = paginated_database_query(notion, database_id, **query)
 
     # Comparison section:
     # We need to see what times between GCal and Notion are not the same, so we are going to convert all of the notion date/times into
@@ -1071,9 +1058,10 @@ def new_events_gcal_to_notion(
 
     ##First, we get a list of all of the GCal Event Ids from the Notion Dashboard.
 
-    my_page = notion.databases.query(
+    my_page = paginated_database_query(
+        notion,
+        database_id,
         **{
-            "database_id": database_id,
             "filter": {
                 "and": [
                     {
@@ -1083,20 +1071,21 @@ def new_events_gcal_to_notion(
                     {"property": Delete_Notion_Name, "checkbox": {"equals": False}},
                 ]
             },
-        }
+        },
     )
 
-    my_page = notion.databases.query(
+    my_page = paginated_database_query(
+        notion,
+        database_id,
         **{
-            "database_id": database_id,
             "filter": {
                 "property": GCalEventId_Notion_Name,
                 "text": {"is_not_empty": True},
             },
-        }
+        },
     )
 
-    resultList = my_page["results"]
+    resultList = my_page
 
     ALL_notion_gCal_Ids = []
 
@@ -1354,9 +1343,8 @@ def delete_page(
     ###########################################################################
     ##### Part 5: Deletion Sync -- If marked Done in Notion, then it will delete the GCal event (and the Notion event once Python API updates)
     ###########################################################################
-    my_page = notion.databases.query(
+    resultList = paginated_database_query(notion,database_id,
         **{
-            "database_id": database_id,
             "filter": {
                 "and": [
                     {
@@ -1370,7 +1358,6 @@ def delete_page(
         }
     )
 
-    resultList = my_page["results"]
 
     if (
         DELETE_OPTION == 0 and len(resultList) > 0
