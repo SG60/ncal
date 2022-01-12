@@ -13,6 +13,8 @@ from notion_gcal_sync import core
 from notion_gcal_sync.config import Settings, load_settings
 from notion_gcal_sync.gcal_token import gcal_token
 
+from . import __version__
+
 
 def sync_actual(settings: Settings):
 
@@ -209,7 +211,13 @@ def cli_gcal_token(client_secret_json: Path, out_file: Path = Path("token.pkl"))
     gcal_token(out_file, client_secret_json)
 
 
-@app.callback()
-def main(verbose: bool = False):
+@app.callback(invoke_without_command=True)
+def main(
+    verbose: bool = False,
+    version: bool = typer.Option(None, "--version", is_eager=True),
+):
     if verbose:
         state["verbose"] = True
+    if version:
+        typer.echo(f"Notion GCal Sync version: {__version__}")
+        raise typer.Exit()
