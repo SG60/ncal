@@ -10,12 +10,11 @@ from google_auth_oauthlib.flow import InstalledAppFlow  # type: ignore
 from googleapiclient.discovery import build  # type: ignore
 
 from notion_gcal_sync import config
+from notion_gcal_sync.gcal_token import gcal_token
 
 
 # SET UP THE GOOGLE CALENDAR API INTERFACE
-def setup_google_api(
-    runscriptlocation: str, calendar_id: str, credentials_location: str
-):
+def setup_google_api(calendar_id: str, credentials_location: str):
 
     credentials = pickle.load(open(credentials_location, "rb"))
     service = build("calendar", "v3", credentials=credentials)
@@ -28,7 +27,8 @@ def setup_google_api(
     except:
         # refresh the token
 
-        os.system(runscriptlocation)
+        # os.system(runscriptlocation)
+        gcal_token(credentials_location, "client_secret.json")
 
         # SET UP THE GOOGLE CALENDAR API INTERFACE
 
