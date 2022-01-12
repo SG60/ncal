@@ -1343,7 +1343,9 @@ def delete_page(
     ###########################################################################
     ##### Part 5: Deletion Sync -- If marked Done in Notion, then it will delete the GCal event (and the Notion event once Python API updates)
     ###########################################################################
-    resultList = paginated_database_query(notion,database_id,
+    resultList = paginated_database_query(
+        notion,
+        database_id,
         **{
             "filter": {
                 "and": [
@@ -1355,9 +1357,8 @@ def delete_page(
                     {"property": Delete_Notion_Name, "checkbox": {"equals": True}},
                 ]
             },
-        }
+        },
     )
-
 
     if (
         DELETE_OPTION == 0 and len(resultList) > 0

@@ -211,7 +211,7 @@ def cli_gcal_token(client_secret_json: Path, out_file: Path = Path("token.pkl"))
     gcal_token(out_file, client_secret_json)
 
 
-@app.callback(invoke_without_command=True)
+@app.callback(invoke_without_command=True, no_args_is_help=True)
 def main(
     verbose: bool = False,
     version: bool = typer.Option(None, "--version", is_eager=True),
