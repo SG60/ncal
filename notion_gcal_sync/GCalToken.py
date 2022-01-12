@@ -1,5 +1,4 @@
 import pickle
-from datetime import date, datetime, timedelta
 
 from google_auth_oauthlib.flow import InstalledAppFlow  # type: ignore
 from googleapiclient.discovery import build  # type: ignore

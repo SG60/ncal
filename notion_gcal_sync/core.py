@@ -1,7 +1,9 @@
 import datetime as dt
 import os
 import pickle
+from typing import Any
 
+import arrow
 import dateutil.parser
 import notion_client as nc
 from google_auth_oauthlib.flow import InstalledAppFlow  # type: ignore
@@ -65,6 +67,63 @@ def googleQuery():
     # # ^^ has to be adjusted for when daylight savings is different if your area observes it
 
 
+def setup_api_connections(
+    runscript_location, default_calendar_id, credentials_location, notion_api_token
+) -> tuple[Any, Any, nc.Client]:
+    service, calendar = setup_google_api(
+        runscript_location,
+        default_calendar_id,
+        str(credentials_location),
+    )
+
+    # This is where we set up the connection with the Notion API
+
+    notion = nc.Client(auth=notion_api_token)
+
+    return service, calendar, notion
+
+
+def get_new_notion_pages(
+    database_id: str,
+    on_gcal_notion_name: str,
+    date_notion_name: str,
+    delete_notion_name: str,
+    notion: nc.Client,
+) -> list:
+    """Get new pages from notion (with pagination!)."""
+    # todayDate = dt.datetime.today().strftime("%Y-%m-%d")
+    todayDate = arrow.utcnow().isoformat()
+
+    matching_pages = []
+
+    query = {
+        "database_id": database_id,
+        "filter": {
+            "and": [
+                {
+                    "property": on_gcal_notion_name,
+                    "checkbox": {"equals": False},
+                },
+                {
+                    "property": date_notion_name,
+                    "date": {"on_or_after": todayDate},
+                },
+                {"property": delete_notion_name, "checkbox": {"equals": False}},
+            ]
+        },
+    }
+
+    while True:
+        # this query will return a dictionary that we will parse for information that we want
+        response = notion.databases.query(**query)
+        matching_pages.extend(response["results"])
+        if response["next_cursor"]:
+            query["start_cursor"] = response["next_cursor"]
+        else:
+            break
+    return matching_pages
+
+
 def new_events_notion_to_gcal(
     database_id,
     urlRoot,
@@ -83,36 +142,17 @@ def new_events_notion_to_gcal(
     notion,
     service,
 ):
-    ###########################################################################
-    ##### Part 1: Take Notion Events not on GCal and move them over to GCal
-    ###########################################################################
+    """
+    Part 1: Take Notion Events not on GCal and move them over to GCal
 
-    ## Note that we are only querying for events that are today or in the next week so the code can be efficient.
-    ## If you just want all Notion events to be on GCal, then you'll have to edit the query so it is only checking the 'On GCal?' property
 
-    todayDate = dt.datetime.today().strftime("%Y-%m-%d")
+    Note that we are only querying for events that are today or in the next week so the code can be efficient.
+    If you just want all Notion events to be on GCal, then you'll have to edit the query so it is only checking the 'On GCal?' property
+    """
 
-    my_page = notion.databases.query(  # this query will return a dictionary that we will parse for information that we want
-        **{
-            "database_id": database_id,
-            "filter": {
-                "and": [
-                    {"property": On_GCal_Notion_Name, "checkbox": {"equals": False}},
-                    {
-                        "or": [
-                            {
-                                "property": Date_Notion_Name,
-                                "date": {"equals": todayDate},
-                            },
-                            {"property": Date_Notion_Name, "date": {"next_week": {}}},
-                        ]
-                    },
-                    {"property": Delete_Notion_Name, "checkbox": {"equals": False}},
-                ]
-            },
-        }
+    resultList = get_new_notion_pages(
+        database_id, On_GCal_Notion_Name, Date_Notion_Name, Delete_Notion_Name, notion
     )
-    resultList = my_page["results"]
 
     # print(len(resultList))
 

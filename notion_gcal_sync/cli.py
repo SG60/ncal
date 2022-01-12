@@ -2,7 +2,7 @@ import asyncio
 import datetime as dt
 import time
 from pathlib import Path
-from typing import Callable, Coroutine, Literal, Optional
+from typing import Callable, Coroutine, Optional
 
 # from notion_client import Client
 import notion_client as nc
@@ -10,15 +10,15 @@ import typer
 from pydantic import ValidationError
 
 from notion_gcal_sync import core
-from notion_gcal_sync.config import Settings, load_config_file, load_settings
+from notion_gcal_sync.config import Settings, load_settings
 
 
 def sync_actual(settings: Settings):
 
     service, calendar = core.setup_google_api(
-        settings.runScript,
-        settings.DEFAULT_CALENDAR_ID,
-        str(settings.credentialsLocation),
+        settings.run_script,
+        settings.default_calendar_id,
+        str(settings.credentials_location),
     )
 
     ##This is where we set up the connection with the Notion API
@@ -29,40 +29,40 @@ def sync_actual(settings: Settings):
 
     core.new_events_notion_to_gcal(
         settings.database_id,
-        settings.urlRoot,
-        settings.DEFAULT_CALENDAR_NAME,
-        settings.calendarDictionary,
-        settings.Task_Notion_Name,
-        settings.Date_Notion_Name,
-        settings.Initiative_Notion_Name,
-        settings.ExtraInfo_Notion_Name,
-        settings.On_GCal_Notion_Name,
-        settings.GCalEventId_Notion_Name,
-        settings.LastUpdatedTime_Notion_Name,
-        settings.Calendar_Notion_Name,
-        settings.Current_Calendar_Id_Notion_Name,
-        settings.Delete_Notion_Name,
+        settings.url_root,
+        settings.default_calendar_name,
+        settings.calendar_dictionary,
+        settings.task_notion_name,
+        settings.date_notion_name,
+        settings.initiative_notion_name,
+        settings.extrainfo_notion_name,
+        settings.on_gcal_notion_name,
+        settings.gcaleventid_notion_name,
+        settings.lastupdatedtime_notion_name,
+        settings.calendar_notion_name,
+        settings.current_calendar_id_notion_name,
+        settings.delete_notion_name,
         notion,
         service,
     )
 
     core.existing_events_notion_to_gcal(
         settings.database_id,
-        settings.urlRoot,
-        settings.DEFAULT_CALENDAR_ID,
-        settings.DEFAULT_CALENDAR_NAME,
-        settings.calendarDictionary,
-        settings.Task_Notion_Name,
-        settings.Date_Notion_Name,
-        settings.Initiative_Notion_Name,
-        settings.ExtraInfo_Notion_Name,
-        settings.On_GCal_Notion_Name,
-        settings.NeedGCalUpdate_Notion_Name,
-        settings.GCalEventId_Notion_Name,
-        settings.LastUpdatedTime_Notion_Name,
-        settings.Calendar_Notion_Name,
-        settings.Current_Calendar_Id_Notion_Name,
-        settings.Delete_Notion_Name,
+        settings.url_root,
+        settings.default_calendar_id,
+        settings.default_calendar_name,
+        settings.calendar_dictionary,
+        settings.task_notion_name,
+        settings.date_notion_name,
+        settings.initiative_notion_name,
+        settings.extrainfo_notion_name,
+        settings.on_gcal_notion_name,
+        settings.needgcalupdate_notion_name,
+        settings.gcaleventid_notion_name,
+        settings.lastupdatedtime_notion_name,
+        settings.calendar_notion_name,
+        settings.current_calendar_id_notion_name,
+        settings.delete_notion_name,
         notion,
         todayDate,
         service,
@@ -70,16 +70,16 @@ def sync_actual(settings: Settings):
 
     core.existing_events_gcal_to_notion(
         settings.database_id,
-        settings.DEFAULT_CALENDAR_NAME,
-        settings.calendarDictionary,
-        settings.Date_Notion_Name,
-        settings.On_GCal_Notion_Name,
-        settings.NeedGCalUpdate_Notion_Name,
-        settings.GCalEventId_Notion_Name,
-        settings.LastUpdatedTime_Notion_Name,
-        settings.Calendar_Notion_Name,
-        settings.Current_Calendar_Id_Notion_Name,
-        settings.Delete_Notion_Name,
+        settings.default_calendar_name,
+        settings.calendar_dictionary,
+        settings.date_notion_name,
+        settings.on_gcal_notion_name,
+        settings.needgcalupdate_notion_name,
+        settings.gcaleventid_notion_name,
+        settings.lastupdatedtime_notion_name,
+        settings.calendar_notion_name,
+        settings.current_calendar_id_notion_name,
+        settings.delete_notion_name,
         service,
         notion,
         todayDate,
@@ -87,16 +87,16 @@ def sync_actual(settings: Settings):
 
     core.new_events_gcal_to_notion(
         settings.database_id,
-        settings.calendarDictionary,
-        settings.Task_Notion_Name,
-        settings.Date_Notion_Name,
-        settings.ExtraInfo_Notion_Name,
-        settings.On_GCal_Notion_Name,
-        settings.GCalEventId_Notion_Name,
-        settings.LastUpdatedTime_Notion_Name,
-        settings.Calendar_Notion_Name,
-        settings.Current_Calendar_Id_Notion_Name,
-        settings.Delete_Notion_Name,
+        settings.calendar_dictionary,
+        settings.task_notion_name,
+        settings.date_notion_name,
+        settings.extrainfo_notion_name,
+        settings.on_gcal_notion_name,
+        settings.gcaleventid_notion_name,
+        settings.lastupdatedtime_notion_name,
+        settings.calendar_notion_name,
+        settings.current_calendar_id_notion_name,
+        settings.delete_notion_name,
         service,
         notion,
     )
