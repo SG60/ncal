@@ -70,16 +70,13 @@ def googleQuery():
 def setup_api_connections(
     runscript_location, default_calendar_id, credentials_location, notion_api_token
 ) -> tuple[Any, Any, nc.Client]:
+    # setup google api
     service, calendar = setup_google_api(
-        runscript_location,
         default_calendar_id,
         str(credentials_location),
     )
-
     # This is where we set up the connection with the Notion API
-
     notion = nc.Client(auth=notion_api_token)
-
     return service, calendar, notion
 
 
@@ -230,41 +227,55 @@ def new_events_notion_to_gcal(
             )
             print(CalendarList)
 
-            # 2 Cases: Start and End are  both either date or date+time #Have restriction that the calendar events don't cross days
-            try:
-                # start and end are both dates
-                calEventId = makeCalEvent(
-                    TaskNames[i],
-                    makeEventDescription(Initiatives[i], ExtraInfo[i]),
-                    dt.datetime.strptime(start_Dates[i], "%Y-%m-%d"),
-                    URL_list[i],
-                    dt.datetime.strptime(end_Times[i], "%Y-%m-%d"),
-                    CalendarList[i],
-                    service,
-                )
-            except:
+            def create_gcal_event(
+                task_name, initiative, extra_info, start, end, url, calendar, service
+            ):
+                # 2 Cases: Start and End are  both either date or date+time #Have restriction that the calendar events don't cross days
                 try:
-                    # start and end are both date+time
+                    # start and end are both dates
                     calEventId = makeCalEvent(
-                        TaskNames[i],
-                        makeEventDescription(Initiatives[i], ExtraInfo[i]),
-                        dateutil.parser.isoparse(start_Dates[i]),
-                        URL_list[i],
-                        dateutil.parser.isoparse(end_Times[i]),
-                        CalendarList[i],
+                        task_name,
+                        makeEventDescription(initiative, extra_info),
+                        dt.datetime.strptime(start, "%Y-%m-%d"),
+                        url,
+                        dt.datetime.strptime(end, "%Y-%m-%d"),
+                        calendar,
                         service,
                     )
                 except:
-                    calEventId = makeCalEvent(
-                        TaskNames[i],
-                        makeEventDescription(Initiatives[i], ExtraInfo[i]),
-                        dateutil.parser.isoparse(start_Dates[i]),
-                        URL_list[i],
-                        dateutil.parser.isoparse(end_Times[i]),
-                        CalendarList[i],
-                        service,
-                    )
+                    try:
+                        # start and end are both date+time
+                        calEventId = makeCalEvent(
+                            task_name,
+                            makeEventDescription(initiative, extra_info),
+                            dateutil.parser.isoparse(start),
+                            url,
+                            dateutil.parser.isoparse(end),
+                            calendar,
+                            service,
+                        )
+                    except:
+                        calEventId = makeCalEvent(
+                            task_name,
+                            makeEventDescription(initiative, extra_info),
+                            dateutil.parser.isoparse(start),
+                            url,
+                            dateutil.parser.isoparse(end),
+                            calendar,
+                            service,
+                        )
+                return calEventId
 
+            calEventId = create_gcal_event(
+                TaskNames[i],
+                Initiatives[i],
+                ExtraInfo[i],
+                start_Dates[i],
+                end_Times[i],
+                URL_list[i],
+                CalendarList[i],
+                service,
+            )
             calEventIdList.append(calEventId)
 
             if (
@@ -303,7 +314,7 @@ def new_events_notion_to_gcal(
 
     else:
         print("Nothing new added to GCal")
-    return todayDate
+    return
 
 
 def existing_events_notion_to_gcal(
