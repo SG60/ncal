@@ -10,26 +10,26 @@ environ.clear()
 @pytest.fixture
 def settings_dict(tmp_path):
     return {
-        "NOTION_API_TOKEN": "asdfaa",
+        "notion_api_token": "asdfaa",
         "database_id": "asdfad",
-        "urlRoot": "asdadf",
-        "credentialsLocation": f"{tmp_path}/sub/picklefile",
+        "url_root": "asdadf",
+        "credentials_location": f"{tmp_path}/sub/picklefile",
     }
 
 
 def test_toml_import(tmp_path, settings_dict):
     toml_str = f"""
-        NOTION_API_TOKEN = "asdfaa"
+        notion_api_token = "asdfaa"
         database_id = "asdfad"
-        urlRoot = "asdadf"
-        credentialsLocation= "{tmp_path}/sub/picklefile"
+        url_root = "asdadf"
+        credentials_location= "{tmp_path}/sub/picklefile"
     """
     tmpfile = tmp_path / "test_file.toml"
     tmpfile.write_text(toml_str)
     (tmp_path / "sub").mkdir()
     (tmp_path / "sub" / "picklefile").touch()
     # test that toml import produces the correct settings
-    assert config.load_config_file(tmpfile) == config.Settings(**settings_dict)
+    assert config.load_settings(tmpfile, use_env_vars=False) == config.Settings(**settings_dict)
 
 
 def test_envvar_import(tmp_path, settings_dict):
@@ -37,12 +37,12 @@ def test_envvar_import(tmp_path, settings_dict):
     environ |= {
         "NCAL_NOTION_API_TOKEN": "asdfaa",
         "ncal_database_id": "asdfad",
-        "NCAL_urlRoot": "asdadf",
-        "NCAL_credentialsLocation": f"{tmp_path}/sub/picklefile",
+        "ncal_url_root": "asdadf",
+        "ncal_credentials_location": f"{tmp_path}/sub/picklefile",
     }
     (tmp_path / "sub").mkdir()
     (tmp_path / "sub" / "picklefile").touch()
-    assert config.Settings() == config.Settings(**settings_dict)
+    assert config.load_settings() == config.Settings(**settings_dict)
 
 
 def test_get_env_vars():

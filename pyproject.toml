@@ -38,4 +38,4 @@ build-backend = "poetry.core.masonry.api"
 profile = "black"
 
 [tool.pytest.ini_options]
-addopts = "--cov=notion_gcal_sync"
+# addopts = "--cov=notion_gcal_sync"

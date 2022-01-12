@@ -105,18 +105,27 @@ def get_env_vars_case_insensitive(env_var_names: Dict[str, str]) -> Dict[str, st
 # priority (high-low): cli, env, config_file
 def load_settings(
     config_file_path: Path = Path("config.toml"),
+    *,
+    use_env_vars=True,
+    use_toml_file=True,
     **kwargs,
 ):
     default_settings = Settings.construct().dict()
 
-    prefix = "NCAL_"
-    env_var_names = {i: prefix + i for i in Settings.__fields__.keys()}
-    env_settings = get_env_vars_case_insensitive(env_var_names)
+    if use_env_vars:
+        prefix = "NCAL_"
+        env_var_names = {i: prefix + i for i in Settings.__fields__.keys()}
+        env_settings = get_env_vars_case_insensitive(env_var_names)
+    else:
+        env_settings = {}
 
-    try:
-        toml_settings = load_config_file(config_file_path)
-    except FileNotFoundError:
-        print(f"no config file found at {config_file_path}")
+    if use_toml_file:
+        try:
+            toml_settings = load_config_file(config_file_path)
+        except FileNotFoundError:
+            print(f"no config file found at {config_file_path}")
+            toml_settings = {}
+    else:
         toml_settings = {}
 
     settings = {**default_settings, **toml_settings, **env_settings, **kwargs}

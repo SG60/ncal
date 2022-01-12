@@ -71,7 +71,12 @@ jobs:
 
       - name: Test with pytest
         run: |
-          poetry run python -m pytest --cov
+          poetry run python -m pytest --cov=notion_gcal_sync --cov-report=xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          fail_ci_if_error: true
           
       - name: Run mypy
         run: poetry run mypy .
