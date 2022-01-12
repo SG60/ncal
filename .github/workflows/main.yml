@@ -69,6 +69,13 @@ jobs:
       - name: Install pytest github plugin
         run: poetry run pip install pytest-github-actions-annotate-failures
 
+      - name: Test with pytest
+        run: |
+          poetry run python -m pytest --cov
+          
+      - name: Run mypy
+        run: poetry run mypy .
+
       - name: Install black
         run: poetry run pip install black
 
@@ -76,10 +83,3 @@ jobs:
         run: |
           # check with black
           poetry run python -m black . --check
-          
-      - name: Run mypy
-        run: poetry run mypy .
-
-      - name: Test with pytest
-        run: |
-          poetry run python -m pytest --cov
