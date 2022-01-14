@@ -122,7 +122,7 @@ async def sync(settings: Settings) -> None:
         )
         progress.update(1)
 
-        progress.label = "new G->G"
+        progress.label = "new G->N"
         core.new_events_gcal_to_notion(
             settings.database_id,
             settings.calendar_dictionary,
@@ -168,7 +168,7 @@ async def continuous_sync(interval: dt.timedelta, settings: Settings):
 @app.command("sync")
 def cli_sync(
     repeat: bool = typer.Option(False, "--repeat/--no-repeat", "-r"),
-    seconds: int = 5,
+    seconds: int = 10,
     config_file: Optional[Path] = typer.Option(
         None, "--config-file", "-c", help="toml configuration file location"
     ),

@@ -1,6 +1,7 @@
 import datetime as dt
 import logging
 import pickle
+import time
 from typing import Any, Literal
 
 import arrow
@@ -1162,6 +1163,7 @@ def new_events_gcal_to_notion(
             .execute()
         )
         events.extend(x["items"])
+        time.sleep(0.1)
 
     logging.info(events)
 
@@ -1431,14 +1433,14 @@ def delete_done_pages(
 
             pageId = el["id"]
 
-            logging.info("deleted:", calendarID, eventId)
-
             try:
                 service.events().delete(
                     calendarId=calendarID, eventId=eventId
                 ).execute()
+                logging.info("deleted:", calendarID, eventId)
             except:
                 continue
+            time.sleep(0.1)
 
             # my_page = notion.pages.update(  ##### Delete Notion task (diesn't work yet)
             #     **{"page_id": pageId, "archived": True, "properties": {}},
