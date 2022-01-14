@@ -37,8 +37,13 @@ async def scheduler(
 
 
 async def sync(settings: Settings) -> None:
+    if settings.delete_option:
+        num_steps = 5
+    else:
+        num_steps = 4
+
     with typer.progressbar(
-        range(5), label="Sychronising", show_eta=False, show_pos=True
+        range(num_steps + 1), label="Sychronising", show_eta=False, show_pos=True
     ) as progress:
         progress.label = "API connections"
         # Set up API connections
@@ -117,7 +122,7 @@ async def sync(settings: Settings) -> None:
         )
         progress.update(1)
 
-        progress.label = "new G->G"
+        progress.label = "new G->N"
         core.new_events_gcal_to_notion(
             settings.database_id,
             settings.calendar_dictionary,
@@ -134,8 +139,25 @@ async def sync(settings: Settings) -> None:
             notion,
             settings=settings,
         )
+
+        if settings.delete_option:
+            progress.update(1)
+            progress.label = "delete done pages from GCal"
+            core.delete_done_pages(
+                notion=notion,
+                database_id=settings.database_id,
+                GCalEventId_Notion_Name=settings.gcaleventid_notion_name,
+                On_GCal_Notion_Name=settings.on_gcal_notion_name,
+                Delete_Notion_Name=settings.delete_notion_name,
+                DELETE_OPTION=settings.delete_option,
+                calendarDictionary=settings.calendar_dictionary,
+                Calendar_Notion_Name=settings.calendar_notion_name,
+                service=service,
+            )
+
         progress.label = "Sychronized"
         progress.update(1)
+        typer.echo(f"Synchronized at UTC {arrow.utcnow()}")
 
 
 async def continuous_sync(interval: dt.timedelta, settings: Settings):
@@ -146,13 +168,19 @@ async def continuous_sync(interval: dt.timedelta, settings: Settings):
 @app.command("sync")
 def cli_sync(
     repeat: bool = typer.Option(False, "--repeat/--no-repeat", "-r"),
-    seconds: int = 5,
+    seconds: int = 10,
     config_file: Optional[Path] = typer.Option(
         None, "--config-file", "-c", help="toml configuration file location"
     ),
     notion_api_token: Optional[str] = None,
     database_id: Optional[str] = None,
     url_root: Optional[str] = None,
+    delete_pages: Optional[bool] = typer.Option(
+        False,
+        "--delete-pages/--no-delete-pages",
+        "-d",
+        help="delete pages which have been marked done",
+    ),
 ):
     """
     CLI to sync a Notion database with Google Calendar.
@@ -171,12 +199,14 @@ def cli_sync(
                 notion_api_token=notion_api_token,
                 database_id=database_id,
                 url_root=url_root,
+                delete_option=delete_pages,
             )
         else:
             settings = load_settings(
                 notion_api_token=notion_api_token,
                 database_id=database_id,
                 url_root=url_root,
+                delete_option=delete_pages,
             )
     except ValidationError:
         typer.secho(
@@ -193,7 +223,8 @@ def cli_sync(
             fg="red",
         )
         raise typer.Exit(1)
-    typer.echo(settings)
+    logging.info(settings)
+
     if repeat:
         interval = dt.timedelta(seconds=seconds)
         asyncio.run(continuous_sync(interval, settings))

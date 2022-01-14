@@ -1,6 +1,6 @@
 from os import environ
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, Literal
 
 import pydantic
 import tomli
@@ -53,9 +53,9 @@ class Settings(pydantic.BaseModel):
     }
 
     ## doesn't delete the Notion task (yet), I'm waiting for the Python API to be updated to allow deleting tasks
-    delete_option = 1
-    # set at 0 if you want the delete column being checked off to mean that the gCal event and the Notion Event will be checked off.
-    # set at 1 if you want nothing deleted
+    delete_option: bool = False
+    # set at True if you want the delete column being checked off to mean that the gCal event and the Notion Event will be checked off.
+    # set at False if you want nothing deleted
 
     ##### DATABASE SPECIFIC EDITS
     # There needs to be a few properties on the Notion Database for this to work. Replace the values of each variable with the string of what the variable is called on your Notion dashboard
@@ -65,7 +65,8 @@ class Settings(pydantic.BaseModel):
 
     task_notion_name: str = "Name"
     date_notion_name: str = "Do Date"
-    initiative_notion_name: str = "Priority"
+    initiative_notion_name: str = "Project"
+    initiative_notion_type: Literal["relation", "select"] = "relation"
     extrainfo_notion_name: str = "Description"
     on_gcal_notion_name: str = "On GCal?"
     needgcalupdate_notion_name: str = "NeedGCalUpdate"
@@ -76,7 +77,7 @@ class Settings(pydantic.BaseModel):
     delete_notion_name: str = "Done"
 
 
-def load_config_file(path_to_file: Path) -> Dict:
+def load_config_file(path_to_file: Path) -> Dict[str, Any]:
     with open(path_to_file, "rb") as f:
         tomli_dictionary = tomli.load(f)
         # settings = Settings(**tomli_dictionary)
@@ -106,8 +107,8 @@ def get_env_vars_case_insensitive(env_var_names: Dict[str, str]) -> Dict[str, st
 def load_settings(
     config_file_path: Path = Path("config.toml"),
     *,
-    use_env_vars=True,
-    use_toml_file=True,
+    use_env_vars: bool = True,
+    use_toml_file: bool = True,
     **kwargs,
 ):
     default_settings = Settings.construct().dict()  # type: ignore
@@ -128,7 +129,7 @@ def load_settings(
     else:
         toml_settings = {}
 
-    passed_settings = {key: value for key, value in kwargs.items() if value}
+    passed_settings = {key: value for key, value in kwargs.items() if value is not None}
 
     settings = {**default_settings, **toml_settings, **env_settings, **passed_settings}
     return Settings(**settings)

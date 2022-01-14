@@ -12,3 +12,6 @@ Currently reworking this fork. It will eventually be a simple command that can b
 Configuration is via toml, command line flags, or environment variables (including via a .env file).
 
 See [old README.md](./oldREADME.md) for more info.
+
+
+Reading through `config.py` will give a lot of useful information on config options. Run `notion-gcal-sync --help` to get more info on the cli command.

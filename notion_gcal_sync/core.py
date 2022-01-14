@@ -1,7 +1,8 @@
 import datetime as dt
 import logging
 import pickle
-from typing import Any
+import time
+from typing import Any, Literal
 
 import arrow
 import dateutil.parser
@@ -103,6 +104,34 @@ def paginated_database_query(
     return matching_pages
 
 
+def get_property_text(
+    notion: nc.Client,
+    notion_page: dict[str, Any],
+    property_name: str,
+    property_type: Literal["relation", "select"],
+) -> str:
+    text: str
+    if property_type == "select":
+        text = notion_page["properties"][property_name]["select"]["name"]
+    elif property_type == "relation":
+        text = get_relation_title(
+            notion=notion, notion_page=notion_page, relation_name=property_name
+        )
+    else:
+        raise ValueError
+    return text
+
+
+def get_relation_title(
+    notion: nc.Client, notion_page: dict[str, Any], relation_name: str
+) -> str:
+    relation_id: str = notion_page["properties"][relation_name]["relation"][0]["id"]
+    relation_title: dict = notion.pages.properties.retrieve(
+        relation_id, "title"
+    )  # type:ignore
+    return relation_title["results"][0]["title"]["plain_text"]
+
+
 def new_events_notion_to_gcal(
     database_id,
     urlRoot,
@@ -200,9 +229,13 @@ def new_events_notion_to_gcal(
                 end_Times.append(el["properties"][Date_Notion_Name]["date"]["start"])
 
             try:
-                # TODO: Make this work with Project relation
                 Initiatives.append(
-                    el["properties"][Initiative_Notion_Name]["select"]["name"]
+                    get_property_text(
+                        notion=notion,
+                        notion_page=el,
+                        property_name=Initiative_Notion_Name,
+                        property_type=settings.initiative_notion_type,
+                    )
                 )
             except:
                 Initiatives.append("")
@@ -490,7 +523,12 @@ def existing_events_notion_to_gcal(
             try:
                 # TODO: Make this work with Project relation
                 Initiatives.append(
-                    el["properties"][Initiative_Notion_Name]["select"]["name"]
+                    get_property_text(
+                        notion=notion,
+                        notion_page=el,
+                        property_name=Initiative_Notion_Name,
+                        property_type=settings.initiative_notion_type,
+                    )
                 )
             except:
                 Initiatives.append("")
@@ -1125,6 +1163,7 @@ def new_events_gcal_to_notion(
             .execute()
         )
         events.extend(x["items"])
+        time.sleep(0.1)
 
     logging.info(events)
 
@@ -1347,13 +1386,13 @@ def new_events_gcal_to_notion(
             logging.info(f"Added this event to Notion: {calName[i]}")
 
 
-def delete_page(
+def delete_done_pages(
     notion: nc.Client,
-    database_id,
+    database_id: str,
     GCalEventId_Notion_Name,
     On_GCal_Notion_Name,
     Delete_Notion_Name,
-    DELETE_OPTION,
+    DELETE_OPTION: bool,
     calendarDictionary,
     Calendar_Notion_Name,
     service,
@@ -1379,7 +1418,7 @@ def delete_page(
     )
 
     if (
-        DELETE_OPTION == 0 and len(resultList) > 0
+        DELETE_OPTION and len(resultList) > 0
     ):  # delete gCal event (and Notion task once the Python API is updated)
         # CalendarList = []
         # CurrentCalList = []
@@ -1394,20 +1433,20 @@ def delete_page(
 
             pageId = el["id"]
 
-            logging.info(calendarID, eventId)
-
             try:
                 service.events().delete(
                     calendarId=calendarID, eventId=eventId
                 ).execute()
+                logging.info("deleted:", calendarID, eventId)
             except:
                 continue
+            time.sleep(0.1)
 
-            my_page = notion.pages.update(  ##### Delete Notion task (diesn't work yet)
-                **{"page_id": pageId, "archived": True, "properties": {}},
-            )
+            # my_page = notion.pages.update(  ##### Delete Notion task (diesn't work yet)
+            #     **{"page_id": pageId, "archived": True, "properties": {}},
+            # )
 
-            logging.info(my_page)
+            # logging.info(my_page)
 
 
 ######################################################################
