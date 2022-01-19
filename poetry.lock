@@ -837,7 +837,7 @@ test = ["shellingham (>=1.3.0,<2.0.0)", "pytest (>=4.4.0,<5.4.0)", "pytest-cov (
 
 [[package]]
 name = "types-python-dateutil"
-version = "2.8.6"
+version = "2.8.7"
 description = "Typing stubs for python-dateutil"
 category = "dev"
 optional = false
@@ -883,7 +883,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "b28c2371a56a73664c0df42d9095a63e321c57de635191a18c6aeca21cfbd62f"
+content-hash = "5f06307b1c390a3ac9219d3ef7572b63c44a7c8e83155b4dbd9e45820e954193"
 
 [metadata.files]
 anyio = [
@@ -1377,8 +1377,8 @@ typer = [
     {file = "typer-0.4.0.tar.gz", hash = "sha256:63c3aeab0549750ffe40da79a1b524f60e08a2cbc3126c520ebf2eeaf507f5dd"},
 ]
 types-python-dateutil = [
-    {file = "types-python-dateutil-2.8.6.tar.gz", hash = "sha256:83bc1424f7675c23f6d9a7673cc04e5acdb4aca885962c4d6d631bd114aa4c5f"},
-    {file = "types_python_dateutil-2.8.6-py3-none-any.whl", hash = "sha256:716ead66982fe3c601de3bcc934ee1ad3be27d7f975e1e2116594568a8c39c6c"},
+    {file = "types-python-dateutil-2.8.7.tar.gz", hash = "sha256:f34bae3c8e83c67f7cbf407fc9d6ee889d7708b42270a496b6026a5537e80482"},
+    {file = "types_python_dateutil-2.8.7-py3-none-any.whl", hash = "sha256:0e3b96fc79d3e58e011a9446ec85be080e2d2a8840dfe124ce30f4e53dbca9e5"},
 ]
 typing-extensions = [
     {file = "typing_extensions-4.0.1-py3-none-any.whl", hash = "sha256:7f001e5ac290a0c0401508864c7ec868be4e701886d5b573a9528ed3973d9d3b"},
