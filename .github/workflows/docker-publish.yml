@@ -5,6 +5,7 @@ name: Upload to Docker Hub
 on:
   release:
     types: [released]
+  workflow_dispatch:
 
 jobs:
   deploy:
