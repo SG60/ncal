@@ -12,9 +12,9 @@ import notion_client as nc
 import typer
 from pydantic import ValidationError
 
-from notion_gcal_sync import core
-from notion_gcal_sync.config import Settings, load_settings
-from notion_gcal_sync.gcal_token import gcal_token
+from ncal import core
+from ncal.config import Settings, load_settings
+from ncal.gcal_token import gcal_token
 
 from . import __version__
 
@@ -247,5 +247,5 @@ def main(
         state["verbose"] = True
         logging.basicConfig(level=20)
     if version:
-        typer.echo(f"Notion GCal Sync version: {__version__}")
+        typer.echo(f"ncal version: {__version__}")
         raise typer.Exit()

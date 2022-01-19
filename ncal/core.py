@@ -9,8 +9,8 @@ import dateutil.parser
 import googleapiclient.discovery  # type: ignore
 import notion_client as nc
 
-from notion_gcal_sync import config
-from notion_gcal_sync.gcal_token import gcal_token
+from ncal import config
+from ncal.gcal_token import gcal_token
 
 
 # SET UP THE GOOGLE CALENDAR API INTERFACE

@@ -15,7 +15,7 @@ RUN /venv/bin/python -m pip install -r requirements.txt
 
 # copy in everything else and build wheel:
 COPY README.md ./
-COPY notion_gcal_sync ./notion_gcal_sync
+COPY ncal ./ncal
 RUN poetry build
 RUN /venv/bin/python -m pip install dist/*.whl
 
@@ -23,4 +23,4 @@ RUN /venv/bin/python -m pip install dist/*.whl
 FROM python:3 AS final
 COPY --from=compile-image /venv /venv
 ENV PATH="/venv/bin:$PATH"
-ENTRYPOINT ["notion-gcal-sync"]
+ENTRYPOINT ["ncal"]

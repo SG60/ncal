@@ -9,7 +9,7 @@ repository = "https://github.com/SG60/Notion-and-Google-Calendar-2-Way-Sync"
 readme = "README.md"
 
 [tool.poetry.scripts]
-notion-gcal-sync = "notion_gcal_sync.cli:app"
+ncal = "ncal.cli:app"
 
 [tool.poetry.dependencies]
 python = "^3.9"
@@ -38,4 +38,4 @@ build-backend = "poetry.core.masonry.api"
 profile = "black"
 
 [tool.pytest.ini_options]
-# addopts = "--cov=notion_gcal_sync"
+# addopts = "--cov=ncal"

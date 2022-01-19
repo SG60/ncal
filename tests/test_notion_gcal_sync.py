@@ -2,7 +2,7 @@ from os import environ
 
 import pytest
 
-from notion_gcal_sync import __version__, config
+from ncal import __version__, config
 
 environ.clear()
 
