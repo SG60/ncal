@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "notion-gcal-sync"
+name = "ncal"
 version = "0.1.0"
 description = ""
 authors = ["Sam Greening <samjg60@gmail.com>"]
