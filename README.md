@@ -3,9 +3,9 @@
 [![CodeQL](https://github.com/SG60/ncal/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/SG60/ncal/actions/workflows/codeql-analysis.yml)
 [![Package Tests](https://github.com/SG60/ncal/actions/workflows/main.yml/badge.svg)](https://github.com/SG60/ncal/actions/workflows/main.yml)
 [![codecov](https://codecov.io/gh/SG60/ncal/branch/main/graph/badge.svg?token=UZCOEA0YWQ)](https://codecov.io/gh/SG60/ncal)
-![PyPI](https://img.shields.io/pypi/v/ncal?logo=python)
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/ncal?label=supported%20python)
-![Docker Image Version (latest semver)](https://img.shields.io/docker/v/sg60/ncal?label=docker&logo=docker)
+[![PyPI](https://img.shields.io/pypi/v/ncal?logo=python)](https://pypi.org/project/ncal/)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/ncal?label=supported%20python)](https://pypi.org/project/ncal/)
+[![Docker Image Version (latest semver)](https://img.shields.io/docker/v/sg60/ncal?label=docker&logo=docker)](https://hub.docker.com/r/sg60/ncal)
 
 # 2-Way Sync for Notion and Google Calendar
 </div>
