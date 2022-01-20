@@ -13,6 +13,7 @@ dist/
 client_secret.json
 token.pkl
 secret_tokens.py
+config.toml
 
 # vim
 Session.vim
