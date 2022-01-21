@@ -11,6 +11,7 @@ import arrow
 import notion_client as nc
 import typer
 from pydantic import ValidationError
+from googleapiclient.discovery import Resource
 
 from ncal import core
 from ncal.config import Settings, load_settings
@@ -36,24 +37,15 @@ async def scheduler(
         await asyncio.sleep(1)
 
 
-async def sync(settings: Settings) -> None:
+async def sync(settings: Settings, service: Resource, notion: nc.Client) -> None:
+    num_steps = 4
     if settings.delete_option:
-        num_steps = 5
-    else:
-        num_steps = 4
+        num_steps += 1
 
     with typer.progressbar(
-        range(num_steps + 1), label="Sychronising", show_eta=False, show_pos=True
+        range(num_steps), label="Sychronising", show_eta=False, show_pos=True
     ) as progress:
-        progress.label = "API connections"
-        # Set up API connections
-        service, calendar = core.setup_google_api(
-            settings.default_calendar_id,
-            str(settings.credentials_location),
-        )
-        notion = nc.Client(auth=settings.notion_api_token)
         todayDate = arrow.utcnow().isoformat()
-        progress.update(1)
 
         progress.label = "new N->G"
         core.new_events_notion_to_gcal(
@@ -160,9 +152,16 @@ async def sync(settings: Settings) -> None:
         typer.echo(f"Synchronized at UTC {arrow.utcnow()}")
 
 
-async def continuous_sync(interval: datetime.timedelta, settings: Settings):
-    await sync(settings)
-    await scheduler(interval, sync, {"settings": settings})
+async def continuous_sync(
+    interval: datetime.timedelta,
+    settings: Settings,
+    service: Resource,
+    notion: nc.Client,
+):
+    await sync(settings, service, notion)
+    await scheduler(
+        interval, sync, {"settings": settings, "service": service, "notion": notion}
+    )
 
 
 @app.command("sync")
@@ -225,11 +224,19 @@ def cli_sync(
         raise typer.Exit(1)
     logging.info(settings)
 
+    typer.echo("Setting up API connections...")
+    service, calendar, notion = core.setup_api_connections(
+        runscript_location=settings.run_script,
+        default_calendar_id=settings.default_calendar_id,
+        credentials_location=settings.credentials_location,
+        notion_api_token=settings.notion_api_token,
+    )
+
     if repeat:
         interval = datetime.timedelta(seconds=seconds)
-        asyncio.run(continuous_sync(interval, settings))
+        asyncio.run(continuous_sync(interval, settings, service, notion))
     else:
-        asyncio.run(sync(settings))
+        asyncio.run(sync(settings, service, notion))
 
 
 @app.command("gcal-token")
