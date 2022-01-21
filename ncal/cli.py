@@ -11,7 +11,7 @@ import arrow
 import notion_client as nc
 import typer
 from pydantic import ValidationError
-from googleapiclient.discovery import Resource
+from googleapiclient.discovery import Resource  # type: ignore
 
 from ncal import core
 from ncal.config import Settings, load_settings

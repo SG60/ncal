@@ -8,8 +8,8 @@ from typing import Any, Literal
 import arrow
 import dateutil.parser
 import googleapiclient.discovery  # type: ignore
-import notion_client as nc
-from googleapiclient.errors import HttpError
+import notion_client as nc  # type: ignore
+from googleapiclient.errors import HttpError  # type: ignore
 
 from ncal import config
 from ncal.gcal_token import gcal_token
