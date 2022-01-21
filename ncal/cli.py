@@ -1,5 +1,5 @@
 import asyncio
-import datetime as dt
+import datetime
 import logging
 import time
 from pathlib import Path
@@ -23,12 +23,12 @@ state = {"verbose": False}
 
 
 async def scheduler(
-    timedelta: dt.timedelta, function: Callable[..., Coroutine], f_args: dict
+    timedelta: datetime.timedelta, function: Callable[..., Coroutine], f_args: dict
 ) -> None:
-    next_run = dt.datetime.now() + timedelta
+    next_run = arrow.utcnow() + timedelta
     print(f"next run: {next_run}")
     while True:
-        now = dt.datetime.now()
+        now = arrow.utcnow()
         if now >= next_run:
             await function(**f_args)
             next_run = timedelta + next_run
@@ -160,7 +160,7 @@ async def sync(settings: Settings) -> None:
         typer.echo(f"Synchronized at UTC {arrow.utcnow()}")
 
 
-async def continuous_sync(interval: dt.timedelta, settings: Settings):
+async def continuous_sync(interval: datetime.timedelta, settings: Settings):
     await sync(settings)
     await scheduler(interval, sync, {"settings": settings})
 
@@ -226,7 +226,7 @@ def cli_sync(
     logging.info(settings)
 
     if repeat:
-        interval = dt.timedelta(seconds=seconds)
+        interval = datetime.timedelta(seconds=seconds)
         asyncio.run(continuous_sync(interval, settings))
     else:
         asyncio.run(sync(settings))

@@ -1,13 +1,15 @@
-import datetime as dt
+import datetime
 import logging
 import pickle
 import time
+from multiprocessing.sharedctypes import Value
 from typing import Any, Literal
 
 import arrow
 import dateutil.parser
 import googleapiclient.discovery  # type: ignore
 import notion_client as nc
+from googleapiclient.errors import HttpError
 
 from ncal import config
 from ncal.gcal_token import gcal_token
@@ -26,7 +28,7 @@ def setup_google_api(
     # This is placed here because it can take a few seconds to start working and I want the most heavy tasks to occur first
     try:
         calendar = service.calendars().get(calendarId=calendar_id).execute()
-    except:
+    except HttpError:
         # refresh the token
 
         # os.system(runscriptlocation)
@@ -48,14 +50,14 @@ def setup_google_api(
 
 
 def notion_time():
-    return dt.datetime.now(dt.timezone.utc).isoformat()
-    # return dt.datetime.now().strftime(
+    return arrow.utcnow().isoformat()
+    # return datetime.datetime.now().strftime(
     #     "%Y-%m-%dT%H:%M:%S"
     # )  # Change the last 5 characters to be representative of your timezone
     # # ^^ has to be adjusted for when daylight savings is different if your area observes it
 
 
-def DateTimeIntoNotionFormat(dateTimeValue: dt.datetime):
+def DateTimeIntoNotionFormat(dateTimeValue: datetime.datetime):
     return dateTimeValue.isoformat()
     # return dateTimeValue.strftime(
     #     "%Y-%m-%dT%H:%M:%S"
@@ -64,7 +66,7 @@ def DateTimeIntoNotionFormat(dateTimeValue: dt.datetime):
 
 
 def googleQuery():
-    return dt.datetime.now(dt.timezone.utc).isoformat()
+    return arrow.utcnow().isoformat()
     # return datetime.now().strftime(
     #     "%Y-%m-%dT%H:%M:%S"
     # )  # Change the last 5 characters to be representative of your timezone
@@ -167,7 +169,7 @@ def new_events_notion_to_gcal(
         notion: nc.Client,
     ) -> list:
         """Get new pages from notion (with pagination!)."""
-        # todayDate = dt.datetime.today().strftime("%Y-%m-%d")
+        # todayDate = datetime.datetime.today().strftime("%Y-%m-%d")
         todayDate = arrow.utcnow().isoformat()
 
         matching_pages = []
@@ -180,10 +182,10 @@ def new_events_notion_to_gcal(
                         "property": on_gcal_notion_name,
                         "checkbox": {"equals": False},
                     },
-                    {
-                        "property": date_notion_name,
-                        "date": {"on_or_after": todayDate},
-                    },
+                    # {
+                    #     "property": date_notion_name,
+                    #     "date": {"on_or_after": todayDate},
+                    # },
                     {"property": delete_notion_name, "checkbox": {"equals": False}},
                 ]
             },
@@ -200,7 +202,7 @@ def new_events_notion_to_gcal(
 
     try:
         logging.info(resultList[0])
-    except:
+    except IndexError:
         logging.info("")
 
     TaskNames = []
@@ -237,7 +239,7 @@ def new_events_notion_to_gcal(
                         property_type=settings.initiative_notion_type,
                     )
                 )
-            except:
+            except ValueError:
                 Initiatives.append("")
 
             try:
@@ -246,7 +248,7 @@ def new_events_notion_to_gcal(
                         "content"
                     ]
                 )
-            except:
+            except IndexError:
                 ExtraInfo.append("")
             URL_list.append(makeTaskURL(el["id"], urlRoot))
 
@@ -256,7 +258,7 @@ def new_events_notion_to_gcal(
                         el["properties"][Calendar_Notion_Name]["select"]["name"]
                     ]
                 )
-            except:  # keyerror occurs when there's nothing put into the calendar in the first place
+            except KeyError:  # keyerror occurs when there's nothing put into the calendar in the first place
                 CalendarList.append(calendarDictionary[DEFAULT_CALENDAR_NAME])
 
             pageId = el["id"]
@@ -293,14 +295,14 @@ def new_events_notion_to_gcal(
                     calEventId = makeCalEvent(
                         task_name,
                         makeEventDescription(initiative, extra_info),
-                        dt.datetime.strptime(start, "%Y-%m-%d"),
+                        datetime.datetime.strptime(start, "%Y-%m-%d"),
                         url,
-                        dt.datetime.strptime(end, "%Y-%m-%d"),
+                        datetime.datetime.strptime(end, "%Y-%m-%d"),
                         calendar,
                         service,
                         config,
                     )
-                except:
+                except ValueError:
                     try:
                         # start and end are both date+time
                         calEventId = makeCalEvent(
@@ -313,7 +315,7 @@ def new_events_notion_to_gcal(
                             service,
                             config,
                         )
-                    except:
+                    except ValueError:
                         calEventId = makeCalEvent(
                             task_name,
                             makeEventDescription(initiative, extra_info),
@@ -410,15 +412,15 @@ def existing_events_notion_to_gcal(
         "filter": {
             "and": [
                 {"property": Calendar_Notion_Name, "select": {"is_empty": True}},
-                {
-                    "or": [
-                        {
-                            "property": Date_Notion_Name,
-                            "date": {"equals": todayDate},
-                        },
-                        {"property": Date_Notion_Name, "date": {"next_week": {}}},
-                    ]
-                },
+                # {
+                #     "or": [
+                #         {
+                #             "property": Date_Notion_Name,
+                #             "date": {"equals": todayDate},
+                #         },
+                #         {"property": Date_Notion_Name, "date": {"next_week": {}}},
+                #     ]
+                # },
                 {"property": Delete_Notion_Name, "checkbox": {"equals": False}},
             ]
         },
@@ -460,15 +462,15 @@ def existing_events_notion_to_gcal(
                     "checkbox": {"equals": True},
                 },
                 {"property": On_GCal_Notion_Name, "checkbox": {"equals": True}},
-                {
-                    "or": [
-                        {
-                            "property": Date_Notion_Name,
-                            "date": {"equals": todayDate},
-                        },
-                        {"property": Date_Notion_Name, "date": {"next_week": {}}},
-                    ]
-                },
+                # {
+                #     "or": [
+                #         {
+                #             "property": Date_Notion_Name,
+                #             "date": {"equals": todayDate},
+                #         },
+                #         {"property": Date_Notion_Name, "date": {"next_week": {}}},
+                #     ]
+                # },
                 {"property": Delete_Notion_Name, "checkbox": {"equals": False}},
             ]
         },
@@ -490,7 +492,7 @@ def existing_events_notion_to_gcal(
             calId = result["properties"][GCalEventId_Notion_Name]["rich_text"][0][
                 "text"
             ]["content"]
-        except:
+        except IndexError:
             calId = DEFAULT_CALENDAR_ID
         logging.info(calId)
         updatingCalEventIds.append(calId)
@@ -521,7 +523,6 @@ def existing_events_notion_to_gcal(
                 end_Times.append(el["properties"][Date_Notion_Name]["date"]["start"])
 
             try:
-                # TODO: Make this work with Project relation
                 Initiatives.append(
                     get_property_text(
                         notion=notion,
@@ -530,7 +531,7 @@ def existing_events_notion_to_gcal(
                         property_type=settings.initiative_notion_type,
                     )
                 )
-            except:
+            except ValueError:
                 Initiatives.append("")
 
             try:
@@ -539,7 +540,7 @@ def existing_events_notion_to_gcal(
                         "content"
                     ]
                 )
-            except:
+            except ValueError:
                 ExtraInfo.append("")
             URL_list.append(makeTaskURL(el["id"], urlRoot))
 
@@ -551,7 +552,7 @@ def existing_events_notion_to_gcal(
                         el["properties"][Calendar_Notion_Name]["select"]["name"]
                     ]
                 )
-            except:  # keyerror occurs when there's nothing put into the calendar in the first place
+            except KeyError:  # keyerror occurs when there's nothing put into the calendar in the first place
                 CalendarList.append(calendarDictionary[DEFAULT_CALENDAR_NAME])
 
             CurrentCalList.append(
@@ -567,16 +568,16 @@ def existing_events_notion_to_gcal(
                 calEventId = upDateCalEvent(
                     TaskNames[i],
                     makeEventDescription(Initiatives[i], ExtraInfo[i]),
-                    dt.datetime.strptime(start_Dates[i], "%Y-%m-%d"),
+                    datetime.datetime.strptime(start_Dates[i], "%Y-%m-%d"),
                     URL_list[i],
                     updatingCalEventIds[i],
-                    dt.datetime.strptime(end_Times[i], "%Y-%m-%d"),
+                    datetime.datetime.strptime(end_Times[i], "%Y-%m-%d"),
                     CurrentCalList[i],
                     CalendarList[i],
                     service,
                     settings,
                 )
-            except:
+            except ValueError:
                 try:
                     calEventId = upDateCalEvent(
                         TaskNames[i],
@@ -590,7 +591,7 @@ def existing_events_notion_to_gcal(
                         service,
                         settings,
                     )
-                except:
+                except ValueError:
                     calEventId = upDateCalEvent(
                         TaskNames[i],
                         makeEventDescription(Initiatives[i], ExtraInfo[i]),
@@ -655,15 +656,15 @@ def existing_events_gcal_to_notion(
                     "formula": {"checkbox": {"equals": False}},
                 },
                 {"property": On_GCal_Notion_Name, "checkbox": {"equals": True}},
-                {
-                    "or": [
-                        {
-                            "property": Date_Notion_Name,
-                            "date": {"equals": todayDate},
-                        },
-                        {"property": Date_Notion_Name, "date": {"next_week": {}}},
-                    ]
-                },
+                # {
+                #     "or": [
+                #         {
+                #             "property": Date_Notion_Name,
+                #             "date": {"equals": todayDate},
+                #         },
+                #         {"property": Date_Notion_Name, "date": {"next_week": {}}},
+                #     ]
+                # },
                 {"property": Delete_Notion_Name, "checkbox": {"equals": False}},
             ]
         },
@@ -710,7 +711,7 @@ def existing_events_gcal_to_notion(
             notion_gCal_CalNames.append(
                 result["properties"][Calendar_Notion_Name]["select"]["name"]
             )
-        except:  # keyerror occurs when there's nothing put into the calendar in the first place
+        except KeyError:  # keyerror occurs when there's nothing put into the calendar in the first place
             notion_gCal_CalIds.append(calendarDictionary[DEFAULT_CALENDAR_NAME])
             notion_gCal_CalNames.append(
                 result["properties"][Calendar_Notion_Name]["select"]["name"]
@@ -719,32 +720,32 @@ def existing_events_gcal_to_notion(
     # the reason we take off the last 6 characters is so we can focus in on just the date and time instead of any extra info
     for i in range(len(notion_start_datetimes)):
         try:
-            notion_start_datetimes[i] = dt.datetime.strptime(
+            notion_start_datetimes[i] = datetime.datetime.strptime(
                 notion_start_datetimes[i], "%Y-%m-%d"
             )
-        except:
+        except ValueError:
             try:
-                notion_start_datetimes[i] = dt.datetime.strptime(
+                notion_start_datetimes[i] = datetime.datetime.strptime(
                     notion_start_datetimes[i][:-6], "%Y-%m-%dT%H:%M:%S.000"
                 )
-            except:
-                notion_start_datetimes[i] = dt.datetime.strptime(
+            except ValueError:
+                notion_start_datetimes[i] = datetime.datetime.strptime(
                     notion_start_datetimes[i][:-6], "%Y-%m-%dT%H:%M:%S.%f"
                 )
 
     for i in range(len(notion_end_datetimes)):
         if notion_end_datetimes[i] != None:
             try:
-                notion_end_datetimes[i] = dt.datetime.strptime(
+                notion_end_datetimes[i] = datetime.datetime.strptime(
                     notion_end_datetimes[i], "%Y-%m-%d"
                 )
-            except:
+            except ValueError:
                 try:
-                    notion_end_datetimes[i] = dt.datetime.strptime(
+                    notion_end_datetimes[i] = datetime.datetime.strptime(
                         notion_end_datetimes[i][:-6], "%Y-%m-%dT%H:%M:%S.000"
                     )
-                except:
-                    notion_end_datetimes[i] = dt.datetime.strptime(
+                except ValueError:
+                    notion_end_datetimes[i] = datetime.datetime.strptime(
                         notion_end_datetimes[i][:-6], "%Y-%m-%dT%H:%M:%S.%f"
                     )
         else:
@@ -765,7 +766,7 @@ def existing_events_gcal_to_notion(
                     .get(calendarId=calendarDictionary[calendarID], eventId=gCalId)
                     .execute()
                 )
-            except:
+            except HttpError:
                 logging.info("Event not found")
                 x = {"status": "unconfirmed"}
             if x["status"] == "confirmed":
@@ -780,8 +781,8 @@ def existing_events_gcal_to_notion(
             gCal_start_datetimes.append(
                 dateutil.parser.isoparse(value["start"]["dateTime"])  # type: ignore
             )
-        except:
-            date = dt.datetime.strptime(value["start"]["date"], "%Y-%m-%d")  # type: ignore
+        except KeyError:
+            date = datetime.datetime.strptime(value["start"]["date"], "%Y-%m-%d")  # type: ignore
             # x = datetime(date.year, date.month, date.day, 0, 0, 0) redundant I think
             # gCal_start_datetimes.append(datetime.strptime(x, "%Y-%m-%dT%H:%M:%S"))
             gCal_start_datetimes.append(date)
@@ -789,23 +790,23 @@ def existing_events_gcal_to_notion(
             gCal_end_datetimes.append(
                 dateutil.parser.isoparse(value["end"]["dateTime"])  # type: ignore
             )
-        except:
-            date = dt.datetime.strptime(value["end"]["date"], "%Y-%m-%d")  # type: ignore
-            x = dt.datetime(date.year, date.month, date.day, 0, 0, 0) - dt.timedelta(
-                days=1
-            )
+        except KeyError:
+            date = datetime.datetime.strptime(value["end"]["date"], "%Y-%m-%d")  # type: ignore
+            x = datetime.datetime(
+                date.year, date.month, date.day, 0, 0, 0
+            ) - datetime.timedelta(days=1)
             gCal_end_datetimes.append(x)
 
     # Now we iterate and compare the time on the Notion Dashboard and the start time of the GCal event
     # If the datetimes don't match up,  then the Notion  Dashboard must be updated
 
-    # new_notion_start_datetimes: list[str | dt.datetime] = [""] * len(
+    # new_notion_start_datetimes: list[str | datetime.datetime] = [""] * len(
     #     notion_start_datetimes
     # )
-    # new_notion_end_datetimes: list[str | dt.datetime] = [""] * len(notion_end_datetimes)
+    # new_notion_end_datetimes: list[str | datetime.datetime] = [""] * len(notion_end_datetimes)
 
-    new_notion_start_datetimes: list[None | dt.datetime] = []
-    new_notion_end_datetimes: list[None | dt.datetime] = []
+    new_notion_start_datetimes: list[None | datetime.datetime] = []
+    new_notion_end_datetimes: list[None | datetime.datetime] = []
 
     for i in range(len(notion_start_datetimes)):
         if notion_start_datetimes[i] != gCal_start_datetimes[i]:
@@ -843,8 +844,8 @@ def existing_events_gcal_to_notion(
         if (
             new_start is not None and new_end is not None
         ):  # both start and end time need to be updated
-            start: dt.datetime = new_start
-            end: dt.datetime = new_end
+            start: datetime.datetime = new_start
+            end: datetime.datetime = new_end
 
             if (
                 start.hour == 0 and start.minute == 0 and start == end
@@ -1185,16 +1186,16 @@ def new_events_gcal_to_notion(
     for el in calItems:
         try:
             calStartDates.append(dateutil.parser.isoparse(el["start"]["dateTime"]))
-        except:
-            date = dt.datetime.strptime(el["start"]["date"], "%Y-%m-%d")
-            x = dt.datetime(date.year, date.month, date.day, 0, 0, 0)
+        except KeyError:
+            date = datetime.datetime.strptime(el["start"]["date"], "%Y-%m-%d")
+            x = datetime.datetime(date.year, date.month, date.day, 0, 0, 0)
             # gCal_start_datetimes.append(datetime.strptime(x, "%Y-%m-%dT%H:%M:%S"))
             calStartDates.append(x)
         try:
             calEndDates.append(dateutil.parser.isoparse(el["end"]["dateTime"]))
-        except:
-            date = dt.datetime.strptime(el["end"]["date"], "%Y-%m-%d")
-            x = dt.datetime(date.year, date.month, date.day, 0, 0, 0)
+        except KeyError:
+            date = datetime.datetime.strptime(el["end"]["date"], "%Y-%m-%d")
+            x = datetime.datetime(date.year, date.month, date.day, 0, 0, 0)
             calEndDates.append(x)
 
     calIds = [item["id"] for item in calItems]
@@ -1203,7 +1204,7 @@ def new_events_gcal_to_notion(
     for item in calItems:
         try:
             calDescriptions.append(item["description"])
-        except:
+        except KeyError:
             calDescriptions.append(" ")
 
     # Now, we compare the Ids from Notion and Ids from GCal. If the Id from GCal is not in the list from Notion, then
@@ -1211,11 +1212,11 @@ def new_events_gcal_to_notion(
 
     for i in range(len(calIds)):
         if calIds[i] not in ALL_notion_gCal_Ids:
-            if calStartDates[i] == calEndDates[i] - dt.timedelta(
+            if calStartDates[i] == calEndDates[i] - datetime.timedelta(
                 days=1
             ):  # only add in the start DATE
                 # Here, we create a new page for every new GCal event
-                end = calEndDates[i] - dt.timedelta(days=1)
+                end = calEndDates[i] - datetime.timedelta(days=1)
                 my_page = notion.pages.create(
                     **{
                         "parent": {
@@ -1275,7 +1276,7 @@ def new_events_gcal_to_notion(
                 and calEndDates[i].minute == 0
             ):  # add start and end in DATE format
                 # Here, we create a new page for every new GCal event
-                end = calEndDates[i] - dt.timedelta(days=1)
+                end = calEndDates[i] - datetime.timedelta(days=1)
 
                 my_page = notion.pages.create(
                     **{
@@ -1438,7 +1439,7 @@ def delete_done_pages(
                     calendarId=calendarID, eventId=eventId
                 ).execute()
                 logging.info("deleted:", calendarID, eventId)
-            except:
+            except HttpError:
                 continue
             time.sleep(0.1)
 
@@ -1499,12 +1500,12 @@ def makeCalEvent(
         and eventEndTime == eventStartTime
     ):  # only startTime is given from the Notion Dashboard
         if config.all_day_event_option == 1:
-            eventStartTime = dt.datetime.combine(
-                eventStartTime, dt.datetime.min.time()
-            ) + dt.timedelta(
+            eventStartTime = datetime.datetime.combine(
+                eventStartTime, datetime.datetime.min.time()
+            ) + datetime.timedelta(
                 hours=config.default_event_start
             )  ##make the events pop up at 8 am instead of 12 am
-            eventEndTime = eventStartTime + dt.timedelta(
+            eventEndTime = eventStartTime + datetime.timedelta(
                 minutes=config.default_event_length
             )
             event = {
@@ -1524,7 +1525,7 @@ def makeCalEvent(
                 },
             }
         else:
-            eventEndTime = eventEndTime + dt.timedelta(
+            eventEndTime = eventEndTime + datetime.timedelta(
                 days=1
             )  # gotta make it to 12AM the day after
             event = {
@@ -1551,7 +1552,7 @@ def makeCalEvent(
         and eventStartTime != eventEndTime
     ):
 
-        eventEndTime = eventEndTime + dt.timedelta(
+        eventEndTime = eventEndTime + datetime.timedelta(
             days=1
         )  # gotta make it to 12AM the day after
 
@@ -1583,19 +1584,19 @@ def makeCalEvent(
         elif (
             eventStartTime.hour == 0 and eventStartTime.minute == 0
         ):  # if the datetime fed into this is only a date or is at 12 AM, then the event will fall under here
-            eventStartTime = dt.datetime.combine(
-                eventStartTime, dt.datetime.min.time()
-            ) + dt.timedelta(
+            eventStartTime = datetime.datetime.combine(
+                eventStartTime, datetime.datetime.min.time()
+            ) + datetime.timedelta(
                 hours=config.default_event_start
             )  ##make the events pop up at 8 am instead of 12 am
-            eventEndTime = eventStartTime + dt.timedelta(
+            eventEndTime = eventStartTime + datetime.timedelta(
                 minutes=config.default_event_length
             )
         elif (
             eventEndTime == eventStartTime
         ):  # this would meant that only 1 datetime was actually on the notion dashboard
             eventStartTime = eventStartTime
-            eventEndTime = eventStartTime + dt.timedelta(
+            eventEndTime = eventStartTime + datetime.timedelta(
                 minutes=config.default_event_length
             )
         else:  # if you give a specific start time to the event
@@ -1648,12 +1649,12 @@ def upDateCalEvent(
         and eventEndTime == eventStartTime
     ):  # you're given a single date
         if config.all_day_event_option == 1:
-            eventStartTime = dt.datetime.combine(
-                eventStartTime, dt.datetime.min.time()
-            ) + dt.timedelta(
+            eventStartTime = datetime.datetime.combine(
+                eventStartTime, datetime.datetime.min.time()
+            ) + datetime.timedelta(
                 hours=config.default_event_start
             )  ##make the events pop up at 8 am instead of 12 am
-            eventEndTime = eventStartTime + dt.timedelta(
+            eventEndTime = eventStartTime + datetime.timedelta(
                 minutes=config.default_event_length
             )
             event = {
@@ -1673,7 +1674,7 @@ def upDateCalEvent(
                 },
             }
         else:
-            eventEndTime = eventEndTime + dt.timedelta(
+            eventEndTime = eventEndTime + datetime.timedelta(
                 days=1
             )  # gotta make it to 12AM the day after
             event = {
@@ -1700,7 +1701,7 @@ def upDateCalEvent(
         and eventStartTime != eventEndTime
     ):  # it's a multiple day event
 
-        eventEndTime = eventEndTime + dt.timedelta(
+        eventEndTime = eventEndTime + datetime.timedelta(
             days=1
         )  # gotta make it to 12AM the day after
 
@@ -1732,19 +1733,19 @@ def upDateCalEvent(
         elif (
             eventStartTime.hour == 0 and eventStartTime.minute == 0
         ):  # if the datetime fed into this is only a date or is at 12 AM, then the event will fall under here
-            eventStartTime = dt.datetime.combine(
-                eventStartTime, dt.datetime.min.time()
-            ) + dt.timedelta(
+            eventStartTime = datetime.datetime.combine(
+                eventStartTime, datetime.datetime.min.time()
+            ) + datetime.timedelta(
                 hours=config.default_event_start
             )  ##make the events pop up at 8 am instead of 12 am
-            eventEndTime = eventStartTime + dt.timedelta(
+            eventEndTime = eventStartTime + datetime.timedelta(
                 minutes=config.default_event_length
             )
         elif (
             eventEndTime == eventStartTime
         ):  # this would meant that only 1 datetime was actually on the notion dashboard
             eventStartTime = eventStartTime
-            eventEndTime = eventStartTime + dt.timedelta(
+            eventEndTime = eventStartTime + datetime.timedelta(
                 minutes=config.default_event_length
             )
         else:  # if you give a specific start time to the event
