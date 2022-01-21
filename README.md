@@ -1,7 +1,7 @@
 <div align="center">
 
 [![CodeQL](https://github.com/SG60/ncal/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/SG60/ncal/actions/workflows/codeql-analysis.yml)
-[![Package Tests](https://github.com/SG60/ncal/actions/workflows/main.yml/badge.svg)](https://github.com/SG60/ncal/actions/workflows/main.yml)
+[![Package Tests](https://github.com/SG60/ncal/actions/workflows/tests.yml/badge.svg)](https://github.com/SG60/ncal/actions/workflows/tests.yml)
 [![codecov](https://codecov.io/gh/SG60/ncal/branch/main/graph/badge.svg?token=UZCOEA0YWQ)](https://codecov.io/gh/SG60/ncal)
 [![PyPI](https://img.shields.io/pypi/v/ncal?logo=python)](https://pypi.org/project/ncal/)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/ncal?label=supported%20python)](https://pypi.org/project/ncal/)
