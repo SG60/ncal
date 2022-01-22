@@ -1,6 +1,29 @@
-site_name: My Docs
+site_name: ncal
+repo_url: https://github.com/sg60/ncal
+repo_name: sg60/ncal
+edit_uri: edit/main/docs/
+
 theme:
   name: material
+  features:
+    - navigation.tabs
+  font:
+    text: Fira Sans
+  palette:
+  - media: "(prefers-color-scheme: light)"
+    scheme: default
+    primary: white
+    accent: lime
+    toggle:
+      icon: material/lightbulb-outline
+      name: "Switch to dark mode"
+  - media: "(prefers-color-scheme: dark)"
+    scheme: slate
+    primary: black
+    accent: lime
+    toggle:
+      icon: material/lightbulb
+      name: "Switch to light mode"
 
 markdown_extensions:
   # Python Markdown
@@ -11,3 +34,14 @@ markdown_extensions:
   # Python Markdown Extensions
   - pymdownx.highlight
   - pymdownx.superfences
+
+plugins:
+  - search
+  - mkdocstrings:
+      # handlers:
+      #   python:
+      #     setup_commands:
+      #       - import sys
+      #       - sys.path.append("../")
+      #     selection:
+      #       new_path_syntax:true
