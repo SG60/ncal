@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ncal"
-version = "0.1.3"
+version = "0.1.4"
 description = ""
 authors = ["Sam Greening <samjg60@gmail.com>"]
 license = "GNU GPL"
