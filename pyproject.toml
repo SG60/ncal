@@ -4,7 +4,7 @@ version = "0.1.4"
 description = ""
 authors = ["Sam Greening <samjg60@gmail.com>"]
 license = "GNU GPL"
-homepage = "https://github.com/SG60/Notion-and-Google-Calendar-2-Way-Sync"
+homepage = "https://sg60.github.io/ncal/"
 repository = "https://github.com/SG60/Notion-and-Google-Calendar-2-Way-Sync"
 readme = "README.md"
 
