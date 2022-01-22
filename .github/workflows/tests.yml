@@ -82,10 +82,11 @@ jobs:
         run: poetry run mypy .
 
       - name: Install black
-        run: poetry run pip install black
+        run: pip install black isort
 
       - name: Code quality checks
         run: |
           # check with black
           poetry run python -m black . --check
-          poetry run flake8
+          poetry run isort . --check --diff
+          poetry run flake8 ncal
