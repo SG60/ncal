@@ -1,0 +1,13 @@
+site_name: My Docs
+theme:
+  name: material
+
+markdown_extensions:
+  # Python Markdown
+  - meta
+  - toc:
+      permalink: true
+
+  # Python Markdown Extensions
+  - pymdownx.highlight
+  - pymdownx.superfences
