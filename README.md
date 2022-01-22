@@ -12,6 +12,8 @@
 
 # 2-Way Sync for Notion and Google Calendar
 </div>
+
+**Docs live at: https://sg60.github.io/ncal/**
   
 Currently reworking this fork. It will eventually be a simple command that can be set to run, either continuously or just once.
 
