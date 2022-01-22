@@ -88,3 +88,4 @@ jobs:
         run: |
           # check with black
           poetry run python -m black . --check
+          poetry run flake8
