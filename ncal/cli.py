@@ -1,7 +1,6 @@
 import asyncio
 import datetime
 import logging
-import time
 from pathlib import Path
 from typing import Callable, Coroutine, Optional
 
@@ -10,8 +9,8 @@ import arrow
 # from notion_client import Client
 import notion_client as nc
 import typer
-from pydantic import ValidationError
 from googleapiclient.discovery import Resource  # type: ignore
+from pydantic import ValidationError
 
 from ncal import core
 from ncal.config import Settings, load_settings
@@ -187,7 +186,7 @@ def cli_sync(
     """
     typer.echo()
     typer.secho(
-        f"Sychronize Notion <-> GCal", bg=typer.colors.GREEN, fg="white", bold=True
+        "Sychronize Notion <-> GCal", bg=typer.colors.GREEN, fg="white", bold=True
     )
     typer.echo()
 

@@ -2,7 +2,6 @@ import datetime
 import logging
 import pickle
 import time
-from multiprocessing.sharedctypes import Value
 from typing import Any, Literal
 
 import arrow
@@ -24,8 +23,7 @@ def setup_google_api(
     service = googleapiclient.discovery.build("calendar", "v3", credentials=credentials)
 
     # There could be a hiccup if the Google Calendar API token expires.
-    # If the token expires, the other python script GCalToken.py creates a new token for the program to use
-    # This is placed here because it can take a few seconds to start working and I want the most heavy tasks to occur first
+    # If the token expires, we create a new token for the program to use
     try:
         calendar = service.calendars().get(calendarId=calendar_id).execute()
     except HttpError:
@@ -51,26 +49,14 @@ def setup_google_api(
 
 def notion_time():
     return arrow.utcnow().isoformat()
-    # return datetime.datetime.now().strftime(
-    #     "%Y-%m-%dT%H:%M:%S"
-    # )  # Change the last 5 characters to be representative of your timezone
-    # # ^^ has to be adjusted for when daylight savings is different if your area observes it
 
 
 def DateTimeIntoNotionFormat(dateTimeValue: datetime.datetime):
     return dateTimeValue.isoformat()
-    # return dateTimeValue.strftime(
-    #     "%Y-%m-%dT%H:%M:%S"
-    # )  # Change the last 5 characters to be representative of your timezone
-    # # ^^ has to be adjusted for when daylight savings is different if your area observes it
 
 
 def googleQuery():
     return arrow.utcnow().isoformat()
-    # return datetime.now().strftime(
-    #     "%Y-%m-%dT%H:%M:%S"
-    # )  # Change the last 5 characters to be representative of your timezone
-    # # ^^ has to be adjusted for when daylight savings is different if your area observes it
 
 
 def setup_api_connections(
@@ -92,11 +78,12 @@ def setup_api_connections(
 def paginated_database_query(
     notion_client: nc.Client, database_id: str, **query: Any
 ) -> list:
-    """notion_client.database.query(**query) becomes paginated_database_query(**query)"""
+    """equivalent to notion_client.database.query(**query)"""
     matching_pages = []
 
     while True:
-        # this query will return a dictionary that we will parse for information that we want
+        # this query will return a dictionary that we will parse
+        # for information that we want
         response = notion_client.databases.query(database_id, **query)
         matching_pages.extend(response["results"])  # type: ignore
         if response["next_cursor"]:  # type: ignore
@@ -157,8 +144,10 @@ def new_events_notion_to_gcal(
     Part 1: Take Notion Events not on GCal and move them over to GCal
 
 
-    Note that we are only querying for events that are today or in the next week so the code can be efficient.
-    If you just want all Notion events to be on GCal, then you'll have to edit the query so it is only checking the 'On GCal?' property
+    Note that we are only querying for events that are today or in the next week so the
+    code can be efficient.
+    If you just want all Notion events to be on GCal, then you'll have to edit the
+    query so it is only checking the 'On GCal?' property
     """
 
     def get_new_notion_pages(
@@ -170,7 +159,7 @@ def new_events_notion_to_gcal(
     ) -> list:
         """Get new pages from notion (with pagination!)."""
         # todayDate = datetime.datetime.today().strftime("%Y-%m-%d")
-        todayDate = arrow.utcnow().isoformat()
+        # todayDate = arrow.utcnow().isoformat()
 
         matching_pages = []
 
@@ -225,7 +214,7 @@ def new_events_notion_to_gcal(
             )
             start_Dates.append(el["properties"][Date_Notion_Name]["date"]["start"])
 
-            if el["properties"][Date_Notion_Name]["date"]["end"] != None:
+            if el["properties"][Date_Notion_Name]["date"]["end"] is not None:
                 end_Times.append(el["properties"][Date_Notion_Name]["date"]["end"])
             else:
                 end_Times.append(el["properties"][Date_Notion_Name]["date"]["start"])
@@ -258,11 +247,14 @@ def new_events_notion_to_gcal(
                         el["properties"][Calendar_Notion_Name]["select"]["name"]
                     ]
                 )
-            except KeyError:  # keyerror occurs when there's nothing put into the calendar in the first place
+            # keyerror occurs when there's nothing put into the calendar in the first
+            # place
+            except KeyError:
                 CalendarList.append(calendarDictionary[DEFAULT_CALENDAR_NAME])
 
             pageId = el["id"]
-            my_page = notion.pages.update(  ##### This checks off that the event has been put on Google Calendar
+            # This checks off that the event has been put on Google Calendar
+            notion.pages.update(
                 **{
                     "page_id": pageId,
                     "properties": {
@@ -287,9 +279,10 @@ def new_events_notion_to_gcal(
                 url,
                 calendar,
                 service,
-                config: config.Settings,
+                settings: config.Settings,
             ):
-                # 2 Cases: Start and End are  both either date or date+time #Have restriction that the calendar events don't cross days
+                # 2 Cases: Start and End are  both either date or date+time
+                # Have restriction that the calendar events don't cross days
                 try:
                     # start and end are both dates
                     calEventId = makeCalEvent(
@@ -300,7 +293,7 @@ def new_events_notion_to_gcal(
                         datetime.datetime.strptime(end, "%Y-%m-%d"),
                         calendar,
                         service,
-                        config,
+                        settings,
                     )
                 except ValueError:
                     try:
@@ -313,7 +306,7 @@ def new_events_notion_to_gcal(
                             dateutil.parser.isoparse(end),
                             calendar,
                             service,
-                            config,
+                            settings,
                         )
                     except ValueError:
                         calEventId = makeCalEvent(
@@ -324,7 +317,7 @@ def new_events_notion_to_gcal(
                             dateutil.parser.isoparse(end),
                             calendar,
                             service,
-                            config,
+                            settings,
                         )
                 return calEventId
 
@@ -344,7 +337,8 @@ def new_events_notion_to_gcal(
             if (
                 CalendarList[i] == calendarDictionary[DEFAULT_CALENDAR_NAME]
             ):  # this means that there is no calendar assigned on Notion
-                my_page = notion.pages.update(  ##### This puts the the GCal Id into the Notion Dashboard
+                # This puts the the GCal Id into the Notion Dashboard
+                notion.pages.update(
                     **{
                         "page_id": pageId,
                         "properties": {
@@ -361,7 +355,7 @@ def new_events_notion_to_gcal(
                     },
                 )
             else:  # just a regular update
-                my_page = notion.pages.update(
+                notion.pages.update(
                     **{
                         "page_id": pageId,
                         "properties": {
@@ -403,7 +397,8 @@ def existing_events_notion_to_gcal(
     settings: config.Settings,
 ):
     ###########################################################################
-    ##### Part 2: Updating GCal Events that Need To Be Updated (Changed on Notion but need to be changed on GCal)
+    # Part 2: Updating GCal Events that Need To Be Updated (Changed on Notion but need
+    # to be changed on GCal)
     ###########################################################################
 
     # Just gotta put a fail-safe in here in case people deleted the Calendar Variable
@@ -433,7 +428,9 @@ def existing_events_notion_to_gcal(
     if len(resultList) > 0:
         for i, el in enumerate(resultList):
             pageId = el["id"]
-            my_page = notion.pages.update(  ##### This checks off that the event has been put on Google Calendar
+
+            # This checks off that the event has been put on Google Calendar
+            notion.pages.update(
                 **{
                     "page_id": pageId,
                     "properties": {
@@ -450,9 +447,10 @@ def existing_events_notion_to_gcal(
                 },
             )
 
-    ## Filter events that have been updated since the GCal event has been made
+    # Filter events that have been updated since the GCal event has been made
 
-    # this query will return a dictionary that we will parse for information that we want
+    # this query will return a dictionary that we will parse for information that
+    # we want
     # look for events that are today or in the next week
     query = {
         "filter": {
@@ -517,7 +515,7 @@ def existing_events_notion_to_gcal(
             )
             start_Dates.append(el["properties"][Date_Notion_Name]["date"]["start"])
 
-            if el["properties"][Date_Notion_Name]["date"]["end"] != None:
+            if el["properties"][Date_Notion_Name]["date"]["end"] is not None:
                 end_Times.append(el["properties"][Date_Notion_Name]["date"]["end"])
             else:
                 end_Times.append(el["properties"][Date_Notion_Name]["date"]["start"])
@@ -552,7 +550,9 @@ def existing_events_notion_to_gcal(
                         el["properties"][Calendar_Notion_Name]["select"]["name"]
                     ]
                 )
-            except KeyError:  # keyerror occurs when there's nothing put into the calendar in the first place
+            # keyerror occurs when there's nothing put into the calendar in the first
+            # place
+            except KeyError:
                 CalendarList.append(calendarDictionary[DEFAULT_CALENDAR_NAME])
 
             CurrentCalList.append(
@@ -563,9 +563,10 @@ def existing_events_notion_to_gcal(
 
             pageId = el["id"]
 
-            ##depending on the format of the dates, we'll update the gCal event as necessary
+            # depending on the format of the dates, we'll update the gCal event as
+            # necessary
             try:
-                calEventId = upDateCalEvent(
+                upDateCalEvent(
                     TaskNames[i],
                     makeEventDescription(Initiatives[i], ExtraInfo[i]),
                     datetime.datetime.strptime(start_Dates[i], "%Y-%m-%d"),
@@ -579,7 +580,7 @@ def existing_events_notion_to_gcal(
                 )
             except ValueError:
                 try:
-                    calEventId = upDateCalEvent(
+                    upDateCalEvent(
                         TaskNames[i],
                         makeEventDescription(Initiatives[i], ExtraInfo[i]),
                         dateutil.parser.isoparse(start_Dates[i]),
@@ -592,7 +593,7 @@ def existing_events_notion_to_gcal(
                         settings,
                     )
                 except ValueError:
-                    calEventId = upDateCalEvent(
+                    upDateCalEvent(
                         TaskNames[i],
                         makeEventDescription(Initiatives[i], ExtraInfo[i]),
                         dateutil.parser.isoparse(start_Dates[i]),
@@ -605,13 +606,14 @@ def existing_events_notion_to_gcal(
                         settings,
                     )
 
-            my_page = notion.pages.update(  ##### This updates the last time that the page in Notion was updated by the code
+            # This updates the last time that the page in Notion was updated by the code
+            notion.pages.update(
                 **{
                     "page_id": pageId,
                     "properties": {
                         LastUpdatedTime_Notion_Name: {
                             "date": {
-                                "start": notion_time(),  # has to be adjusted for when daylight savings is different
+                                "start": notion_time(),
                                 "end": None,
                             }
                         },
@@ -644,10 +646,11 @@ def existing_events_gcal_to_notion(
     settings: config.Settings,
 ):
     ###########################################################################
-    ##### Part 3: Sync GCal event updates for events already in Notion back to Notion!
+    # Part 3: Sync GCal event updates for events already in Notion back to Notion!
     ###########################################################################
 
-    ##Query notion tasks already in Gcal, don't have to be updated, and are today or in the next week
+    # Query notion tasks already in Gcal, don't have to be updated, and are today or
+    # in the next week
     query = {
         "filter": {
             "and": [
@@ -673,9 +676,10 @@ def existing_events_gcal_to_notion(
     resultList = paginated_database_query(notion, database_id, **query)
 
     # Comparison section:
-    # We need to see what times between GCal and Notion are not the same, so we are going to convert all of the notion date/times into
-    ## datetime values and then compare that against the datetime value of the GCal event. If they are not the same, then we change the Notion
-    ### event as appropriate
+    # We need to see what times between GCal and Notion are not the same, so we are
+    # going to convert all of the notion date/times into datetime values and then
+    # compare that against the datetime value of the GCal event.
+    # If they are not the same, then we change the Notion event as appropriate.
     notion_IDs_List = []
     notion_start_datetimes = []
     notion_end_datetimes = []
@@ -711,13 +715,15 @@ def existing_events_gcal_to_notion(
             notion_gCal_CalNames.append(
                 result["properties"][Calendar_Notion_Name]["select"]["name"]
             )
-        except KeyError:  # keyerror occurs when there's nothing put into the calendar in the first place
+        # keyerror occurs when there's nothing put into the calendar in the first place
+        except KeyError:
             notion_gCal_CalIds.append(calendarDictionary[DEFAULT_CALENDAR_NAME])
             notion_gCal_CalNames.append(
                 result["properties"][Calendar_Notion_Name]["select"]["name"]
             )
 
-    # the reason we take off the last 6 characters is so we can focus in on just the date and time instead of any extra info
+    # the reason we take off the last 6 characters is so we can focus in on just the
+    # date and time instead of any extra info
     for i in range(len(notion_start_datetimes)):
         try:
             notion_start_datetimes[i] = datetime.datetime.strptime(
@@ -734,7 +740,7 @@ def existing_events_gcal_to_notion(
                 )
 
     for i in range(len(notion_end_datetimes)):
-        if notion_end_datetimes[i] != None:
+        if notion_end_datetimes[i] is not None:
             try:
                 notion_end_datetimes[i] = datetime.datetime.strptime(
                     notion_end_datetimes[i], "%Y-%m-%d"
@@ -749,13 +755,15 @@ def existing_events_gcal_to_notion(
                         notion_end_datetimes[i][:-6], "%Y-%m-%dT%H:%M:%S.%f"
                     )
         else:
-            notion_end_datetimes[i] = notion_start_datetimes[
-                i
-            ]  # the reason we're doing this weird ass thing is because when we put the end time into the update or make GCal event, it'll be representative of the date
+            # the reason we're doing this weird ass thing is because when we put the
+            # end time into the update or make GCal event, it'll be representative of
+            # the date
+            notion_end_datetimes[i] = notion_start_datetimes[i]
 
-    ##We use the gCalId from the Notion dashboard to get retrieve the start Time from the gCal event
+    # We use the gCalId from the Notion dashboard to get retrieve the start Time from
+    # the gCal event
     value = ""
-    exitVar = ""
+    # exitVar = ""
     for gCalId in notion_gCal_IDs:
         # just check all of the calendars of interest for info about the event
         for calendarID in calendarDictionary.keys():
@@ -782,7 +790,7 @@ def existing_events_gcal_to_notion(
                 dateutil.parser.isoparse(value["start"]["dateTime"])  # type: ignore
             )
         except KeyError:
-            date = datetime.datetime.strptime(value["start"]["date"], "%Y-%m-%d")  # type: ignore
+            date = datetime.datetime.strptime(value["start"]["date"], "%Y-%m-%d")  # type: ignore # noqa
             # x = datetime(date.year, date.month, date.day, 0, 0, 0) redundant I think
             # gCal_start_datetimes.append(datetime.strptime(x, "%Y-%m-%dT%H:%M:%S"))
             gCal_start_datetimes.append(date)
@@ -791,19 +799,15 @@ def existing_events_gcal_to_notion(
                 dateutil.parser.isoparse(value["end"]["dateTime"])  # type: ignore
             )
         except KeyError:
-            date = datetime.datetime.strptime(value["end"]["date"], "%Y-%m-%d")  # type: ignore
+            date = datetime.datetime.strptime(value["end"]["date"], "%Y-%m-%d")  # type: ignore # noqa
             x = datetime.datetime(
                 date.year, date.month, date.day, 0, 0, 0
             ) - datetime.timedelta(days=1)
             gCal_end_datetimes.append(x)
 
-    # Now we iterate and compare the time on the Notion Dashboard and the start time of the GCal event
+    # Now we iterate and compare the time on the Notion Dashboard and the start time of
+    # the GCal event
     # If the datetimes don't match up,  then the Notion  Dashboard must be updated
-
-    # new_notion_start_datetimes: list[str | datetime.datetime] = [""] * len(
-    #     notion_start_datetimes
-    # )
-    # new_notion_end_datetimes: list[str | datetime.datetime] = [""] * len(notion_end_datetimes)
 
     new_notion_start_datetimes: list[None | datetime.datetime] = []
     new_notion_end_datetimes: list[None | datetime.datetime] = []
@@ -847,10 +851,12 @@ def existing_events_gcal_to_notion(
             start: datetime.datetime = new_start
             end: datetime.datetime = new_end
 
-            if (
-                start.hour == 0 and start.minute == 0 and start == end
-            ):  # you're given 12 am dateTimes so you want to enter them as dates (not datetimes) into Notion
-                my_page = notion.pages.update(  # update the notion dashboard with the new datetime and update the last updated time
+            # you're given 12 am dateTimes so you want to enter them as dates (not
+            # datetimes) into Notion
+            if start.hour == 0 and start.minute == 0 and start == end:
+                # update the notion dashboard with the new datetime and update the last
+                # updated time
+                notion.pages.update(
                     **{
                         "page_id": notion_IDs_List[i],
                         "properties": {
@@ -862,7 +868,7 @@ def existing_events_gcal_to_notion(
                             },
                             LastUpdatedTime_Notion_Name: {
                                 "date": {
-                                    "start": notion_time(),  # has to be adjsuted for when daylight savings is different
+                                    "start": notion_time(),
                                     "end": None,
                                 }
                             },
@@ -874,8 +880,12 @@ def existing_events_gcal_to_notion(
                 and start.minute == 0
                 and end.hour == 0
                 and end.minute == 0
-            ):  # you're given 12 am dateTimes so you want to enter them as dates (not datetimes) into Notion
-                my_page = notion.pages.update(  # update the notion dashboard with the new datetime and update the last updated time
+            ):
+                # you're given 12 am dateTimes so you want to enter them as dates (not
+                # datetimes) into Notion
+                # update the notion dashboard with the new datetime and update the last
+                # updated time
+                notion.pages.update(
                     **{
                         "page_id": notion_IDs_List[i],
                         "properties": {
@@ -887,7 +897,7 @@ def existing_events_gcal_to_notion(
                             },
                             LastUpdatedTime_Notion_Name: {
                                 "date": {
-                                    "start": notion_time(),  # has to be adjsuted for when daylight savings is different
+                                    "start": notion_time(),
                                     "end": None,
                                 }
                             },
@@ -895,7 +905,9 @@ def existing_events_gcal_to_notion(
                     },
                 )
             else:  # update Notin using datetime format
-                my_page = notion.pages.update(  # update the notion dashboard with the new datetime and update the last updated time
+                notion.pages.update(
+                    # update the notion dashboard with the new datetime and update the
+                    # last updated time
                     **{
                         "page_id": notion_IDs_List[i],
                         "properties": {
@@ -907,7 +919,7 @@ def existing_events_gcal_to_notion(
                             },
                             LastUpdatedTime_Notion_Name: {
                                 "date": {
-                                    "start": notion_time(),  # has to be adjsuted for when daylight savings is different
+                                    "start": notion_time(),
                                     "end": None,
                                 }
                             },
@@ -918,10 +930,12 @@ def existing_events_gcal_to_notion(
             start = new_start
             end = notion_end_datetimes[i]
 
-            if (
-                start.hour == 0 and start.minute == 0 and start == end
-            ):  # you're given 12 am dateTimes so you want to enter them as dates (not datetimes) into Notion
-                my_page = notion.pages.update(  # update the notion dashboard with the new datetime and update the last updated time
+            if start.hour == 0 and start.minute == 0 and start == end:
+                # you're given 12 am dateTimes so you want to enter them as dates (not
+                # datetimes) into Notion
+                # update the notion dashboard with the new datetime and update the last
+                # updated time
+                notion.pages.update(
                     **{
                         "page_id": notion_IDs_List[i],
                         "properties": {
@@ -933,7 +947,7 @@ def existing_events_gcal_to_notion(
                             },
                             LastUpdatedTime_Notion_Name: {
                                 "date": {
-                                    "start": notion_time(),  # has to be adjsuted for when daylight savings is different
+                                    "start": notion_time(),
                                     "end": None,
                                 }
                             },
@@ -945,8 +959,12 @@ def existing_events_gcal_to_notion(
                 and start.minute == 0
                 and end.hour == 0
                 and end.minute == 0
-            ):  # you're given 12 am dateTimes so you want to enter them as dates (not datetimes) into Notion
-                my_page = notion.pages.update(  # update the notion dashboard with the new datetime and update the last updated time
+            ):
+                # you're given 12 am dateTimes so you want to enter them as dates
+                # (not datetimes) into Notion
+                notion.pages.update(
+                    # update the notion dashboard with the new datetime and update the
+                    # last updated time
                     **{
                         "page_id": notion_IDs_List[i],
                         "properties": {
@@ -958,15 +976,18 @@ def existing_events_gcal_to_notion(
                             },
                             LastUpdatedTime_Notion_Name: {
                                 "date": {
-                                    "start": notion_time(),  # has to be adjsuted for when daylight savings is different
+                                    "start": notion_time(),
                                     "end": None,
                                 }
                             },
                         },
                     },
                 )
-            else:  # update Notin using datetime format
-                my_page = notion.pages.update(  # update the notion dashboard with the new datetime and update the last updated time
+            else:
+                # update Notin using datetime format
+                notion.pages.update(
+                    # update the notion dashboard with the new datetime and update the
+                    # last updated time
                     **{
                         "page_id": notion_IDs_List[i],
                         "properties": {
@@ -978,7 +999,7 @@ def existing_events_gcal_to_notion(
                             },
                             LastUpdatedTime_Notion_Name: {
                                 "date": {
-                                    "start": notion_time(),  # has to be adjsuted for when daylight savings is different
+                                    "start": notion_time(),
                                     "end": None,
                                 }
                             },
@@ -989,10 +1010,12 @@ def existing_events_gcal_to_notion(
             start = notion_start_datetimes[i]
             end = new_end
 
-            if (
-                start.hour == 0 and start.minute == 0 and start == end
-            ):  # you're given 12 am dateTimes so you want to enter them as dates (not datetimes) into Notion
-                my_page = notion.pages.update(  # update the notion dashboard with the new datetime and update the last updated time
+            if start.hour == 0 and start.minute == 0 and start == end:
+                # you're given 12 am dateTimes so you want to enter them as dates (not
+                # datetimes) into Notion
+                notion.pages.update(
+                    # update the notion dashboard with the new datetime and update the
+                    # last updated time
                     **{
                         "page_id": notion_IDs_List[i],
                         "properties": {
@@ -1004,7 +1027,7 @@ def existing_events_gcal_to_notion(
                             },
                             LastUpdatedTime_Notion_Name: {
                                 "date": {
-                                    "start": notion_time(),  # has to be adjsuted for when daylight savings is different
+                                    "start": notion_time(),
                                     "end": None,
                                 }
                             },
@@ -1016,8 +1039,10 @@ def existing_events_gcal_to_notion(
                 and start.minute == 0
                 and end.hour == 0
                 and end.minute == 0
-            ):  # you're given 12 am dateTimes so you want to enter them as dates (not datetimes) into Notion
-                my_page = notion.pages.update(  # update the notion dashboard with the new datetime and update the last updated time
+            ):
+                # update the notion dashboard with the new datetime and update the last
+                # updated time
+                notion.pages.update(
                     **{
                         "page_id": notion_IDs_List[i],
                         "properties": {
@@ -1029,15 +1054,18 @@ def existing_events_gcal_to_notion(
                             },
                             LastUpdatedTime_Notion_Name: {
                                 "date": {
-                                    "start": notion_time(),  # has to be adjsuted for when daylight savings is different
+                                    "start": notion_time(),
                                     "end": None,
                                 }
                             },
                         },
                     },
                 )
-            else:  # update Notion using datetime format
-                my_page = notion.pages.update(  # update the notion dashboard with the new datetime and update the last updated time
+            else:
+                # update Notion using datetime format
+                notion.pages.update(
+                    # update the notion dashboard with the new datetime and update the
+                    # last updated time
                     **{
                         "page_id": notion_IDs_List[i],
                         "properties": {
@@ -1049,7 +1077,7 @@ def existing_events_gcal_to_notion(
                             },
                             LastUpdatedTime_Notion_Name: {
                                 "date": {
-                                    "start": notion_time(),  # has to be adjsuted for when daylight savings is different
+                                    "start": notion_time(),
                                     "end": None,
                                 }
                             },
@@ -1066,11 +1094,12 @@ def existing_events_gcal_to_notion(
     CalNames = list(calendarDictionary.keys())
     CalIds = list(calendarDictionary.values())
 
-    for i, gCalId in enumerate(
-        gCal_CalIds
-    ):  # instead of checking, just update the notion datebase with whatever calendar the event is on
+    for i, gCalId in enumerate(gCal_CalIds):
+        # instead of checking, just update the notion datebase with whatever calendar
+        # the event is on
         logging.info("GcalId: " + gCalId)
-        my_page = notion.pages.update(  ##### This puts the the GCal Id into the Notion Dashboard
+        notion.pages.update(
+            # This puts the the GCal Id into the Notion Dashboard
             **{
                 "page_id": notion_IDs_List[i],
                 "properties": {
@@ -1084,7 +1113,7 @@ def existing_events_gcal_to_notion(
                     },
                     LastUpdatedTime_Notion_Name: {
                         "date": {
-                            "start": notion_time(),  # has to be adjsuted for when daylight savings is different
+                            "start": notion_time(),
                             "end": None,
                         }
                     },
@@ -1110,10 +1139,10 @@ def new_events_gcal_to_notion(
     settings: config.Settings,
 ):
     ###########################################################################
-    ##### Part 4: Bring events (not in Notion already) from GCal to Notion
+    # Part 4: Bring events (not in Notion already) from GCal to Notion
     ###########################################################################
 
-    ##First, we get a list of all of the GCal Event Ids from the Notion Dashboard.
+    # First, we get a list of all of the GCal Event Ids from the Notion Dashboard.
 
     my_page = paginated_database_query(
         notion,
@@ -1153,7 +1182,7 @@ def new_events_gcal_to_notion(
             ]
         )
 
-    ##Get the GCal Ids and other Event Info from Google Calendar
+    # Get the GCal Ids and other Event Info from Google Calendar
 
     events = []
     # get all the events from all calendars of interest
@@ -1207,8 +1236,9 @@ def new_events_gcal_to_notion(
         except KeyError:
             calDescriptions.append(" ")
 
-    # Now, we compare the Ids from Notion and Ids from GCal. If the Id from GCal is not in the list from Notion, then
-    ## we know that the event does not exist in Notion yet, so we should bring that over.
+    # Now, we compare the Ids from Notion and Ids from GCal. If the Id from GCal is
+    # not in the list from Notion, then we know that the event does not exist in
+    # Notion yet, so we should bring that over.
 
     for i in range(len(calIds)):
         if calIds[i] not in ALL_notion_gCal_Ids:
@@ -1399,7 +1429,8 @@ def delete_done_pages(
     service,
 ):
     ###########################################################################
-    ##### Part 5: Deletion Sync -- If marked Done in Notion, then it will delete the GCal event (and the Notion event once Python API updates)
+    # Part 5: Deletion Sync -- If marked Done in Notion, then it will delete the
+    # GCal event (and the Notion event once Python API updates)
     ###########################################################################
     resultList = paginated_database_query(
         notion,
@@ -1432,7 +1463,7 @@ def delete_done_pages(
                 "content"
             ]
 
-            pageId = el["id"]
+            # pageId = el["id"]
 
             try:
                 service.events().delete(
@@ -1443,7 +1474,7 @@ def delete_done_pages(
                 continue
             time.sleep(0.1)
 
-            # my_page = notion.pages.update(  ##### Delete Notion task (diesn't work yet)
+            # my_page = notion.pages.update(  # Delete Notion task
             #     **{"page_id": pageId, "archived": True, "properties": {}},
             # )
 
@@ -1453,7 +1484,8 @@ def delete_done_pages(
 ######################################################################
 # METHOD TO MAKE A CALENDAR EVENT DESCRIPTION
 
-# This method can be edited as wanted. Whatever is returned from this method will be in the GCal event description
+# This method can be edited as wanted. Whatever is returned from this method will
+# be in the GCal event description
 # Whatever you change up, be sure to return a string
 
 
@@ -1470,11 +1502,11 @@ def makeEventDescription(initiative, info):
 
 ######################################################################
 # METHOD TO MAKE A TASK'S URL
-# To make a url for the notion task, we have to take the id of the task and take away the hyphens from the string
+# To make a url for the notion task, we have to take the id of the task and take
+# away the hyphens from the string
 
 
 def makeTaskURL(ending, urlRoot):
-    # urlId = ending[0:8] + ending[9:13] + ending[14:18] + ending[19:23] + ending[24:]  #<--- super inefficient way to do things lol
     urlId = ending.replace("-", "")
     return urlRoot + urlId
 
@@ -1504,7 +1536,7 @@ def makeCalEvent(
                 eventStartTime, datetime.datetime.min.time()
             ) + datetime.timedelta(
                 hours=config.default_event_start
-            )  ##make the events pop up at 8 am instead of 12 am
+            )  # make the events pop up at 8 am instead of 12 am
             eventEndTime = eventStartTime + datetime.timedelta(
                 minutes=config.default_event_length
             )
@@ -1581,25 +1613,25 @@ def makeCalEvent(
         ):  # Start on Notion is 12 am and end is also given on Notion
             eventStartTime = eventStartTime  # start will be 12 am
             eventEndTime = eventEndTime  # end will be whenever specified
-        elif (
-            eventStartTime.hour == 0 and eventStartTime.minute == 0
-        ):  # if the datetime fed into this is only a date or is at 12 AM, then the event will fall under here
+        elif eventStartTime.hour == 0 and eventStartTime.minute == 0:
+            # if the datetime fed into this is only a date or is at 12 AM,
+            # then the event will fall under here
             eventStartTime = datetime.datetime.combine(
                 eventStartTime, datetime.datetime.min.time()
             ) + datetime.timedelta(
                 hours=config.default_event_start
-            )  ##make the events pop up at 8 am instead of 12 am
+            )  # make the events pop up at 8 am instead of 12 am
             eventEndTime = eventStartTime + datetime.timedelta(
                 minutes=config.default_event_length
             )
-        elif (
-            eventEndTime == eventStartTime
-        ):  # this would meant that only 1 datetime was actually on the notion dashboard
+        elif eventEndTime == eventStartTime:
+            # this would meant that only 1 datetime was actually on the notion dashboard
             eventStartTime = eventStartTime
             eventEndTime = eventStartTime + datetime.timedelta(
                 minutes=config.default_event_length
             )
-        else:  # if you give a specific start time to the event
+        else:
+            # if you give a specific start time to the event
             eventStartTime = eventStartTime
             eventEndTime = eventEndTime
 
@@ -1653,7 +1685,7 @@ def upDateCalEvent(
                 eventStartTime, datetime.datetime.min.time()
             ) + datetime.timedelta(
                 hours=config.default_event_start
-            )  ##make the events pop up at 8 am instead of 12 am
+            )  # make the events pop up at 8 am instead of 12 am
             eventEndTime = eventStartTime + datetime.timedelta(
                 minutes=config.default_event_length
             )
@@ -1730,25 +1762,25 @@ def upDateCalEvent(
         ):  # Start on Notion is 12 am and end is also given on Notion
             eventStartTime = eventStartTime  # start will be 12 am
             eventEndTime = eventEndTime  # end will be whenever specified
-        elif (
-            eventStartTime.hour == 0 and eventStartTime.minute == 0
-        ):  # if the datetime fed into this is only a date or is at 12 AM, then the event will fall under here
+        elif eventStartTime.hour == 0 and eventStartTime.minute == 0:
+            # if the datetime fed into this is only a date or is at 12 AM,
+            # then the event will fall under here
             eventStartTime = datetime.datetime.combine(
                 eventStartTime, datetime.datetime.min.time()
             ) + datetime.timedelta(
                 hours=config.default_event_start
-            )  ##make the events pop up at 8 am instead of 12 am
+            )  # make the events pop up at 8 am instead of 12 am
             eventEndTime = eventStartTime + datetime.timedelta(
                 minutes=config.default_event_length
             )
-        elif (
-            eventEndTime == eventStartTime
-        ):  # this would meant that only 1 datetime was actually on the notion dashboard
+        elif eventEndTime == eventStartTime:
+            # this would meant that only 1 datetime was actually on the notion dashboard
             eventStartTime = eventStartTime
             eventEndTime = eventStartTime + datetime.timedelta(
                 minutes=config.default_event_length
             )
-        else:  # if you give a specific start time to the event
+        else:
+            # if you give a specific start time to the event
             eventStartTime = eventStartTime
             eventEndTime = eventEndTime
         event = {
@@ -1776,7 +1808,10 @@ def upDateCalEvent(
             .execute()
         )
 
-    else:  # When we have to move the event to a new calendar. We must move the event over to the new calendar and then update the information on the event
+    else:
+        # When we have to move the event to a new calendar.
+        # We must move the event over to the new calendar and
+        # then update the information on the event
         logging.info("Event " + eventId)
         logging.info("CurrentCal " + currentCalId)
         logging.info("NewCal " + CalId)
