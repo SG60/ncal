@@ -1,7 +1,7 @@
 # This workflow will upload a Python Package using Poetry and upload the docker image
 # to docker hub when a release occurs
 
-name: Publish Release
+name: Release
 
 on:
   release:
