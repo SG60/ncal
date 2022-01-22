@@ -10,15 +10,15 @@ on:
 
 jobs:
   test:
-    uses: sg60/ncal/.github/workflows/tests.yml
-    uses: sg60/ncal/.github/workflows/code-style.yml
+    uses: sg60/ncal/.github/workflows/tests.yml@main
+    uses: sg60/ncal/.github/workflows/code-style.yml@main
   python-publish:
-    uses: sg60/ncal/.github/workflows/python-publish.yml
+    uses: sg60/ncal/.github/workflows/python-publish.yml@main
     secrets:
       PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
     needs: test
   docker-publish:
-    uses: sg60/ncal/.github/workflows/docker-publish.yml
+    uses: sg60/ncal/.github/workflows/docker-publish.yml@main
     secrets:
       DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
       DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
