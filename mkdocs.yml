@@ -7,23 +7,24 @@ theme:
   name: material
   features:
     - navigation.tabs
+    - navigation.top
   font:
     text: Fira Sans
   palette:
-  - media: "(prefers-color-scheme: light)"
-    scheme: default
-    primary: white
-    accent: lime
-    toggle:
-      icon: material/lightbulb-outline
-      name: "Switch to dark mode"
-  - media: "(prefers-color-scheme: dark)"
-    scheme: slate
-    primary: black
-    accent: lime
-    toggle:
-      icon: material/lightbulb
-      name: "Switch to light mode"
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: white
+      accent: lime
+      toggle:
+        icon: material/lightbulb-outline
+        name: "Switch to dark mode"
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: lime
+      toggle:
+        icon: material/lightbulb
+        name: "Switch to light mode"
 
 markdown_extensions:
   # Python Markdown
@@ -38,10 +39,8 @@ markdown_extensions:
 plugins:
   - search
   - mkdocstrings:
-      # handlers:
-      #   python:
-      #     setup_commands:
-      #       - import sys
-      #       - sys.path.append("../")
-      #     selection:
-      #       new_path_syntax:true
+      watch:
+        - ncal
+
+extra_css:
+  - stylesheets/extra.css

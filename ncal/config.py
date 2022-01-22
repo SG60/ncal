@@ -1,3 +1,7 @@
+"""
+Functions and classes to manage configuration are in this file. Configuration can
+operate through toml, .env, environment variables, or the command line.
+"""
 from os import environ
 from pathlib import Path
 from typing import Any, Dict, Literal
@@ -15,10 +19,14 @@ from dotenv import load_dotenv
 
 
 class Settings(pydantic.BaseModel):
-    """Class for storing settings"""
+    """Class for storing settings
 
-    # secret api token
+    Attributes:
+        notion_api_token: API token for Notion integration
+    """
+
     notion_api_token: str
+
     # get the mess of numbers before the "?" on your dashboard URL (no need to split
     # into dashes)
     database_id: str
@@ -126,7 +134,20 @@ def load_settings(
     use_env_vars: bool = True,
     use_toml_file: bool = True,
     **kwargs,
-):
+) -> Settings:
+    """Function to load settings from multiple sources.
+
+    This function falls back to defaults, so only a few settings are required.
+
+    Args:
+        config_file_path: Path to a .toml config file
+        use_env_vars:
+        use_toml_file:
+        kwargs: Other settings to provide to the Settings object
+
+    Returns:
+        A ncal.config.Settings object
+    """
     default_settings = Settings.construct().dict()  # type: ignore
 
     if use_env_vars:

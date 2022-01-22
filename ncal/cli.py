@@ -25,6 +25,13 @@ state = {"verbose": False}
 async def scheduler(
     timedelta: datetime.timedelta, function: Callable[..., Coroutine], f_args: dict
 ) -> None:
+    """Schedule an async function.
+
+    Args:
+        timedelta:
+        function:
+        f_args: arguments to pass to the function
+    """
     next_run = arrow.utcnow() + timedelta
     print(f"next run: {next_run}")
     while True:
@@ -37,6 +44,7 @@ async def scheduler(
 
 
 async def sync(settings: Settings, service: Resource, notion: nc.Client) -> None:
+    """Sync between Google Calendar and Notion."""
     num_steps = 4
     if settings.delete_option:
         num_steps += 1

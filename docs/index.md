@@ -1,3 +1,9 @@
+---
+hide:
+    - navigation
+---
+
+
 [![CodeQL](https://github.com/SG60/ncal/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/SG60/ncal/actions/workflows/codeql-analysis.yml)
 [![Package Tests](https://github.com/SG60/ncal/actions/workflows/tests.yml/badge.svg)](https://github.com/SG60/ncal/actions/workflows/tests.yml)
 [![codecov](https://codecov.io/gh/SG60/ncal/branch/main/graph/badge.svg?token=UZCOEA0YWQ)](https://codecov.io/gh/SG60/ncal)
@@ -12,6 +18,7 @@
   
 Currently reworking this fork. It will eventually be a simple command that can be set to run, either continuously or just once.
 
+## Configuration
 Configuration is via toml, command line flags, or environment variables (including via a .env file).
 
 See [old README.md](https://github.com/SG60/ncal/blob/main/oldREADME.md) for more info.
