@@ -3,9 +3,13 @@
 name: Upload Python Package
 
 on:
-  release:
-    types: [released]
+  # release:
+  #   types: [released]
   workflow_dispatch:
+  workflow_call:
+    secrets:
+      PYPI_TOKEN:
+        required: true
 
 jobs:
   deploy:
@@ -19,11 +23,7 @@ jobs:
         with:
           python-version: "3.10"
 
-      - name: Bootstrap Poetry
-        run: pip install poetry
-
-      - name: Update PATH
-        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+      - uses: SG60/setup-poetry@v1
 
       - name: Build package for distribution
         run: poetry build

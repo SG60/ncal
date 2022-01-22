@@ -1,0 +1,25 @@
+# This workflow will upload a Python Package using Poetry and upload the docker image
+# to docker hub when a release occurs
+
+name: Publish Release
+
+on:
+  release:
+    types: [released]
+  workflow_dispatch:
+
+jobs:
+  test:
+    uses: sg60/ncal/.github/workflows/tests.yml
+    uses: sg60/ncal/.github/workflows/code-style.yml
+  python-publish:
+    uses: sg60/ncal/.github/workflows/python-publish.yml
+    secrets:
+      PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+    needs: test
+  docker-publish:
+    uses: sg60/ncal/.github/workflows/docker-publish.yml
+    secrets:
+      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+      DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+    needs: test

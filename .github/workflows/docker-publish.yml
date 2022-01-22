@@ -3,9 +3,15 @@
 name: Upload to Docker Hub
 
 on:
-  release:
-    types: [released]
+  # release:
+  #   types: [released]
   workflow_dispatch:
+  workflow_call:
+    secrets:
+      DOCKER_HUB_USERNAME:
+        required: true
+      DOCKER_HUB_ACCESS_TOKEN:
+        required: true
 
 jobs:
   deploy:
