@@ -538,7 +538,7 @@ def existing_events_notion_to_gcal(
                         "content"
                     ]
                 )
-            except ValueError:
+            except IndexError:
                 ExtraInfo.append("")
             URL_list.append(makeTaskURL(el["id"], urlRoot))
 
