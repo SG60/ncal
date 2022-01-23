@@ -249,7 +249,7 @@ def new_events_notion_to_gcal(
                 )
             # keyerror occurs when there's nothing put into the calendar in the first
             # place
-            except KeyError:
+            except (KeyError, TypeError):
                 CalendarList.append(calendarDictionary[DEFAULT_CALENDAR_NAME])
 
             pageId = el["id"]
