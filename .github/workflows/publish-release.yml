@@ -29,3 +29,5 @@ jobs:
   documentation:
     needs: python-publish
     uses: ./.github/workflows/docs.yml
+    permissions:
+      contents: write
