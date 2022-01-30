@@ -13,6 +13,7 @@ jobs:
     uses: sg60/ncal/.github/workflows/tests.yml@main
   lint:
     uses: sg60/ncal/.github/workflows/code-style.yml@main
+
   python-publish:
     uses: sg60/ncal/.github/workflows/python-publish.yml@main
     secrets:
@@ -24,3 +25,7 @@ jobs:
       DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
       DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
     needs: [test, lint]
+
+  documentation:
+    needs: python-publish
+    uses: ./.github/workflows/docs.yml
