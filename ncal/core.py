@@ -6,6 +6,7 @@ from typing import Any, Literal
 
 import arrow
 import dateutil.parser
+import google.auth.exceptions
 import googleapiclient.discovery  # type: ignore
 import notion_client as nc  # type: ignore
 from googleapiclient.errors import HttpError  # type: ignore
@@ -26,7 +27,7 @@ def setup_google_api(
     # If the token expires, we create a new token for the program to use
     try:
         calendar = service.calendars().get(calendarId=calendar_id).execute()
-    except HttpError:
+    except google.auth.exceptions.RefreshError:
         # refresh the token
 
         # os.system(runscriptlocation)
