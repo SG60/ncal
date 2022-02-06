@@ -23,6 +23,7 @@ class Settings(pydantic.BaseModel):
 
     Attributes:
         notion_api_token: API token for Notion integration
+        credentials_location: file containing GCal Credentials
     """
 
     notion_api_token: str
@@ -32,7 +33,7 @@ class Settings(pydantic.BaseModel):
     database_id: str
     # open up a task and then copy the URL root up to the "p="
     url_root: str
-    # GCalToken creating program
+    # GCalToken creating program TODO:this might not be necessary anymore?!
     run_script: str = "python3 GCalToken.py"
     # Pickle file containing GCal Credentials
     credentials_location: pydantic.FilePath = Path("token.pkl")
@@ -102,6 +103,11 @@ class Settings(pydantic.BaseModel):
 
 
 def load_config_file(path_to_file: Path) -> Dict[str, Any]:
+    """Load a toml config file into a dictionary
+    Args:
+        path_to_file:
+    Returns:
+        Settings (unfiltered)"""
     with open(path_to_file, "rb") as f:
         tomli_dictionary = tomli.load(f)
         # settings = Settings(**tomli_dictionary)
@@ -116,6 +122,13 @@ def env_var_names_dict(prefix: str) -> Dict[str, str]:
 
 
 def get_env_vars_case_insensitive(env_var_names: Dict[str, str]) -> Dict[str, str]:
+    """Gets environment variables matching the values in the given dictionary,
+    using the keys as the keys for the returned dictionary.
+    Args:
+        env_var_names: {desired label: environment variable label}
+    Returns:
+        Dictionary of environment variables
+    """
     load_dotenv()  # uses .env file if available
     ncal_env_vars: dict[str, str] = {}
     # populate env_vars with values which match the dictionary
@@ -127,7 +140,6 @@ def get_env_vars_case_insensitive(env_var_names: Dict[str, str]) -> Dict[str, st
     return ncal_env_vars
 
 
-# priority (high-low): cli, env, config_file
 def load_settings(
     config_file_path: Path = Path("config.toml"),
     *,
@@ -138,6 +150,7 @@ def load_settings(
     """Function to load settings from multiple sources.
 
     This function falls back to defaults, so only a few settings are required.
+    Priority (high-low): cli, env, config_file.
 
     Args:
         config_file_path: Path to a .toml config file

@@ -9,7 +9,7 @@ theme:
     - navigation.tabs
     - navigation.top
   font:
-    text: Fira Sans
+    # text: Fira Sans
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
