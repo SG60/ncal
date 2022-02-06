@@ -6,7 +6,7 @@ from typing import Any, Literal
 
 import arrow
 import dateutil.parser
-import google.auth.exceptions
+import google.auth.exceptions  # type: ignore
 import googleapiclient.discovery  # type: ignore
 import notion_client as nc  # type: ignore
 from googleapiclient.errors import HttpError  # type: ignore
