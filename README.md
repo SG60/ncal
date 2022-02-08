@@ -15,11 +15,11 @@
 
 **Docs live at: https://sg60.github.io/ncal/**
   
-Currently reworking this fork. It will eventually be a simple command that can be set to run, either continuously or just once.
+Currently reworking the documentation.
 
-Configuration is via toml, command line flags, or environment variables (including via a .env file).
+Install with `pip install ncal`. This will install the `ncal` command.
+
+Configuration is via toml, command line flags, or environment variables (including via a .env file). Reading through `config.py` will give a lot of useful information on options. Run `ncal --help` to get more info on the cli command.
 
 See [old README.md](./oldREADME.md) for more info.
 
-
-Reading through `config.py` will give a lot of useful information on config options. Run `ncal --help` to get more info on the cli command.
