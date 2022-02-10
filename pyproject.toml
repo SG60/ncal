@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ncal"
-version = "0.1.8"
+version = "0.1.7"
 description = ""
 authors = ["Sam Greening <samjg60@gmail.com>"]
 license = "GNU GPL"
@@ -35,8 +35,9 @@ mkdocstrings = "^0.17.0"
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.1.7"
+version = "0.1.8"
 tag_format = "v$version"
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
