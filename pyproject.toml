@@ -38,7 +38,7 @@ name = "cz_conventional_commits"
 version = "0.1.9"
 tag_format = "v$version"
 version_files = [
-    "pyproject.toml:^version"
+    "pyproject.toml:version"
 ]
 
 [build-system]
