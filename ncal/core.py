@@ -119,11 +119,15 @@ def get_relation_title(
     notion: nc.Client, notion_page: dict[str, Any], relation_name: str
 ) -> str:
     """Get the title of the first page in a relation property."""
-    relation_id: str = notion_page["properties"][relation_name]["relation"][0]["id"]
-    relation_title: dict = notion.pages.properties.retrieve(
-        relation_id, "title"
-    )  # type:ignore
-    return relation_title["results"][0]["title"]["plain_text"]
+    relation_property: list = notion_page["properties"][relation_name]["relation"]
+    if relation_property:
+        relation_id: str = relation_property[0]["id"]
+        relation_title: dict = notion.pages.properties.retrieve(
+            relation_id, "title"
+        )  # type:ignore
+        return relation_title["results"][0]["title"]["plain_text"]
+    else:
+        return ""
 
 
 def new_events_notion_to_gcal(
