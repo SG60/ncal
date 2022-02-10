@@ -37,6 +37,9 @@ mkdocstrings = "^0.17.0"
 name = "cz_conventional_commits"
 version = "0.1.8"
 tag_format = "v$version"
+version_files = [
+    "pyproject.toml:^version"
+]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
