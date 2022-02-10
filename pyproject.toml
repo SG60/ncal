@@ -32,6 +32,11 @@ ipdb = "^0.13.9"
 mkdocs-material = "^8.1.10"
 mkdocstrings = "^0.17.0"
 
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+version = "0.1.7"
+tag_format = "v$version"
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
