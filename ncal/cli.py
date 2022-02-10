@@ -50,7 +50,7 @@ async def sync(settings: Settings, service: Resource, notion: nc.Client) -> None
         num_steps += 1
 
     with typer.progressbar(
-        range(num_steps), label="Sychronising", show_eta=False, show_pos=True
+        range(num_steps), label="Synchronising", show_eta=False, show_pos=True
     ) as progress:
         todayDate = arrow.utcnow().isoformat()
 
@@ -65,7 +65,7 @@ async def sync(settings: Settings, service: Resource, notion: nc.Client) -> None
             settings.initiative_notion_name,
             settings.extrainfo_notion_name,
             settings.on_gcal_notion_name,
-            settings.gcaleventid_notion_name,
+            settings.gcal_event_id_notion_name,
             settings.lastupdatedtime_notion_name,
             settings.calendar_notion_name,
             settings.current_calendar_id_notion_name,
@@ -88,8 +88,8 @@ async def sync(settings: Settings, service: Resource, notion: nc.Client) -> None
             settings.initiative_notion_name,
             settings.extrainfo_notion_name,
             settings.on_gcal_notion_name,
-            settings.needgcalupdate_notion_name,
-            settings.gcaleventid_notion_name,
+            settings.need_gcal_update_notion_name,
+            settings.gcal_event_id_notion_name,
             settings.lastupdatedtime_notion_name,
             settings.calendar_notion_name,
             settings.current_calendar_id_notion_name,
@@ -108,8 +108,8 @@ async def sync(settings: Settings, service: Resource, notion: nc.Client) -> None
             settings.calendar_dictionary,
             settings.date_notion_name,
             settings.on_gcal_notion_name,
-            settings.needgcalupdate_notion_name,
-            settings.gcaleventid_notion_name,
+            settings.need_gcal_update_notion_name,
+            settings.gcal_event_id_notion_name,
             settings.lastupdatedtime_notion_name,
             settings.calendar_notion_name,
             settings.current_calendar_id_notion_name,
@@ -129,7 +129,7 @@ async def sync(settings: Settings, service: Resource, notion: nc.Client) -> None
             settings.date_notion_name,
             settings.extrainfo_notion_name,
             settings.on_gcal_notion_name,
-            settings.gcaleventid_notion_name,
+            settings.gcal_event_id_notion_name,
             settings.lastupdatedtime_notion_name,
             settings.calendar_notion_name,
             settings.current_calendar_id_notion_name,
@@ -145,7 +145,7 @@ async def sync(settings: Settings, service: Resource, notion: nc.Client) -> None
             core.delete_done_pages(
                 notion=notion,
                 database_id=settings.database_id,
-                GCalEventId_Notion_Name=settings.gcaleventid_notion_name,
+                GCalEventId_Notion_Name=settings.gcal_event_id_notion_name,
                 On_GCal_Notion_Name=settings.on_gcal_notion_name,
                 Delete_Notion_Name=settings.delete_notion_name,
                 DELETE_OPTION=settings.delete_option,
@@ -154,9 +154,9 @@ async def sync(settings: Settings, service: Resource, notion: nc.Client) -> None
                 service=service,
             )
 
-        progress.label = "Sychronized"
+        progress.label = "Synchronised"
         progress.update(1)
-        typer.echo(f"Synchronized at UTC {arrow.utcnow()}")
+        typer.echo(f"Synchronised at UTC {arrow.utcnow()}")
 
 
 async def continuous_sync(
@@ -194,7 +194,7 @@ def cli_sync(
     """
     typer.echo()
     typer.secho(
-        "Sychronize Notion <-> GCal", bg=typer.colors.GREEN, fg="white", bold=True
+        "Synchronize Notion <-> GCal", bg=typer.colors.GREEN, fg="white", bold=True
     )
     typer.echo()
 

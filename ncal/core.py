@@ -905,7 +905,7 @@ def existing_events_gcal_to_notion(
                         },
                     },
                 )
-            else:  # update Notin using datetime format
+            else:  # update Notion using datetime format
                 notion.pages.update(
                     # update the notion dashboard with the new datetime and update the
                     # last updated time
@@ -985,7 +985,7 @@ def existing_events_gcal_to_notion(
                     },
                 )
             else:
-                # update Notin using datetime format
+                # update Notion using datetime format
                 notion.pages.update(
                     # update the notion dashboard with the new datetime and update the
                     # last updated time
