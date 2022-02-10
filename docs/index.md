@@ -16,12 +16,13 @@ hide:
 
 # 2-Way Sync for Notion and Google Calendar
   
-Currently reworking this fork. It will eventually be a simple command that can be set to run, either continuously or just once.
+Currently reworking the documentation.
+
+Install with `pip install ncal`. This will install the `ncal` command.
 
 ## Configuration
 Configuration is via toml, command line flags, or environment variables (including via a .env file).
 
+Configuration is via toml, command line flags, or environment variables (including via a .env file). Reading through `config.py` will give a lot of useful information on options. Run `ncal --help` to get more info on the cli command.
+
 See [old README.md](https://github.com/SG60/ncal/blob/main/oldREADME.md) for more info.
-
-
-Reading through `config.py` will give a lot of useful information on config options. Run `ncal --help` to get more info on the cli command.
