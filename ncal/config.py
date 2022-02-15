@@ -30,7 +30,7 @@ class Settings(pydantic.BaseModel):
     # GCalToken creating program TODO:this might not be necessary anymore?!
     run_script: str = "python3 GCalToken.py"
     # Pickle file containing GCal Credentials
-    credentials_location: pydantic.FilePath = Path("token.pkl")
+    credentials_location: Path = Path("token.pkl")
 
     default_event_length: int = 60  # Default event length in minutes
     # http://www.timezoneconverter.com/cgi-bin/zonehelp.tzc  TODO: make this unnecessary
