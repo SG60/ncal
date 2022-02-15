@@ -43,5 +43,5 @@ jobs:
         run: poetry run isort . --check --diff
         if: ${{ always() }}
       - name: Flake8
-        run: poetry run flake8 ncal
+        run: poetry run flake8 .
         if: ${{ always() }}
