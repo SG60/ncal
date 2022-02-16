@@ -10,13 +10,6 @@ import pydantic
 import tomli
 from dotenv import load_dotenv
 
-# Pydantic default priority order (high to low):
-#     Arguments passed to the Settings class initialiser.
-#     Environment variables, e.g. my_prefix_special_function as described above.
-#     Variables loaded from a dotenv (.env) file.
-#     Variables loaded from the secrets directory.
-#     The default field values for the Settings model.
-
 
 class Settings(pydantic.BaseModel):
     """Class for storing settings
@@ -24,6 +17,7 @@ class Settings(pydantic.BaseModel):
     Attributes:
         notion_api_token: API token for Notion integration
         credentials_location: file containing GCal Credentials
+        database_id: ID of the Notion database
     """
 
     notion_api_token: str
@@ -36,7 +30,7 @@ class Settings(pydantic.BaseModel):
     # GCalToken creating program TODO:this might not be necessary anymore?!
     run_script: str = "python3 GCalToken.py"
     # Pickle file containing GCal Credentials
-    credentials_location: pydantic.FilePath = Path("token.pkl")
+    credentials_location: Path = Path("token.pkl")
 
     default_event_length: int = 60  # Default event length in minutes
     # http://www.timezoneconverter.com/cgi-bin/zonehelp.tzc  TODO: make this unnecessary
@@ -116,8 +110,17 @@ def load_config_file(path_to_file: Path) -> Dict[str, Any]:
 
 def env_var_names_dict(prefix: str) -> Dict[str, str]:
     """
-    produces a dictionary: {setting_str: prefixed_str}
-    """
+    Args:
+        prefix: string to add to the start of each environment variable name
+    Returns:
+        Dict[str, str]: A dictionary in the form of `original_name: new_name`
+
+    ```python
+    >>> env_var_names_dict("PREFIX_")
+    {'notion_api_token': 'prefix_notion_api_token', 'database_id': 'prefix_database_id', 'url_root': 'prefix_url_root', 'run_script': 'prefix_run_script', 'credentials_location': 'prefix_credentials_location', 'default_event_length': 'prefix_default_event_length', 'timezone': 'prefix_timezone', 'default_event_start': 'prefix_default_event_start', 'all_day_event_option': 'prefix_all_day_event_option', 'default_calendar_id': 'prefix_default_calendar_id', 'default_calendar_name': 'prefix_default_calendar_name', 'delete_option': 'prefix_delete_option', 'task_notion_name': 'prefix_task_notion_name', 'date_notion_name': 'prefix_date_notion_name', 'initiative_notion_name': 'prefix_initiative_notion_name', 'initiative_notion_type': 'prefix_initiative_notion_type', 'extrainfo_notion_name': 'prefix_extrainfo_notion_name', 'on_gcal_notion_name': 'prefix_on_gcal_notion_name', 'need_gcal_update_notion_name': 'prefix_need_gcal_update_notion_name', 'gcal_event_id_notion_name': 'prefix_gcal_event_id_notion_name', 'lastupdatedtime_notion_name': 'prefix_lastupdatedtime_notion_name', 'calendar_notion_name': 'prefix_calendar_notion_name', 'current_calendar_id_notion_name': 'prefix_current_calendar_id_notion_name', 'delete_notion_name': 'prefix_delete_notion_name', 'calendar_dictionary': 'prefix_calendar_dictionary'}
+
+    ```
+    """  # noqa
     return {i: prefix.lower() + i.lower() for i in Settings.__fields__.keys()}
 
 
@@ -141,7 +144,7 @@ def get_env_vars_case_insensitive(env_var_names: Dict[str, str]) -> Dict[str, st
 
 
 def load_settings(
-    config_file_path: Path = Path("config.toml"),
+    config_file_path: Path = None,
     *,
     use_env_vars: bool = True,
     use_toml_file: bool = True,
@@ -170,7 +173,7 @@ def load_settings(
     else:
         env_settings = {}
 
-    if use_toml_file:
+    if config_file_path is not None:
         try:
             toml_settings = load_config_file(config_file_path)
         except FileNotFoundError:
