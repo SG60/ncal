@@ -2,7 +2,7 @@ from os import environ
 
 import pytest
 
-from ncal import __version__, config
+from ncal import config
 
 environ.clear()
 
@@ -10,18 +10,18 @@ environ.clear()
 @pytest.fixture
 def settings_dict(tmp_path):
     return {
-        "notion_api_token": "asdfaa",
-        "database_id": "asdfad",
-        "url_root": "asdadf",
+        "notion_api_token": "asdf",
+        "database_id": "asdf",
+        "url_root": "asdf",
         "credentials_location": f"{tmp_path}/sub/picklefile",
     }
 
 
 def test_toml_import(tmp_path, settings_dict):
     toml_str = f"""
-        notion_api_token = "asdfaa"
-        database_id = "asdfad"
-        url_root = "asdadf"
+        notion_api_token = "asdf"
+        database_id = "asdf"
+        url_root = "asdf"
         credentials_location= "{tmp_path}/sub/picklefile"
     """
     tmpfile = tmp_path / "test_file.toml"
@@ -34,12 +34,12 @@ def test_toml_import(tmp_path, settings_dict):
     )
 
 
-def test_envvar_import(tmp_path, settings_dict):
+def test_env_var_import(tmp_path, settings_dict):
     global environ
     environ |= {
-        "NCAL_NOTION_API_TOKEN": "asdfaa",
-        "ncal_database_id": "asdfad",
-        "ncal_url_root": "asdadf",
+        "NCAL_NOTION_API_TOKEN": "asdf",
+        "ncal_database_id": "asdf",
+        "ncal_url_root": "asdf",
         "ncal_credentials_location": f"{tmp_path}/sub/picklefile",
     }
     (tmp_path / "sub").mkdir()
@@ -49,7 +49,7 @@ def test_envvar_import(tmp_path, settings_dict):
 
 def test_get_env_vars():
     prefix = "ncal_"
-    key, value = ("notion_api_token", "asdfadf")
+    key, value = ("notion_api_token", "asdf")
     environ_key = prefix + key
     environ[environ_key] = value
     env_var_names = {i: prefix + i for i in config.Settings.__fields__.keys()}
