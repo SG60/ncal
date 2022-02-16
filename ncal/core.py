@@ -128,7 +128,7 @@ def get_relation_title(
 
 def new_events_notion_to_gcal(
     database_id,
-    urlRoot,
+    url_root,
     DEFAULT_CALENDAR_NAME,
     calendarDictionary,
     Task_Notion_Name,
@@ -190,14 +190,14 @@ def new_events_notion_to_gcal(
     except IndexError:
         logging.info("")
 
-    TaskNames = []
-    start_Dates = []
-    end_Times = []
-    Initiatives = []
-    ExtraInfo = []
-    URL_list = []
-    calEventIdList = []
-    CalendarList = []
+    task_names = []
+    start_dates = []
+    end_times = []
+    initiatives = []
+    extra_info = []
+    url_list = []
+    cal_event_id_list = []
+    calendar_list = []
 
     if len(resultList) > 0:
         for i, el in enumerate(resultList):
@@ -205,18 +205,18 @@ def new_events_notion_to_gcal(
             logging.info(el)
             logging.info("\n")
 
-            TaskNames.append(
+            task_names.append(
                 el["properties"][Task_Notion_Name]["title"][0]["text"]["content"]
             )
-            start_Dates.append(el["properties"][Date_Notion_Name]["date"]["start"])
+            start_dates.append(el["properties"][Date_Notion_Name]["date"]["start"])
 
             if el["properties"][Date_Notion_Name]["date"]["end"] is not None:
-                end_Times.append(el["properties"][Date_Notion_Name]["date"]["end"])
+                end_times.append(el["properties"][Date_Notion_Name]["date"]["end"])
             else:
-                end_Times.append(el["properties"][Date_Notion_Name]["date"]["start"])
+                end_times.append(el["properties"][Date_Notion_Name]["date"]["start"])
 
             try:
-                Initiatives.append(
+                initiatives.append(
                     get_property_text(
                         notion=notion,
                         notion_page=el,
@@ -225,20 +225,20 @@ def new_events_notion_to_gcal(
                     )
                 )
             except ValueError:
-                Initiatives.append("")
+                initiatives.append("")
 
             try:
-                ExtraInfo.append(
+                extra_info.append(
                     el["properties"][ExtraInfo_Notion_Name]["rich_text"][0]["text"][
                         "content"
                     ]
                 )
             except IndexError:
-                ExtraInfo.append("")
-            URL_list.append(make_task_url(el["id"], urlRoot))
+                extra_info.append("")
+            url_list.append(make_task_url(el["id"], url_root))
 
             try:
-                CalendarList.append(
+                calendar_list.append(
                     calendarDictionary[
                         el["properties"][Calendar_Notion_Name]["select"]["name"]
                     ]
@@ -246,7 +246,7 @@ def new_events_notion_to_gcal(
             # keyerror occurs when there's nothing put into the calendar in the first
             # place
             except (KeyError, TypeError):
-                CalendarList.append(calendarDictionary[DEFAULT_CALENDAR_NAME])
+                calendar_list.append(calendarDictionary[DEFAULT_CALENDAR_NAME])
 
             pageId = el["id"]
             # This checks off that the event has been put on Google Calendar
@@ -264,7 +264,7 @@ def new_events_notion_to_gcal(
                     },
                 },
             )
-            logging.info(CalendarList)
+            logging.info(calendar_list)
 
             def create_gcal_event(
                 task_name,
@@ -281,7 +281,7 @@ def new_events_notion_to_gcal(
                 # Have restriction that the calendar events don't cross days
                 try:
                     # start and end are both dates
-                    calEventId = make_cal_event(
+                    cal_event_id = make_cal_event(
                         task_name,
                         make_event_description(initiative, extra_info),
                         datetime.datetime.strptime(start, "%Y-%m-%d"),
@@ -294,7 +294,7 @@ def new_events_notion_to_gcal(
                 except ValueError:
                     try:
                         # start and end are both date+time
-                        calEventId = make_cal_event(
+                        cal_event_id = make_cal_event(
                             task_name,
                             make_event_description(initiative, extra_info),
                             dateutil.parser.isoparse(start),
@@ -305,7 +305,7 @@ def new_events_notion_to_gcal(
                             settings,
                         )
                     except ValueError:
-                        calEventId = make_cal_event(
+                        cal_event_id = make_cal_event(
                             task_name,
                             make_event_description(initiative, extra_info),
                             dateutil.parser.isoparse(start),
@@ -315,23 +315,23 @@ def new_events_notion_to_gcal(
                             service,
                             settings,
                         )
-                return calEventId
+                return cal_event_id
 
             calEventId = create_gcal_event(
-                TaskNames[i],
-                Initiatives[i],
-                ExtraInfo[i],
-                start_Dates[i],
-                end_Times[i],
-                URL_list[i],
-                CalendarList[i],
+                task_names[i],
+                initiatives[i],
+                extra_info[i],
+                start_dates[i],
+                end_times[i],
+                url_list[i],
+                calendar_list[i],
                 service,
                 settings,
             )
-            calEventIdList.append(calEventId)
+            cal_event_id_list.append(calEventId)
 
             if (
-                CalendarList[i] == calendarDictionary[DEFAULT_CALENDAR_NAME]
+                calendar_list[i] == calendarDictionary[DEFAULT_CALENDAR_NAME]
             ):  # this means that there is no calendar assigned on Notion
                 # This puts the the GCal Id into the Notion Dashboard
                 notion.pages.update(
@@ -339,10 +339,12 @@ def new_events_notion_to_gcal(
                         "page_id": pageId,
                         "properties": {
                             GCalEventId_Notion_Name: {
-                                "rich_text": [{"text": {"content": calEventIdList[i]}}]
+                                "rich_text": [
+                                    {"text": {"content": cal_event_id_list[i]}}
+                                ]
                             },
                             Current_Calendar_Id_Notion_Name: {
-                                "rich_text": [{"text": {"content": CalendarList[i]}}]
+                                "rich_text": [{"text": {"content": calendar_list[i]}}]
                             },
                             Calendar_Notion_Name: {
                                 "select": {"name": DEFAULT_CALENDAR_NAME},
@@ -356,10 +358,12 @@ def new_events_notion_to_gcal(
                         "page_id": pageId,
                         "properties": {
                             GCalEventId_Notion_Name: {
-                                "rich_text": [{"text": {"content": calEventIdList[i]}}]
+                                "rich_text": [
+                                    {"text": {"content": cal_event_id_list[i]}}
+                                ]
                             },
                             Current_Calendar_Id_Notion_Name: {
-                                "rich_text": [{"text": {"content": CalendarList[i]}}]
+                                "rich_text": [{"text": {"content": calendar_list[i]}}]
                             },
                         },
                     },
@@ -372,7 +376,7 @@ def new_events_notion_to_gcal(
 
 def existing_events_notion_to_gcal(
     database_id,
-    urlRoot,
+    url_root,
     DEFAULT_CALENDAR_ID,
     DEFAULT_CALENDAR_NAME,
     calendarDictionary,
@@ -516,7 +520,7 @@ def existing_events_notion_to_gcal(
                 )
             except IndexError:
                 ExtraInfo.append("")
-            URL_list.append(make_task_url(el["id"], urlRoot))
+            URL_list.append(make_task_url(el["id"], url_root))
 
             logging.info(el)
             # CalendarList.append(calendarDictionary[el['properties'][Calendar_Notion_Name]['select']['name']])
@@ -1450,14 +1454,14 @@ def make_event_description(initiative, info):
         return f"Initiative: {initiative} \n{info}"
 
 
-def make_task_url(ending, urlRoot):
+def make_task_url(ending: str, url_root: str):
     """
     Method to make a task's url
     """
     # To make a url for the notion task, we have to take the id of the task and take
     # away the hyphens from the string
-    urlId = ending.replace("-", "")
-    return urlRoot + urlId
+    url_id = ending.replace("-", "")
+    return url_root + url_id
 
 
 def make_cal_event(
@@ -1554,10 +1558,7 @@ def make_cal_event(
 
     else:
         if eventStartTime.hour == 0 and eventStartTime.minute == 0:
-            # Start on Notion is 12 am and end is also given on Notion
-            if eventEndTime != eventStartTime:
-                pass
-            else:
+            if eventEndTime == eventStartTime:
                 # if the datetime fed into this is only a date or is at 12 AM,
                 # then the event will fall under here
                 eventStartTime = datetime.datetime.combine(
