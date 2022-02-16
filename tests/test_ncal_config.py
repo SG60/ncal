@@ -32,16 +32,13 @@ def test_toml_import(tmp_path, settings_dict):
     assert config.load_settings(tmpfile, use_env_vars=False) == config.Settings(
         **settings_dict
     )
-    assert (
-        config.load_settings(
-            tmp_path / "fake_path.toml",
-            use_env_vars=False,
-            notion_api_token="1234",
-            database_id="asdf",
-            url_root="1234",
-        )
-        == config.Settings(notion_api_token="1234", database_id="asdf", url_root="1234")
-    )
+    assert config.load_settings(
+        tmp_path / "fake_path.toml",
+        use_env_vars=False,
+        notion_api_token="1234",
+        database_id="asdf",
+        url_root="1234",
+    ) == config.Settings(notion_api_token="1234", database_id="asdf", url_root="1234")
 
 
 def test_env_var_import(tmp_path, settings_dict):
