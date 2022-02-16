@@ -5,8 +5,6 @@ from pathlib import Path
 from typing import Callable, Coroutine, Optional
 
 import arrow
-
-# from notion_client import Client
 import notion_client as nc
 import typer
 from googleapiclient.discovery import Resource  # type: ignore

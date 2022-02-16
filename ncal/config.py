@@ -104,7 +104,6 @@ def load_config_file(path_to_file: Path) -> Dict[str, Any]:
         Settings (unfiltered)"""
     with open(path_to_file, "rb") as f:
         tomli_dictionary = tomli.load(f)
-        # settings = Settings(**tomli_dictionary)
         return tomli_dictionary
 
 
