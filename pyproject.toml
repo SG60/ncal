@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ncal"
-version = "0.1.12"
+version = "0.1.13"
 description = ""
 authors = ["Sam Greening <samjg60@gmail.com>"]
 license = "GNU GPL"
@@ -36,7 +36,7 @@ hypothesis = "^6.37.1"
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.1.12"
+version = "0.1.13"
 tag_format = "v$version"
 version_files = ["pyproject.toml:version"]
 
