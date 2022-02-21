@@ -2,7 +2,7 @@ import datetime
 import logging
 import pickle
 import time
-from typing import Any, Literal
+from typing import Any
 
 import arrow
 import dateutil.parser
@@ -11,8 +11,9 @@ import googleapiclient.discovery  # type: ignore
 import notion_client as nc  # type: ignore
 from googleapiclient.errors import HttpError  # type: ignore
 
-from ncal import config
+from ncal import config, utils
 from ncal.gcal_token import gcal_token
+from ncal.utils import get_property_text
 
 
 def setup_google_api(
@@ -90,42 +91,6 @@ def paginated_database_query(
     return matching_pages
 
 
-def get_property_text(
-    notion: nc.Client,
-    notion_page: dict[str, Any],
-    property_name: str,
-    property_type: Literal["relation", "select"],
-) -> str:
-    """Get the text contained within several different types of property.
-
-    Note: Currently only relation and select are implemented."""
-    text: str
-    if property_type == "select":
-        text = notion_page["properties"][property_name]["select"]["name"]
-    elif property_type == "relation":
-        text = get_relation_title(
-            notion=notion, notion_page=notion_page, relation_name=property_name
-        )
-    else:
-        raise ValueError
-    return text
-
-
-def get_relation_title(
-    notion: nc.Client, notion_page: dict[str, Any], relation_name: str
-) -> str:
-    """Get the title of the first page in a relation property."""
-    relation_property: list = notion_page["properties"][relation_name]["relation"]
-    if relation_property:
-        relation_id: str = relation_property[0]["id"]
-        relation_title: dict = notion.pages.properties.retrieve(
-            relation_id, "title"
-        )  # type:ignore
-        return relation_title["results"][0]["title"]["plain_text"]
-    else:
-        return ""
-
-
 def new_events_notion_to_gcal(
     database_id,
     url_root,
@@ -188,7 +153,7 @@ def new_events_notion_to_gcal(
     try:
         logging.info(resultList[0])
     except IndexError:
-        logging.info("")
+        logging.info("index error")
 
     task_names = []
     start_dates = []
@@ -201,12 +166,12 @@ def new_events_notion_to_gcal(
 
     if len(resultList) > 0:
         for i, el in enumerate(resultList):
-            logging.info("\n")
             logging.info(el)
-            logging.info("\n")
 
             task_names.append(
-                el["properties"][Task_Notion_Name]["title"][0]["text"]["content"]
+                utils.collapse_rich_text_property(
+                    el["properties"][Task_Notion_Name]["title"]
+                )
             )
             start_dates.append(el["properties"][Date_Notion_Name]["date"]["start"])
 
@@ -491,7 +456,9 @@ def existing_events_notion_to_gcal(
             logging.info("\n")
 
             TaskNames.append(
-                el["properties"][Task_Notion_Name]["title"][0]["text"]["content"]
+                utils.collapse_rich_text_property(
+                    el["properties"][Task_Notion_Name]["title"]
+                )
             )
             start_Dates.append(el["properties"][Date_Notion_Name]["date"]["start"])
 
