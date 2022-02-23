@@ -1,0 +1,51 @@
+[tool.poetry]
+name = "ncal"
+version = "0.1.13"
+description = ""
+authors = ["Sam Greening <samjg60@gmail.com>"]
+license = "GNU GPL"
+homepage = "https://sg60.github.io/ncal/"
+repository = "https://github.com/SG60/Notion-and-Google-Calendar-2-Way-Sync"
+readme = "README.md"
+
+[tool.poetry.scripts]
+ncal = "ncal.cli:app"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+notion-client = "^0.9.0"
+google-api-python-client = "^2.36.0"
+google-auth-oauthlib = "^0.4.6"
+python-dateutil = "^2.8.2"
+tomli = "^2.0.0"
+typer = "^0.4.0"
+pydantic = "^1.9.0"
+python-dotenv = "^0.19.2"
+arrow = "^1.2.1"
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.0.1"
+pytest-cov = "^3.0.0"
+mypy = "^0.931"
+types-python-dateutil = "^2.8.4"
+ipdb = "^0.13.9"
+mkdocs-material = "^8.2.1"
+mkdocstrings = {version = "^0.18.0", extras = ["python"]}
+hypothesis = "^6.37.1"
+
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+version = "0.1.13"
+tag_format = "v$version"
+version_files = ["pyproject.toml:version"]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.isort]
+profile = "black"
+
+[tool.pytest.ini_options]
+addopts = "--doctest-glob='docs/*.md' --doctest-modules"

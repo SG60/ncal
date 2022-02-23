@@ -1,0 +1,20 @@
+# environments
+.env
+venv/
+.vscode/
+
+# Python
+__pycache__/
+.mypy_cache/
+.coverage
+dist/
+.hypothesis/
+
+# other credentials
+client_secret.json
+token.pkl
+secret_tokens.py
+config.toml
+
+# vim
+Session.vim

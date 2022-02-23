@@ -1,0 +1,57 @@
+# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: Package Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: ["**"]
+  workflow_call:
+
+jobs:
+  build:
+    name: ${{ matrix.os }} / ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [Ubuntu, macOS, Windows]
+        python-version: ["3.9", "3.10"]
+        include:
+          - os: Ubuntu
+            image: ubuntu-latest
+          - os: Windows
+            image: windows-2022
+          - os: macOS
+            image: macos-11
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - uses: SG60/setup-poetry@v1
+
+      - name: Install dependencies
+        run: poetry install --remove-untracked
+
+      - name: Install pytest github plugin
+        run: poetry run pip install pytest-github-actions-annotate-failures
+
+      - name: Test with pytest
+        run: |
+          poetry run python -m pytest --cov --cov-report=xml --cov-report=term-missing
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          fail_ci_if_error: false
+
+      - name: Run mypy
+        run: poetry run mypy .
+        if: ${{ always() }}
