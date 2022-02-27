@@ -258,7 +258,7 @@ six = "*"
 
 [[package]]
 name = "google-auth-oauthlib"
-version = "0.4.6"
+version = "0.5.0"
 description = "Google Authentication Library"
 category = "main"
 optional = false
@@ -1172,7 +1172,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "7b8135d0859fb4111e21a07401103c87beda195e340dc5815384307ae22333c5"
+content-hash = "bf0ba7bcc424cd772fbf108cc1631eeb6369a44660062853fb466357d66112a7"
 
 [metadata.files]
 anyio = [
@@ -1320,8 +1320,8 @@ google-auth-httplib2 = [
     {file = "google_auth_httplib2-0.1.0-py2.py3-none-any.whl", hash = "sha256:31e49c36c6b5643b57e82617cb3e021e3e1d2df9da63af67252c02fa9c1f4a10"},
 ]
 google-auth-oauthlib = [
-    {file = "google-auth-oauthlib-0.4.6.tar.gz", hash = "sha256:a90a072f6993f2c327067bf65270046384cda5a8ecb20b94ea9a687f1f233a7a"},
-    {file = "google_auth_oauthlib-0.4.6-py2.py3-none-any.whl", hash = "sha256:3f2a6e802eebbb6fb736a370fbf3b055edcb6b52878bf2f26330b5e041316c73"},
+    {file = "google-auth-oauthlib-0.5.0.tar.gz", hash = "sha256:06c4ceb3ab2a93b85b8976bbe86cbb82ae1d1c02d2ded3cfd0847a8b6955263b"},
+    {file = "google_auth_oauthlib-0.5.0-py2.py3-none-any.whl", hash = "sha256:8b7ff4d2fe81e3bd034306aa665444360b3c67195b9dea582dddc7dfb8d89d34"},
 ]
 googleapis-common-protos = [
     {file = "googleapis-common-protos-1.54.0.tar.gz", hash = "sha256:a4031d6ec6c2b1b6dc3e0be7e10a1bd72fb0b18b07ef9be7b51f2c1004ce2437"},
