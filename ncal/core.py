@@ -46,7 +46,9 @@ def setup_google_api(
 
 
 def setup_api_connections(
-    runscript_location, default_calendar_id, credentials_location, notion_api_token
+    default_calendar_id: str,
+    credentials_location,
+    notion_api_token: str,
 ) -> tuple[googleapiclient.discovery.Resource, Any, nc.Client]:
     """Setup the API connections to Google Calendar and notion
     Args:
@@ -67,13 +69,13 @@ def setup_api_connections(
 
 
 def paginated_database_query(
-    notion_client: nc.Client, database_id: str, **query: dict
+    notion_client: nc.Client, database_id: str, **query: Any
 ) -> list:
     """similar to notion_client.database.query(**query)
     Args:
         notion_client:
         database_id:
-        query: A query such as would be used for the normal notion_client query
+        **query: A query such as would be used for the normal notion_client query
     Returns:
         List of notion pages matching the query
     """
@@ -111,7 +113,7 @@ def new_events_notion_to_gcal(
     settings: config.Settings,
 ):
     """
-    Take Notion Events not on GCal and move them over to GCal
+    Take Notion Events not on GCal and move them over to GCal.
 
     If you just want all Notion events to be on GCal, then you'll have to edit the
     query so it is only checking the 'On GCal?' property
@@ -1571,7 +1573,23 @@ def update_calendar_event(
     service,
     config: config.Settings,
 ):
-    """Method to update a calendar event"""
+    """Update a Google Calendar event.
+
+    Args:
+        eventName:
+        eventDescription:
+        eventStartTime:
+        sourceURL:
+        eventId:
+        eventEndTime:
+        currentCalId:
+        CalId:
+        service:
+        config (config.Settings):
+
+    Returns:
+        _type_: _description_
+    """
     if (
         eventStartTime.hour == 0
         and eventStartTime.minute == 0

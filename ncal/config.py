@@ -151,7 +151,7 @@ def load_settings(
     *,
     use_env_vars: bool = True,
     use_toml_file: bool = True,
-    **kwargs,
+    **kwargs: Any,
 ) -> Settings:
     """Load settings from multiple sources.
 
@@ -162,7 +162,7 @@ def load_settings(
         config_file_path: Path to a .toml config file
         use_env_vars:
         use_toml_file:
-        kwargs: Other settings to provide to the Settings object
+        **kwargs: Other settings to provide to the Settings object
 
     Returns:
         A ncal.config.Settings object

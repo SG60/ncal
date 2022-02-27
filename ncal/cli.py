@@ -1,3 +1,4 @@
+"""Command Line Interface for synchronising Google Calendar and Notion."""
 import asyncio
 import datetime
 import logging
@@ -42,7 +43,13 @@ async def scheduler(
 
 
 async def sync(settings: Settings, service: Resource, notion: nc.Client) -> None:
-    """Sync between Google Calendar and Notion."""
+    """Sync between Google Calendar and Notion.
+
+    Args:
+        settings: Configuration settings
+        service: A Google Calendar API Client
+        notion: A Notion API Client
+    """
     num_steps = 4
     if settings.delete_option:
         num_steps += 1
@@ -50,7 +57,7 @@ async def sync(settings: Settings, service: Resource, notion: nc.Client) -> None
     with typer.progressbar(
         range(num_steps), label="Synchronising", show_eta=False, show_pos=True
     ) as progress:
-        todayDate = arrow.utcnow().isoformat()
+        today_date = arrow.utcnow().isoformat()
 
         progress.label = "new N->G"
         core.new_events_notion_to_gcal(
@@ -93,7 +100,7 @@ async def sync(settings: Settings, service: Resource, notion: nc.Client) -> None
             settings.current_calendar_id_notion_name,
             settings.delete_notion_name,
             notion,
-            todayDate,
+            today_date,
             service,
             settings=settings,
         )
@@ -114,7 +121,7 @@ async def sync(settings: Settings, service: Resource, notion: nc.Client) -> None
             settings.delete_notion_name,
             service,
             notion,
-            todayDate,
+            today_date,
             settings=settings,
         )
         progress.update(1)
@@ -163,6 +170,14 @@ async def continuous_sync(
     service: Resource,
     notion: nc.Client,
 ):
+    """Call sync continuously.
+
+    Args:
+        interval (datetime.timedelta):
+        settings (Settings):
+        service (Resource):
+        notion (nc.Client):
+    """
     await sync(settings, service, notion)
     await scheduler(
         interval, sync, {"settings": settings, "service": service, "notion": notion}
@@ -186,10 +201,7 @@ def cli_sync(
         help="delete pages which have been marked done",
     ),
 ):
-    """
-    CLI to sync a Notion database with Google Calendar.
-
-    """
+    """CLI to sync a Notion database with Google Calendar."""
     typer.echo()
     typer.secho(
         "Synchronize Notion <-> GCal", bg=typer.colors.GREEN, fg="white", bold=True
@@ -231,7 +243,6 @@ def cli_sync(
 
     typer.echo("Setting up API connections...")
     service, calendar, notion = core.setup_api_connections(
-        runscript_location=settings.run_script,
         default_calendar_id=settings.default_calendar_id,
         credentials_location=settings.credentials_location,
         notion_api_token=settings.notion_api_token,
@@ -246,7 +257,7 @@ def cli_sync(
 
 @app.command("gcal-token")
 def cli_gcal_token(client_secret_json: Path, out_file: Path = Path("token.pkl")):
-    """Generate a token, which will be stored in a .pkl file"""
+    """Generate a token, which will be stored in a .pkl file."""
     gcal_token(out_file, client_secret_json)
 
 
@@ -255,6 +266,7 @@ def main(
     verbose: bool = False,
     version: bool = typer.Option(None, "--version", is_eager=True),
 ):
+    """Main CLI entrypoint."""  # noqa: D401
     if verbose:
         state["verbose"] = True
         logging.basicConfig(level=20)
