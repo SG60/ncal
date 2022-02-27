@@ -6,7 +6,7 @@ line.
 """
 from os import environ
 from pathlib import Path
-from typing import Any, Dict, Literal
+from typing import Any, Dict, Literal, Optional
 
 import pydantic
 import tomli
@@ -147,7 +147,7 @@ def get_env_vars_case_insensitive(env_var_names: Dict[str, str]) -> Dict[str, st
 
 
 def load_settings(
-    config_file_path: Path | None = None,
+    config_file_path: Optional[Path] = None,
     *,
     use_env_vars: bool = True,
     use_toml_file: bool = True,
