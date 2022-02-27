@@ -1,3 +1,4 @@
+"""Test core functionality module."""
 from unittest import mock
 
 import pytest
@@ -7,13 +8,14 @@ from ncal import core
 
 @pytest.mark.parametrize("property_type", ("relation", "other"))
 @mock.patch("notion_client.Client")
-def test_get_property_text(MockNotionClient, property_type):
+def test_get_property_text(mock_notion_client, property_type):
+    """Test general purpose property text getter."""
     property_name = "rel_name"
     property_text = "Property Title Text"
     example_page = {"properties": {property_name: {"relation": [{"id": "12345"}]}}}
 
     # mocking of notion response
-    client = MockNotionClient.return_value
+    client = mock_notion_client.return_value
     client.pages.properties.retrieve.return_value = {
         "name": "asdf",
         "results": [{"a": "asdf", "title": {"plain_text": property_text}}],

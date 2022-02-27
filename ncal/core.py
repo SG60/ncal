@@ -1,3 +1,4 @@
+"""Core functionality for synchronisation."""
 import datetime
 import logging
 import pickle
@@ -19,8 +20,7 @@ from ncal.notion_utils import get_property_text
 def setup_google_api(
     calendar_id: str, credentials_location: str
 ) -> tuple[googleapiclient.discovery.Resource, Any]:
-    """Set up the Google Calendar API interface"""
-
+    """Set up the Google Calendar API interface."""
     credentials = pickle.load(open(credentials_location, "rb"))
     service = googleapiclient.discovery.build("calendar", "v3", credentials=credentials)
 
@@ -125,7 +125,6 @@ def new_events_notion_to_gcal(
         notion: nc.Client,
     ) -> list:
         """Get new pages from notion (with pagination!)."""
-
         matching_pages = []
 
         query = {
@@ -1080,7 +1079,6 @@ def new_events_gcal_to_notion(
 
     First, we get a list of all of the GCal Event Ids from the Notion Dashboard.
     """
-
     my_page = paginated_database_query(
         notion,
         database_id,
@@ -1422,9 +1420,7 @@ def make_event_description(initiative, info):
 
 
 def make_task_url(ending: str, url_root: str):
-    """
-    Method to make a task's url
-    """
+    """Method to create a task's url"""
     # To make a url for the notion task, we have to take the id of the task and take
     # away the hyphens from the string
     url_id = ending.replace("-", "")
@@ -1441,9 +1437,7 @@ def make_cal_event(
     service,
     config: config.Settings,
 ):
-    """
-    Method to make a calendar event
-    """
+    """Method to make a calendar event"""
     if (
         eventStartTime.hour == 0
         and eventStartTime.minute == 0
@@ -1577,9 +1571,7 @@ def update_calendar_event(
     service,
     config: config.Settings,
 ):
-    """
-    Method to update a calendar event
-    """
+    """Method to update a calendar event"""
     if (
         eventStartTime.hour == 0
         and eventStartTime.minute == 0

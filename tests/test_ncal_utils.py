@@ -1,3 +1,4 @@
+"""Test notion_utils module."""
 import hypothesis
 import pytest
 from hypothesis import strategies as st
@@ -42,6 +43,7 @@ from ncal import notion_utils
     ],
 )
 def test_collapse_rich_text_property_parametrized(test_list, output):
+    """Test a function to convert a Notion rich text property to plain text."""
     assert notion_utils.collapse_rich_text_property(test_list) == output
 
 
@@ -54,6 +56,11 @@ def test_collapse_rich_text_property_parametrized(test_list, output):
     )
 )
 def test_collapse_rich_text_property(test_list):
+    """Test notion_utils.collapse_rich_text_property.
+
+    Test a function to convert a Notion rich text property to plain text
+    using hypothesis.
+    """
     assert notion_utils.collapse_rich_text_property(test_list) == "".join(
         i["plain_text"] for i in test_list
     )

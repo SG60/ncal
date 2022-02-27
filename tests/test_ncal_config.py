@@ -1,3 +1,4 @@
+"""Test the config management module."""
 from os import environ
 
 import pytest
@@ -9,6 +10,7 @@ environ.clear()
 
 @pytest.fixture
 def settings_dict(tmp_path):
+    """Generate a sample dictionary of settings."""
     return {
         "notion_api_token": "asdf",
         "database_id": "asdf",
@@ -18,6 +20,7 @@ def settings_dict(tmp_path):
 
 
 def test_toml_import(tmp_path, settings_dict):
+    """Test that .toml import is working."""
     toml_str = f"""
         notion_api_token = "asdf"
         database_id = "asdf"
@@ -32,16 +35,20 @@ def test_toml_import(tmp_path, settings_dict):
     assert config.load_settings(tmpfile, use_env_vars=False) == config.Settings(
         **settings_dict
     )
-    assert config.load_settings(
-        tmp_path / "fake_path.toml",
-        use_env_vars=False,
-        notion_api_token="1234",
-        database_id="asdf",
-        url_root="1234",
-    ) == config.Settings(notion_api_token="1234", database_id="asdf", url_root="1234")
+    assert (
+        config.load_settings(
+            tmp_path / "fake_path.toml",
+            use_env_vars=False,
+            notion_api_token="1234",
+            database_id="asdf",
+            url_root="1234",
+        )
+        == config.Settings(notion_api_token="1234", database_id="asdf", url_root="1234")
+    )
 
 
 def test_env_var_import(tmp_path, settings_dict):
+    """Test ncal.config.load_settings for env vars."""
     global environ
     environ |= {
         "NCAL_NOTION_API_TOKEN": "asdf",
@@ -55,6 +62,7 @@ def test_env_var_import(tmp_path, settings_dict):
 
 
 def test_get_env_vars():
+    """Test case insensitive env var import."""
     prefix = "ncal_"
     key, value = ("notion_api_token", "asdf")
     environ_key = prefix + key

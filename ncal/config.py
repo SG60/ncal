@@ -1,6 +1,8 @@
 """
-Functions and classes to manage configuration are in this file. Configuration can
-operate through toml, .env, environment variables, or the command line.
+Functions and classes to manage configuration are in this file.
+
+Configuration can operate through toml, .env, environment variables, or the command
+line.
 """
 from os import environ
 from pathlib import Path
@@ -12,7 +14,7 @@ from dotenv import load_dotenv
 
 
 class Settings(pydantic.BaseModel):
-    """Class for storing settings
+    """Class for storing settings.
 
     Attributes:
         notion_api_token: API token for Notion integration
@@ -97,11 +99,13 @@ class Settings(pydantic.BaseModel):
 
 
 def load_config_file(path_to_file: Path) -> Dict[str, Any]:
-    """Load a toml config file into a dictionary
+    """Load a toml config file into a dictionary.
+
     Args:
         path_to_file:
     Returns:
-        Settings (unfiltered)"""
+        Settings (unfiltered)
+    """
     with open(path_to_file, "rb") as f:
         tomli_dictionary = tomli.load(f)
         return tomli_dictionary
@@ -124,8 +128,8 @@ def env_var_names_dict(prefix: str) -> Dict[str, str]:
 
 
 def get_env_vars_case_insensitive(env_var_names: Dict[str, str]) -> Dict[str, str]:
-    """Gets environment variables matching the values in the given dictionary,
-    using the keys as the keys for the returned dictionary.
+    """Get environment variables matching the given dictionary.
+
     Args:
         env_var_names: {desired label: environment variable label}
     Returns:
@@ -143,13 +147,13 @@ def get_env_vars_case_insensitive(env_var_names: Dict[str, str]) -> Dict[str, st
 
 
 def load_settings(
-    config_file_path: Path = None,
+    config_file_path: Path | None = None,
     *,
     use_env_vars: bool = True,
     use_toml_file: bool = True,
     **kwargs,
 ) -> Settings:
-    """Function to load settings from multiple sources.
+    """Load settings from multiple sources.
 
     This function falls back to defaults, so only a few settings are required.
     Priority (high-low): cli, env, config_file.

@@ -5,7 +5,7 @@ import notion_client
 
 
 def collapse_rich_text_property(property: list[dict[str, Any]]) -> str:
-    """Collapse a Notion Rich Text property into a single string
+    """Collapse a Notion Rich Text property into a single string.
 
     Args:
         property: An array of rich text objects (as returned by a rich text property)
@@ -38,7 +38,8 @@ def get_property_text(
 ) -> str:
     """Get the text contained within several different types of property.
 
-    Note: Currently only relation and select are implemented."""
+    Note: Currently only relation and select are implemented.
+    """
     text: str
     if property_type == "select":
         text = notion_page["properties"][property_name]["select"]["name"]
