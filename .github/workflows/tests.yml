@@ -43,9 +43,9 @@ jobs:
       - name: Install pytest github plugin
         run: poetry run pip install pytest-github-actions-annotate-failures
 
-      - name: Test with pytest
+      - name: Test with pytest, in parallel using pytest-xdist
         run: |
-          poetry run python -m pytest --cov --cov-report=xml --cov-report=term-missing
+          poetry run python -m pytest --cov --cov-report=xml --cov-report=term-missing -n auto
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
