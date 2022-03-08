@@ -32,6 +32,7 @@ ipdb = "^0.13.9"
 mkdocs-material = "^8.2.5"
 mkdocstrings = {version = "^0.18.1", extras = ["python"]}
 hypothesis = "^6.39.2"
+pytest-xdist = "^2.5.0"
 
 
 [tool.commitizen]
