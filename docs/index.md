@@ -19,5 +19,3 @@ Install with `pip install ncal`. This will install the `ncal` command.
 Configuration is via toml, command line flags, or environment variables (including via a .env file).
 
 Configuration is via toml, command line flags, or environment variables (including via a .env file). Reading through `config.py` will give a lot of useful information on options. Run `ncal --help` to get more info on the cli command.
-
-See [old README.md](https://github.com/SG60/ncal/blob/main/oldREADME.md) for more info.
