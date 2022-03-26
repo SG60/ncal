@@ -37,7 +37,7 @@ def setup_google_api(
         # otherwise, get new credentials
         else:
             flow = InstalledAppFlow.from_client_secrets_file(client_secret_file, SCOPES)
-            credentials = flow.run_local_server(port=0)
+            credentials = flow.run_local_server(port=0, open_browser=False)
         # Save the credentials for the next run
         with open(token_file, "w") as token:
             token.write(credentials.to_json())
