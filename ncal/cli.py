@@ -13,7 +13,7 @@ from pydantic import ValidationError
 
 from ncal import core
 from ncal.config import Settings, load_settings
-from ncal.gcal_token import gcal_token
+from ncal.gcal_setup import gcal_token
 
 from . import __version__
 

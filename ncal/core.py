@@ -1,50 +1,20 @@
 """Core functionality for synchronisation."""
 import datetime
 import logging
-import pickle
 import time
 from typing import Any, Final
 
 import arrow
 import dateutil.parser
-import google.auth.exceptions  # type: ignore
 import googleapiclient.discovery  # type: ignore
 import notion_client as nc  # type: ignore
 from googleapiclient.errors import HttpError  # type: ignore
 
 from ncal import config, notion_utils
-from ncal.gcal_token import gcal_token
+from ncal.gcal_setup import setup_google_api
 from ncal.notion_utils import get_property_text
 
 DATE_AND_TIME_FORMAT_STRING: Final = "%Y-%m-%dT%H:%M:%S"
-
-
-def setup_google_api(
-    calendar_id: str, credentials_location: str
-) -> tuple[googleapiclient.discovery.Resource, Any]:
-    """Set up the Google Calendar API interface."""
-    credentials = pickle.load(open(credentials_location, "rb"))
-    service = googleapiclient.discovery.build("calendar", "v3", credentials=credentials)
-
-    # There could be a hiccup if the Google Calendar API token expires.
-    # If the token expires, we create a new token for the program to use
-    try:
-        calendar = service.calendars().get(calendarId=calendar_id).execute()
-    except google.auth.exceptions.RefreshError:
-        # refresh the token
-
-        gcal_token(credentials_location, "client_secret.json")
-
-        # SET UP THE GOOGLE CALENDAR API INTERFACE
-
-        credentials = pickle.load(open(credentials_location, "rb"))
-        service = googleapiclient.discovery.build(
-            "calendar", "v3", credentials=credentials
-        )
-
-        calendar = service.calendars().get(calendarId=calendar_id).execute()
-
-    return (service, calendar)
 
 
 def setup_api_connections(
