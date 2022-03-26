@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ncal"
-version = "0.1.15"
+version = "0.2.0"
 description = ""
 authors = ["Sam Greening <samjg60@gmail.com>"]
 license = "GNU GPL"
@@ -37,7 +37,7 @@ pytest-xdist = "^2.5.0"
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.1.15"
+version = "0.2.0"
 tag_format = "v$version"
 version_files = ["pyproject.toml:version"]
 
