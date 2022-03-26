@@ -3,7 +3,7 @@ import datetime
 import logging
 import pickle
 import time
-from typing import Any
+from typing import Any, Final
 
 import arrow
 import dateutil.parser
@@ -15,6 +15,8 @@ from googleapiclient.errors import HttpError  # type: ignore
 from ncal import config, notion_utils
 from ncal.gcal_token import gcal_token
 from ncal.notion_utils import get_property_text
+
+DATE_AND_TIME_FORMAT_STRING: Final = "%Y-%m-%dT%H:%M:%S"
 
 
 def setup_google_api(
@@ -740,8 +742,6 @@ def existing_events_gcal_to_notion(
             )
         except KeyError:
             date = datetime.datetime.strptime(value["start"]["date"], "%Y-%m-%d")  # type: ignore # noqa
-            # x = datetime(date.year, date.month, date.day, 0, 0, 0) redundant I think
-            # gcal_start_datetimes.append(datetime.strptime(x, "%Y-%m-%dT%H:%M:%S"))
             gcal_start_datetimes.append(date)
         try:
             gcal_end_datetimes.append(
@@ -1406,7 +1406,7 @@ def delete_done_pages(
                 service.events().delete(
                     calendarId=calendar_id, event_id=event_id
                 ).execute()
-                logging.info("deleted:", calendar_id, event_id)
+                logging.info(f"deleted: {calendar_id} {event_id}")
             except HttpError:
                 continue
             time.sleep(0.1)
@@ -1466,11 +1466,11 @@ def make_cal_event(
                 "summary": event_name,
                 "description": event_description,
                 "start": {
-                    "dateTime": event_start_time.strftime("%Y-%m-%dT%H:%M:%S"),
+                    "dateTime": event_start_time.strftime(DATE_AND_TIME_FORMAT_STRING),
                     "timeZone": config.timezone,
                 },
                 "end": {
-                    "dateTime": event_end_time.strftime("%Y-%m-%dT%H:%M:%S"),
+                    "dateTime": event_end_time.strftime(DATE_AND_TIME_FORMAT_STRING),
                     "timeZone": config.timezone,
                 },
                 "source": {
@@ -1550,11 +1550,11 @@ def make_cal_event(
             "summary": event_name,
             "description": event_description,
             "start": {
-                "dateTime": event_start_time.strftime("%Y-%m-%dT%H:%M:%S"),
+                "dateTime": event_start_time.strftime(DATE_AND_TIME_FORMAT_STRING),
                 "timeZone": config.timezone,
             },
             "end": {
-                "dateTime": event_end_time.strftime("%Y-%m-%dT%H:%M:%S"),
+                "dateTime": event_end_time.strftime(DATE_AND_TIME_FORMAT_STRING),
                 "timeZone": config.timezone,
             },
             "source": {
@@ -1616,11 +1616,11 @@ def update_calendar_event(
                 "summary": event_name,
                 "description": event_description,
                 "start": {
-                    "dateTime": event_start_time.strftime("%Y-%m-%dT%H:%M:%S"),
+                    "dateTime": event_start_time.strftime(DATE_AND_TIME_FORMAT_STRING),
                     "timeZone": config.timezone,
                 },
                 "end": {
-                    "dateTime": event_end_time.strftime("%Y-%m-%dT%H:%M:%S"),
+                    "dateTime": event_end_time.strftime(DATE_AND_TIME_FORMAT_STRING),
                     "timeZone": config.timezone,
                 },
                 "source": {
@@ -1703,11 +1703,11 @@ def update_calendar_event(
             "summary": event_name,
             "description": event_description,
             "start": {
-                "dateTime": event_start_time.strftime("%Y-%m-%dT%H:%M:%S"),
+                "dateTime": event_start_time.strftime(DATE_AND_TIME_FORMAT_STRING),
                 "timeZone": config.timezone,
             },
             "end": {
-                "dateTime": event_end_time.strftime("%Y-%m-%dT%H:%M:%S"),
+                "dateTime": event_end_time.strftime(DATE_AND_TIME_FORMAT_STRING),
                 "timeZone": config.timezone,
             },
             "source": {
