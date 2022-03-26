@@ -1,56 +1,27 @@
 """Core functionality for synchronisation."""
 import datetime
 import logging
-import pickle
 import time
 from typing import Any, Final
 
 import arrow
 import dateutil.parser
-import google.auth.exceptions  # type: ignore
 import googleapiclient.discovery  # type: ignore
 import notion_client as nc  # type: ignore
 from googleapiclient.errors import HttpError  # type: ignore
 
 from ncal import config, notion_utils
-from ncal.gcal_token import gcal_token
+from ncal.gcal_setup import setup_google_api
 from ncal.notion_utils import get_property_text
 
 DATE_AND_TIME_FORMAT_STRING: Final = "%Y-%m-%dT%H:%M:%S"
-
-
-def setup_google_api(
-    calendar_id: str, credentials_location: str
-) -> tuple[googleapiclient.discovery.Resource, Any]:
-    """Set up the Google Calendar API interface."""
-    credentials = pickle.load(open(credentials_location, "rb"))
-    service = googleapiclient.discovery.build("calendar", "v3", credentials=credentials)
-
-    # There could be a hiccup if the Google Calendar API token expires.
-    # If the token expires, we create a new token for the program to use
-    try:
-        calendar = service.calendars().get(calendarId=calendar_id).execute()
-    except google.auth.exceptions.RefreshError:
-        # refresh the token
-
-        gcal_token(credentials_location, "client_secret.json")
-
-        # SET UP THE GOOGLE CALENDAR API INTERFACE
-
-        credentials = pickle.load(open(credentials_location, "rb"))
-        service = googleapiclient.discovery.build(
-            "calendar", "v3", credentials=credentials
-        )
-
-        calendar = service.calendars().get(calendarId=calendar_id).execute()
-
-    return (service, calendar)
 
 
 def setup_api_connections(
     default_calendar_id: str,
     credentials_location,
     notion_api_token: str,
+    client_secret_location,
 ) -> tuple[googleapiclient.discovery.Resource, Any, nc.Client]:
     """Set up the API connections to Google Calendar and notion.
 
@@ -63,8 +34,9 @@ def setup_api_connections(
     """
     # setup google api
     service, calendar = setup_google_api(
-        default_calendar_id,
-        str(credentials_location),
+        calendar_id=default_calendar_id,
+        token_file=str(credentials_location),
+        client_secret_file=str(client_secret_location),
     )
     # This is where we set up the connection with the Notion API
     notion = nc.Client(auth=notion_api_token)
@@ -722,7 +694,7 @@ def existing_events_gcal_to_notion(
             try:
                 x = (
                     service.events()
-                    .get(calendarId=calendar_dictionary[calendar_id], event_id=gcal_id)
+                    .get(calendarId=calendar_dictionary[calendar_id], eventId=gcal_id)
                     .execute()
                 )
             except HttpError:
@@ -1404,7 +1376,7 @@ def delete_done_pages(
 
             try:
                 service.events().delete(
-                    calendarId=calendar_id, event_id=event_id
+                    calendarId=calendar_id, eventId=event_id
                 ).execute()
                 logging.info(f"deleted: {calendar_id} {event_id}")
             except HttpError:
@@ -1720,7 +1692,7 @@ def update_calendar_event(
     if current_cal_id == cal_id:
         x = (
             service.events()
-            .update(calendarId=cal_id, event_id=event_id, body=event)
+            .update(calendarId=cal_id, eventId=event_id, body=event)
             .execute()
         )
 
@@ -1733,13 +1705,13 @@ def update_calendar_event(
         logging.info("NewCal " + cal_id)
         x = (
             service.events()
-            .move(calendarId=current_cal_id, event_id=event_id, destination=cal_id)
+            .move(calendarId=current_cal_id, eventId=event_id, destination=cal_id)
             .execute()
         )
         logging.info("New event id: " + x["id"])
         x = (
             service.events()
-            .update(calendarId=cal_id, event_id=event_id, body=event)
+            .update(calendarId=cal_id, eventId=event_id, body=event)
             .execute()
         )
 

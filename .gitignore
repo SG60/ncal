@@ -12,7 +12,7 @@ dist/
 
 # other credentials
 client_secret.json
-token.pkl
+user_token.json
 secret_tokens.py
 config.toml
 

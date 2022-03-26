@@ -13,7 +13,6 @@ from pydantic import ValidationError
 
 from ncal import core
 from ncal.config import Settings, load_settings
-from ncal.gcal_token import gcal_token
 
 from . import __version__
 
@@ -246,6 +245,7 @@ def cli_sync(
         default_calendar_id=settings.default_calendar_id,
         credentials_location=settings.credentials_location,
         notion_api_token=settings.notion_api_token,
+        client_secret_location=settings.client_secret_location,
     )
 
     if repeat:
@@ -253,12 +253,6 @@ def cli_sync(
         asyncio.run(continuous_sync(interval, settings, service, notion))
     else:
         asyncio.run(sync(settings, service, notion))
-
-
-@app.command("gcal-token")
-def cli_gcal_token(client_secret_json: Path, out_file: Path = Path("token.pkl")):
-    """Generate a token, which will be stored in a .pkl file."""
-    gcal_token(out_file, client_secret_json)
 
 
 @app.callback(invoke_without_command=True, no_args_is_help=True)
