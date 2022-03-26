@@ -150,12 +150,12 @@ async def sync(settings: Settings, service: Resource, notion: nc.Client) -> None
             core.delete_done_pages(
                 notion=notion,
                 database_id=settings.database_id,
-                GCalEventId_Notion_Name=settings.gcal_event_id_notion_name,
-                On_GCal_Notion_Name=settings.on_gcal_notion_name,
-                Delete_Notion_Name=settings.delete_notion_name,
-                DELETE_OPTION=settings.delete_option,
-                calendarDictionary=settings.calendar_dictionary,
-                Calendar_Notion_Name=settings.calendar_notion_name,
+                gcal_event_id_notion_name=settings.gcal_event_id_notion_name,
+                on_gcal_notion_name=settings.on_gcal_notion_name,
+                delete_notion_name=settings.delete_notion_name,
+                delete_option=settings.delete_option,
+                calendar_dictionary=settings.calendar_dictionary,
+                calendar_notion_name=settings.calendar_notion_name,
                 service=service,
             )
 
