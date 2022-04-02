@@ -19,3 +19,11 @@ Install with `pip install ncal`. This will install the `ncal` command.
 Configuration is via toml, command line flags, or environment variables (including via a .env file).
 
 Configuration is via toml, command line flags, or environment variables (including via a .env file). Reading through `config.py` will give a lot of useful information on options. Run `ncal --help` to get more info on the cli command.
+
+## Key dependencies
+- [Notion API Python SDK](https://github.com/ramnes/notion-sdk-py)
+- https://github.com/googleapis/google-api-python-client
+- [Arrow](https://github.com/arrow-py/arrow) for datetime handling
+- Dev:
+  - https://github.com/HypothesisWorks/hypothesis
+  - https://github.com/python/mypy
