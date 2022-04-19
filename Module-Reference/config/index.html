@@ -1,0 +1,1412 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.2.9">
+    
+    
+      
+        <title>config - ncal</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.120efc48.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.9647289d.min.css">
+        
+      
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="lime">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#config" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="ncal" class="md-header__button md-logo" aria-label="ncal" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ncal
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              config
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      <form class="md-header__option" data-md-component="palette">
+        
+          
+          
+          <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="lime"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+          
+            <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7M9 21v-1h6v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1m3-17a5 5 0 0 0-5 5c0 2.05 1.23 3.81 3 4.58V16h4v-2.42c1.77-.77 3-2.53 3-4.58a5 5 0 0 0-5-5Z"/></svg>
+            </label>
+          
+        
+          
+          
+          <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="lime"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+          
+            <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9v1Z"/></svg>
+            </label>
+          
+        
+      </form>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/sg60/ncal" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    sg60/ncal
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../.." class="md-tabs__link">
+      Home
+    </a>
+  </li>
+
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../cli/" class="md-tabs__link md-tabs__link--active">
+        Module Reference
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="ncal" class="md-nav__button md-logo" aria-label="ncal" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    ncal
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/sg60/ncal" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    sg60/ncal
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          Module Reference
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Module Reference" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Module Reference
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/" class="md-nav__link">
+        cli
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          config
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        config
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ncal.config" class="md-nav__link">
+    ncal.config
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ncal.config.Settings" class="md-nav__link">
+    Settings
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ncal.config.env_var_names_dict" class="md-nav__link">
+    env_var_names_dict()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ncal.config.get_env_vars_case_insensitive" class="md-nav__link">
+    get_env_vars_case_insensitive()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ncal.config.load_config_file" class="md-nav__link">
+    load_config_file()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ncal.config.load_settings" class="md-nav__link">
+    load_settings()
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../core/" class="md-nav__link">
+        core
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gcal_setup/" class="md-nav__link">
+        gcal_setup
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../notion_utils/" class="md-nav__link">
+        notion_utils
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ncal.config" class="md-nav__link">
+    ncal.config
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ncal.config.Settings" class="md-nav__link">
+    Settings
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ncal.config.env_var_names_dict" class="md-nav__link">
+    env_var_names_dict()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ncal.config.get_env_vars_case_insensitive" class="md-nav__link">
+    get_env_vars_case_insensitive()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ncal.config.load_config_file" class="md-nav__link">
+    load_config_file()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ncal.config.load_settings" class="md-nav__link">
+    load_settings()
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+  <a href="https://github.com/sg60/ncal/edit/main/docs/Module-Reference/config.md" title="Edit this page" class="md-content__button md-icon">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
+  </a>
+
+
+
+<h1 id="config">config<a class="headerlink" href="#config" title="Permanent link">&para;</a></h1>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">ncal.config</span> <span class="kn">import</span> <span class="n">load_settings</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">configuration</span> <span class="o">=</span> <span class="n">load_settings</span><span class="p">(</span>
+<span class="o">...</span>     <span class="n">notion_api_token</span><span class="o">=</span><span class="s2">&quot;secret_123456&quot;</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">database_id</span><span class="o">=</span><span class="s2">&quot;1234567&quot;</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">url_root</span><span class="o">=</span><span class="s2">&quot;https://www.notion.so/exampleuser/afeeec3434177a5aefde223455?v=1462bb2343466546ae54e&amp;p=&quot;</span><span class="p">,</span>
+<span class="o">...</span> <span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">type</span><span class="p">(</span><span class="n">configuration</span><span class="p">)</span>
+<span class="o">&lt;</span><span class="k">class</span> <span class="err">&#39;</span><span class="nc">ncal</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">Settings</span><span class="s1">&#39;&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">configuration</span><span class="o">.</span><span class="n">default_calendar_name</span>
+<span class="s1">&#39;Notion Events&#39;</span>
+</code></pre></div>
+
+
+  <div class="doc doc-object doc-module">
+
+<a id="ncal.config"></a>
+    <div class="doc doc-contents first">
+
+      <p>Functions and classes to manage configuration are in this file.</p>
+<p>Configuration can operate through toml, .env, environment variables, or the command
+line.</p>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h2 id="ncal.config.Settings" class="doc doc-heading">
+          <code>Settings</code>
+
+
+
+<a href="#ncal.config.Settings" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+        <p class="doc doc-class-bases">
+          Bases: <code>pydantic.<span title="pydantic.BaseModel">BaseModel</span></code></p>
+
+
+      <p>Class for storing settings.</p>
+
+  <p><strong>Attributes:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>notion_api_token</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td><p>API token for Notion integration</p></td>
+        </tr>
+        <tr>
+          <td><code>credentials_location</code></td>
+          <td>
+                <code><span title="pathlib.Path">Path</span></code>
+          </td>
+          <td><p>file containing GCal User Credentials</p></td>
+        </tr>
+        <tr>
+          <td><code>database_id</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td><p>ID of the Notion database</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+
+          <details class="quote">
+            <summary>Source code in <code>ncal/config.py</code></summary>
+            <table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span>
+<span class="normal">92</span>
+<span class="normal">93</span>
+<span class="normal">94</span>
+<span class="normal">95</span>
+<span class="normal">96</span>
+<span class="normal">97</span>
+<span class="normal">98</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Settings</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class for storing settings.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        notion_api_token: API token for Notion integration</span>
+<span class="sd">        credentials_location: file containing GCal User Credentials</span>
+<span class="sd">        database_id: ID of the Notion database</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">notion_api_token</span><span class="p">:</span> <span class="nb">str</span>
+
+    <span class="c1"># get the mess of numbers before the &quot;?&quot; on your dashboard URL (no need to split</span>
+    <span class="c1"># into dashes)</span>
+    <span class="n">database_id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="c1"># open up a task and then copy the URL root up to the &quot;p=&quot;</span>
+    <span class="n">url_root</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="c1"># json file containing GCal User Credentials</span>
+    <span class="n">credentials_location</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;user_token.json&quot;</span><span class="p">)</span>
+    <span class="c1"># gcal API client secrets file</span>
+    <span class="n">client_secret_location</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;client_secret.json&quot;</span><span class="p">)</span>
+
+    <span class="n">default_event_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">60</span>  <span class="c1"># Default event length in minutes</span>
+    <span class="c1"># http://www.timezoneconverter.com/cgi-bin/zonehelp.tzc  TODO: make this unnecessary</span>
+    <span class="n">timezone</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Europe/London&quot;</span>
+
+    <span class="c1"># 8 would be 8 am. 16 would be 4 pm. Only whole numbers</span>
+    <span class="n">default_event_start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span>
+
+    <span class="c1"># 0 if you want dates on your Notion dashboard to be treated as an all-day event</span>
+    <span class="n">all_day_event_option</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># ^^ 1 if you want dates on your Notion dashboard to be created at whatever hour you</span>
+    <span class="c1"># defined in the DEFAULT_EVENT_START variable</span>
+
+    <span class="c1"># MULTIPLE CALENDAR PART:</span>
+    <span class="c1">#  - VERY IMPORTANT: For each &#39;key&#39; of the dictionary, make sure that you make that</span>
+    <span class="c1"># EXACT thing in the Notion database first before running the code. You WILL have</span>
+    <span class="c1"># an error and your dashboard/calendar will be messed up</span>
+
+    <span class="c1"># The GCal calendar id. The format is something like</span>
+    <span class="c1"># &quot;sldkjfliksedjgodsfhgshglsj@group.calendar.google.com&quot;</span>
+    <span class="n">default_calendar_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;cv9aoe96819t4bt5f5jars9b10@group.calendar.google.com&quot;</span>
+
+    <span class="n">default_calendar_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Notion Events&quot;</span>
+
+    <span class="c1"># leave the first entry as is</span>
+    <span class="c1"># the structure should be as follows:</span>
+    <span class="c1"># WHAT_THE_OPTION_IN_NOTION_IS_CALLED: GCAL_CALENDAR_ID</span>
+    <span class="n">calendar_dictionary</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">default_calendar_name</span><span class="p">:</span> <span class="n">default_calendar_id</span><span class="p">,</span>
+        <span class="c1"># &quot;Cal Name&quot;: &quot;asdfadsf234asef21134@group.calendar.google.com&quot;,</span>
+    <span class="p">}</span>
+
+    <span class="c1"># doesn&#39;t delete the Notion task (yet), I&#39;m waiting for the Python API to be</span>
+    <span class="c1"># updated to allow deleting tasks</span>
+    <span class="n">delete_option</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="c1"># set at True if you want the delete column being checked off to mean that the</span>
+    <span class="c1"># gCal event and the Notion Event will be checked off.</span>
+    <span class="c1"># set at False if you want nothing deleted</span>
+
+    <span class="c1"># DATABASE SPECIFIC EDITS</span>
+    <span class="c1"># There needs to be a few properties on the Notion Database for this to work.</span>
+    <span class="c1"># Replace the values of each variable with the string of what the variable is</span>
+    <span class="c1"># called on your Notion dashboard</span>
+    <span class="c1"># The Last Edited Time column is a property of the notion pages themselves,</span>
+    <span class="c1"># you just have to make it a column</span>
+    <span class="c1"># The NeedGCalUpdate column is a formula column that works as such</span>
+    <span class="c1"># &quot;if(prop(&quot;Last Edited Time&quot;) &gt; prop(&quot;Last Updated Time&quot;), true, false)&quot;</span>
+    <span class="c1"># Please refer to the Template if you are confused:</span>
+    <span class="c1"># https://www.notion.so/akarri/2583098dfd32472ab6ca1ff2a8b2866d?v=3a1adf60f15748f08ed925a2eca88421</span>
+
+    <span class="n">task_notion_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Name&quot;</span>
+    <span class="n">date_notion_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Do Date&quot;</span>
+    <span class="n">initiative_notion_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Project&quot;</span>
+    <span class="n">initiative_notion_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;relation&quot;</span><span class="p">,</span> <span class="s2">&quot;select&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;relation&quot;</span>
+    <span class="n">extrainfo_notion_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Description&quot;</span>
+    <span class="n">on_gcal_notion_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;On GCal?&quot;</span>
+    <span class="n">need_gcal_update_notion_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;NeedGCalUpdate&quot;</span>
+    <span class="n">gcal_event_id_notion_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;GCal Event Id&quot;</span>
+    <span class="n">lastupdatedtime_notion_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Last Updated Time&quot;</span>
+    <span class="n">calendar_notion_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Calendar&quot;</span>
+    <span class="n">current_calendar_id_notion_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Current Calendar Id&quot;</span>
+    <span class="n">delete_notion_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Done&quot;</span>
+</code></pre></div>
+</td></tr></table>
+          </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="ncal.config.env_var_names_dict" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">env_var_names_dict</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span></code>
+
+
+<a href="#ncal.config.env_var_names_dict" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>prefix</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td><p>string to add to the start of each environment variable name</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><span title="typing.Dict">Dict</span>[str, str]</code>
+          </td>
+          <td><p>Dict[str, str]: A dictionary in the form of <code>original_name: new_name</code></p></td>
+        </tr>
+    </tbody>
+  </table>
+      <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">env_var_names_dict</span><span class="p">(</span><span class="s2">&quot;PREFIX_&quot;</span><span class="p">)</span>
+<span class="p">{</span><span class="s1">&#39;notion_api_token&#39;</span><span class="p">:</span> <span class="s1">&#39;prefix_notion_api_token&#39;</span><span class="p">,</span> <span class="s1">&#39;database_id&#39;</span><span class="p">:</span> <span class="s1">&#39;prefix_database_id&#39;</span><span class="p">,</span> <span class="s1">&#39;url_root&#39;</span><span class="p">:</span> <span class="s1">&#39;prefix_url_root&#39;</span><span class="p">,</span> <span class="s1">&#39;credentials_location&#39;</span><span class="p">:</span> <span class="s1">&#39;prefix_credentials_location&#39;</span><span class="p">,</span> <span class="s1">&#39;client_secret_location&#39;</span><span class="p">:</span> <span class="s1">&#39;prefix_client_secret_location&#39;</span><span class="p">,</span> <span class="s1">&#39;default_event_length&#39;</span><span class="p">:</span> <span class="s1">&#39;prefix_default_event_length&#39;</span><span class="p">,</span> <span class="s1">&#39;timezone&#39;</span><span class="p">:</span> <span class="s1">&#39;prefix_timezone&#39;</span><span class="p">,</span> <span class="s1">&#39;default_event_start&#39;</span><span class="p">:</span> <span class="s1">&#39;prefix_default_event_start&#39;</span><span class="p">,</span> <span class="s1">&#39;all_day_event_option&#39;</span><span class="p">:</span> <span class="s1">&#39;prefix_all_day_event_option&#39;</span><span class="p">,</span> <span class="s1">&#39;default_calendar_id&#39;</span><span class="p">:</span> <span class="s1">&#39;prefix_default_calendar_id&#39;</span><span class="p">,</span> <span class="s1">&#39;default_calendar_name&#39;</span><span class="p">:</span> <span class="s1">&#39;prefix_default_calendar_name&#39;</span><span class="p">,</span> <span class="s1">&#39;delete_option&#39;</span><span class="p">:</span> <span class="s1">&#39;prefix_delete_option&#39;</span><span class="p">,</span> <span class="s1">&#39;task_notion_name&#39;</span><span class="p">:</span> <span class="s1">&#39;prefix_task_notion_name&#39;</span><span class="p">,</span> <span class="s1">&#39;date_notion_name&#39;</span><span class="p">:</span> <span class="s1">&#39;prefix_date_notion_name&#39;</span><span class="p">,</span> <span class="s1">&#39;initiative_notion_name&#39;</span><span class="p">:</span> <span class="s1">&#39;prefix_initiative_notion_name&#39;</span><span class="p">,</span> <span class="s1">&#39;initiative_notion_type&#39;</span><span class="p">:</span> <span class="s1">&#39;prefix_initiative_notion_type&#39;</span><span class="p">,</span> <span class="s1">&#39;extrainfo_notion_name&#39;</span><span class="p">:</span> <span class="s1">&#39;prefix_extrainfo_notion_name&#39;</span><span class="p">,</span> <span class="s1">&#39;on_gcal_notion_name&#39;</span><span class="p">:</span> <span class="s1">&#39;prefix_on_gcal_notion_name&#39;</span><span class="p">,</span> <span class="s1">&#39;need_gcal_update_notion_name&#39;</span><span class="p">:</span> <span class="s1">&#39;prefix_need_gcal_update_notion_name&#39;</span><span class="p">,</span> <span class="s1">&#39;gcal_event_id_notion_name&#39;</span><span class="p">:</span> <span class="s1">&#39;prefix_gcal_event_id_notion_name&#39;</span><span class="p">,</span> <span class="s1">&#39;lastupdatedtime_notion_name&#39;</span><span class="p">:</span> <span class="s1">&#39;prefix_lastupdatedtime_notion_name&#39;</span><span class="p">,</span> <span class="s1">&#39;calendar_notion_name&#39;</span><span class="p">:</span> <span class="s1">&#39;prefix_calendar_notion_name&#39;</span><span class="p">,</span> <span class="s1">&#39;current_calendar_id_notion_name&#39;</span><span class="p">:</span> <span class="s1">&#39;prefix_current_calendar_id_notion_name&#39;</span><span class="p">,</span> <span class="s1">&#39;delete_notion_name&#39;</span><span class="p">:</span> <span class="s1">&#39;prefix_delete_notion_name&#39;</span><span class="p">,</span> <span class="s1">&#39;calendar_dictionary&#39;</span><span class="p">:</span> <span class="s1">&#39;prefix_calendar_dictionary&#39;</span><span class="p">}</span>
+</code></pre></div>
+
+        <details class="quote">
+          <summary>Source code in <code>ncal/config.py</code></summary>
+          <table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">env_var_names_dict</span><span class="p">(</span><span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        prefix: string to add to the start of each environment variable name</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        Dict[str, str]: A dictionary in the form of `original_name: new_name`</span>
+
+<span class="sd">    ```python</span>
+<span class="sd">    &gt;&gt;&gt; env_var_names_dict(&quot;PREFIX_&quot;)</span>
+<span class="sd">    {&#39;notion_api_token&#39;: &#39;prefix_notion_api_token&#39;, &#39;database_id&#39;: &#39;prefix_database_id&#39;, &#39;url_root&#39;: &#39;prefix_url_root&#39;, &#39;credentials_location&#39;: &#39;prefix_credentials_location&#39;, &#39;client_secret_location&#39;: &#39;prefix_client_secret_location&#39;, &#39;default_event_length&#39;: &#39;prefix_default_event_length&#39;, &#39;timezone&#39;: &#39;prefix_timezone&#39;, &#39;default_event_start&#39;: &#39;prefix_default_event_start&#39;, &#39;all_day_event_option&#39;: &#39;prefix_all_day_event_option&#39;, &#39;default_calendar_id&#39;: &#39;prefix_default_calendar_id&#39;, &#39;default_calendar_name&#39;: &#39;prefix_default_calendar_name&#39;, &#39;delete_option&#39;: &#39;prefix_delete_option&#39;, &#39;task_notion_name&#39;: &#39;prefix_task_notion_name&#39;, &#39;date_notion_name&#39;: &#39;prefix_date_notion_name&#39;, &#39;initiative_notion_name&#39;: &#39;prefix_initiative_notion_name&#39;, &#39;initiative_notion_type&#39;: &#39;prefix_initiative_notion_type&#39;, &#39;extrainfo_notion_name&#39;: &#39;prefix_extrainfo_notion_name&#39;, &#39;on_gcal_notion_name&#39;: &#39;prefix_on_gcal_notion_name&#39;, &#39;need_gcal_update_notion_name&#39;: &#39;prefix_need_gcal_update_notion_name&#39;, &#39;gcal_event_id_notion_name&#39;: &#39;prefix_gcal_event_id_notion_name&#39;, &#39;lastupdatedtime_notion_name&#39;: &#39;prefix_lastupdatedtime_notion_name&#39;, &#39;calendar_notion_name&#39;: &#39;prefix_calendar_notion_name&#39;, &#39;current_calendar_id_notion_name&#39;: &#39;prefix_current_calendar_id_notion_name&#39;, &#39;delete_notion_name&#39;: &#39;prefix_delete_notion_name&#39;, &#39;calendar_dictionary&#39;: &#39;prefix_calendar_dictionary&#39;}</span>
+
+<span class="sd">    ```</span>
+<span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="n">prefix</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">+</span> <span class="n">i</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">Settings</span><span class="o">.</span><span class="n">__fields__</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
+</code></pre></div>
+</td></tr></table>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="ncal.config.get_env_vars_case_insensitive" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">get_env_vars_case_insensitive</span><span class="p">(</span><span class="n">env_var_names</span><span class="p">)</span></code>
+
+
+<a href="#ncal.config.get_env_vars_case_insensitive" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+      <p>Get environment variables matching the given dictionary.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>env_var_names</code></td>
+          <td>
+                <code><span title="typing.Dict">Dict</span>[str, str]</code>
+          </td>
+          <td><p>{desired label: environment variable label}</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><span title="typing.Dict">Dict</span>[str, str]</code>
+          </td>
+          <td><p>Dictionary of environment variables</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+        <details class="quote">
+          <summary>Source code in <code>ncal/config.py</code></summary>
+          <table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_env_vars_case_insensitive</span><span class="p">(</span><span class="n">env_var_names</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Get environment variables matching the given dictionary.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        env_var_names: {desired label: environment variable label}</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        Dictionary of environment variables</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">load_dotenv</span><span class="p">()</span>  <span class="c1"># uses .env file if available</span>
+    <span class="n">ncal_env_vars</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="c1"># populate env_vars with values which match the dictionary</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">env_var_names</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">:=</span> <span class="n">value</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span> <span class="ow">in</span> <span class="n">environ</span><span class="p">:</span>
+            <span class="n">ncal_env_vars</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">environ</span><span class="p">[</span><span class="n">x</span><span class="p">]</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">:=</span> <span class="n">value</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span> <span class="ow">in</span> <span class="n">environ</span><span class="p">:</span>
+            <span class="n">ncal_env_vars</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">environ</span><span class="p">[</span><span class="n">x</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">ncal_env_vars</span>
+</code></pre></div>
+</td></tr></table>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="ncal.config.load_config_file" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">load_config_file</span><span class="p">(</span><span class="n">path_to_file</span><span class="p">)</span></code>
+
+
+<a href="#ncal.config.load_config_file" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+      <p>Load a toml config file into a dictionary.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>path_to_file</code></td>
+          <td>
+                <code><span title="pathlib.Path">Path</span></code>
+          </td>
+          <td></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><span title="typing.Dict">Dict</span>[str, <span title="typing.Any">Any</span>]</code>
+          </td>
+          <td><p>Settings (unfiltered)</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+        <details class="quote">
+          <summary>Source code in <code>ncal/config.py</code></summary>
+          <table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">load_config_file</span><span class="p">(</span><span class="n">path_to_file</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Load a toml config file into a dictionary.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        path_to_file:</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        Settings (unfiltered)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path_to_file</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">tomli_dictionary</span> <span class="o">=</span> <span class="n">tomli</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">tomli_dictionary</span>
+</code></pre></div>
+</td></tr></table>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="ncal.config.load_settings" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">load_settings</span><span class="p">(</span><span class="n">config_file_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">use_env_vars</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_toml_file</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+
+<a href="#ncal.config.load_settings" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+      <p>Load settings from multiple sources.</p>
+<p>This function falls back to defaults, so only a few settings are required.
+Priority (high-low): cli, env, config_file.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>config_file_path</code></td>
+          <td>
+                <code><span title="typing.Optional">Optional</span>[<span title="pathlib.Path">Path</span>]</code>
+          </td>
+          <td><p>Path to a .toml config file</p></td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>use_env_vars</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td></td>
+          <td>
+                <code>True</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>use_toml_file</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td></td>
+          <td>
+                <code>True</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>**kwargs</code></td>
+          <td>
+                <code><span title="typing.Any">Any</span></code>
+          </td>
+          <td><p>Other settings to provide to the Settings object</p></td>
+          <td>
+                <code>{}</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><a class="autorefs autorefs-internal" title="ncal.config.Settings" href="#ncal.config.Settings">Settings</a></code>
+          </td>
+          <td><p>A ncal.config.Settings object</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+        <details class="quote">
+          <summary>Source code in <code>ncal/config.py</code></summary>
+          <table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">load_settings</span><span class="p">(</span>
+    <span class="n">config_file_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">use_env_vars</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">use_toml_file</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Settings</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Load settings from multiple sources.</span>
+
+<span class="sd">    This function falls back to defaults, so only a few settings are required.</span>
+<span class="sd">    Priority (high-low): cli, env, config_file.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config_file_path: Path to a .toml config file</span>
+<span class="sd">        use_env_vars:</span>
+<span class="sd">        use_toml_file:</span>
+<span class="sd">        **kwargs: Other settings to provide to the Settings object</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A ncal.config.Settings object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">default_settings</span> <span class="o">=</span> <span class="n">Settings</span><span class="o">.</span><span class="n">construct</span><span class="p">()</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>  <span class="c1"># type: ignore</span>
+
+    <span class="k">if</span> <span class="n">use_env_vars</span><span class="p">:</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot;NCAL_&quot;</span>
+        <span class="n">env_var_names</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">Settings</span><span class="o">.</span><span class="n">__fields__</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
+        <span class="n">env_settings</span> <span class="o">=</span> <span class="n">get_env_vars_case_insensitive</span><span class="p">(</span><span class="n">env_var_names</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">env_settings</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">if</span> <span class="n">config_file_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">toml_settings</span> <span class="o">=</span> <span class="n">load_config_file</span><span class="p">(</span><span class="n">config_file_path</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;no config file found at </span><span class="si">{</span><span class="n">config_file_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">toml_settings</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">toml_settings</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">passed_settings</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">}</span>
+
+    <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">default_settings</span><span class="p">,</span> <span class="o">**</span><span class="n">toml_settings</span><span class="p">,</span> <span class="o">**</span><span class="n">env_settings</span><span class="p">,</span> <span class="o">**</span><span class="n">passed_settings</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">Settings</span><span class="p">(</span><span class="o">**</span><span class="n">settings</span><span class="p">)</span>
+</code></pre></div>
+</td></tr></table>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+              
+            </article>
+          </div>
+        </div>
+        
+          <a href="#" class="md-top md-icon" data-md-component="top" data-md-state="hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+            Back to top
+          </a>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../cli/" class="md-footer__link md-footer__link--prev" aria-label="Previous: cli" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              cli
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../core/" class="md-footer__link md-footer__link--next" aria-label="Next: core" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              core
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.top"], "search": "../../assets/javascripts/workers/search.2a1c317c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.6e54b5cd.min.js"></script>
+      
+    
+  </body>
+</html>
