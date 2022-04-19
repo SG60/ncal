@@ -5,9 +5,9 @@ from typing import Any, Final
 
 import google.auth.exceptions  # type: ignore
 from google.auth.transport.requests import Request  # type: ignore
-from googleapiclient.discovery import build, Resource  # type: ignore
 from google.oauth2.credentials import Credentials  # type: ignore
 from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import Resource, build  # type: ignore
 
 # If modifying these scopes, delete the file at "token_location".
 SCOPES: Final = ["https://www.googleapis.com/auth/calendar"]
