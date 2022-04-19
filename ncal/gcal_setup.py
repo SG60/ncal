@@ -31,7 +31,7 @@ def setup_google_api(
         credentials = Credentials.from_authorized_user_file(token_file)
     # If no valid credentials are available, let the user log in.
     if not credentials or not credentials.valid:
-        # use refresh token if available
+        # use refresh token if available  ## TODO: #81 Fix this bit.
         if credentials and credentials.expired and credentials.refresh_token:
             credentials.refresh(google.auth.transport.requests.Request())
         # otherwise, get new credentials
