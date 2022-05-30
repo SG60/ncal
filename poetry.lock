@@ -582,7 +582,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "mkdocstrings"
-version = "0.18.1"
+version = "0.19.0"
 description = "Automatic documentation from sources, for MkDocs."
 category = "dev"
 optional = false
@@ -595,7 +595,6 @@ MarkupSafe = ">=1.1"
 mkdocs = ">=1.2"
 mkdocs-autorefs = ">=0.3.1"
 mkdocstrings-python = {version = ">=0.5.2", optional = true, markers = "extra == \"python\""}
-mkdocstrings-python-legacy = ">=0.2"
 pymdown-extensions = ">=6.3"
 
 [package.extras]
@@ -614,18 +613,6 @@ python-versions = ">=3.7"
 [package.dependencies]
 griffe = ">=0.11.1"
 mkdocstrings = ">=0.18"
-
-[[package]]
-name = "mkdocstrings-python-legacy"
-version = "0.2.2"
-description = "A legacy Python handler for mkdocstrings."
-category = "dev"
-optional = false
-python-versions = ">=3.7"
-
-[package.dependencies]
-mkdocstrings = ">=0.18"
-pytkdocs = ">=0.14"
 
 [[package]]
 name = "mypy"
@@ -929,17 +916,6 @@ python-versions = ">=3.5"
 cli = ["click (>=5.0)"]
 
 [[package]]
-name = "pytkdocs"
-version = "0.16.1"
-description = "Load Python objects documentation."
-category = "dev"
-optional = false
-python-versions = ">=3.7"
-
-[package.extras]
-numpy-style = ["docstring_parser (>=0.7)"]
-
-[[package]]
 name = "pyyaml"
 version = "6.0"
 description = "YAML parser and emitter for Python"
@@ -1171,7 +1147,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "3daec5060a0a3da7649697846ec6b96265dfd7e3f8c5a2b6b963525c7d91a224"
+content-hash = "22ecba74bc8e3291b94d8f2fb3ddeccbbd977d5a61822c7d8b38d2649218cfb1"
 
 [metadata.files]
 anyio = [
@@ -1427,16 +1403,12 @@ mkdocs-material-extensions = [
     {file = "mkdocs_material_extensions-1.0.3-py3-none-any.whl", hash = "sha256:a82b70e533ce060b2a5d9eb2bc2e1be201cf61f901f93704b4acf6e3d5983a44"},
 ]
 mkdocstrings = [
-    {file = "mkdocstrings-0.18.1-py3-none-any.whl", hash = "sha256:4053929356df8cd69ed32eef71d8f676a472ef72980c9ffd4f933ead1debcdad"},
-    {file = "mkdocstrings-0.18.1.tar.gz", hash = "sha256:fb7c91ce7e3ab70488d3fa6c073a4f827cdc319042f682ef8ea95459790d64fc"},
+    {file = "mkdocstrings-0.19.0-py3-none-any.whl", hash = "sha256:3217d510d385c961f69385a670b2677e68e07b5fea4a504d86bf54c006c87c7d"},
+    {file = "mkdocstrings-0.19.0.tar.gz", hash = "sha256:efa34a67bad11229d532d89f6836a8a215937548623b64f3698a1df62e01cc3e"},
 ]
 mkdocstrings-python = [
     {file = "mkdocstrings-python-0.6.6.tar.gz", hash = "sha256:37281696b9f199624ae420e0625b6659b7fdfbea736618bce7fd978682dea3b1"},
     {file = "mkdocstrings_python-0.6.6-py3-none-any.whl", hash = "sha256:c118438d3cb4b14c492a51d109f4e5b27ab06ba19b099d624430dfd904926152"},
-]
-mkdocstrings-python-legacy = [
-    {file = "mkdocstrings-python-legacy-0.2.2.tar.gz", hash = "sha256:f0e7ec6a19750581b752acb38f6b32fcd1efe006f14f6703125d2c2c9a5c6f02"},
-    {file = "mkdocstrings_python_legacy-0.2.2-py3-none-any.whl", hash = "sha256:379107a3a5b8db9b462efc4493c122efe21e825e3702425dbd404621302a563a"},
 ]
 mypy = [
     {file = "mypy-0.931-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:3c5b42d0815e15518b1f0990cff7a705805961613e701db60387e6fb663fe78a"},
@@ -1638,10 +1610,6 @@ python-dateutil = [
 python-dotenv = [
     {file = "python-dotenv-0.20.0.tar.gz", hash = "sha256:b7e3b04a59693c42c36f9ab1cc2acc46fa5df8c78e178fc33a8d4cd05c8d498f"},
     {file = "python_dotenv-0.20.0-py3-none-any.whl", hash = "sha256:d92a187be61fe482e4fd675b6d52200e7be63a12b724abbf931a40ce4fa92938"},
-]
-pytkdocs = [
-    {file = "pytkdocs-0.16.1-py3-none-any.whl", hash = "sha256:a8c3f46ecef0b92864cc598e9101e9c4cf832ebbf228f50c84aa5dd850aac379"},
-    {file = "pytkdocs-0.16.1.tar.gz", hash = "sha256:e2ccf6dfe9dbbceb09818673f040f1a7c32ed0bffb2d709b06be6453c4026045"},
 ]
 pyyaml = [
     {file = "PyYAML-6.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:d4db7c7aef085872ef65a8fd7d6d09a14ae91f691dec3e87ee5ee0539d516f53"},
