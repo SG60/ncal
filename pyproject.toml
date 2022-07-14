@@ -13,7 +13,7 @@ ncal = "ncal.cli:app"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-notion-client = "^0.9.0"
+notion-client = "^1.0.0"
 google-api-python-client = "^2.36.0"
 google-auth-oauthlib = ">=0.4.6,<0.6.0"
 python-dateutil = "^2.8.2"

@@ -641,7 +641,7 @@ python-versions = "*"
 
 [[package]]
 name = "notion-client"
-version = "0.9.0"
+version = "1.0.0"
 description = "Python client for the official Notion API"
 category = "main"
 optional = false
@@ -1147,7 +1147,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "cc73c25e447a86fadc41332957b73caf0edf3c8c3cbcf2778e5337ceb2163f68"
+content-hash = "9b64dcd0d75c7d6c69bde0bf8a71aad141f81258f4447d2573e349da71645792"
 
 [metadata.files]
 anyio = [
@@ -1440,8 +1440,8 @@ mypy-extensions = [
     {file = "mypy_extensions-0.4.3.tar.gz", hash = "sha256:2d82818f5bb3e369420cb3c4060a7970edba416647068eb4c5343488a6c604a8"},
 ]
 notion-client = [
-    {file = "notion-client-0.9.0.tar.gz", hash = "sha256:7438848aa0de81bf2183524ba5cc6caf5b9cba84e1da5051c822ecb31de89b00"},
-    {file = "notion_client-0.9.0-py2.py3-none-any.whl", hash = "sha256:5a11b5fdbf00210ff256c507a7b0c7aa2842c076b22636dbb779ed9240e40e0d"},
+    {file = "notion-client-1.0.0.tar.gz", hash = "sha256:281b37a1512abeccb81377d4a3461833f1c1fbd0ceb6e681e38b7cd446bf1bce"},
+    {file = "notion_client-1.0.0-py2.py3-none-any.whl", hash = "sha256:01b3dfba071b5d09b6bdef2950624b7f000da2ece851c133ccf40815c4db167b"},
 ]
 oauthlib = [
     {file = "oauthlib-3.2.0-py3-none-any.whl", hash = "sha256:6db33440354787f9b7f3a6dbd4febf5d0f93758354060e802f6c06cb493022fe"},
